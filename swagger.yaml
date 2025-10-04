@@ -1,0 +1,520 @@
+openapi: 3.0.3
+info:
+  title: AI Tutor Backend API
+  version: 1.0.0
+  description: >
+    REST API for AI Tutor — a multi-user intelligent learning platform integrating
+    Google Drive via OAuth and Gemini AI for personalized tutoring.
+
+servers:
+  - url: http://localhost:8000
+    description: FastAPI / Auth
+  - url: http://localhost:8001
+    description: python MCP Server
+
+paths:
+  /signup:
+    post:
+      summary: Register a new user and start OAuth flow
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required: [email, password]
+      responses:
+        "200":
+          description: OAuth URL + created user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authUrl:
+                    type: string
+                  userId:
+                    type: string
+
+  /login:
+    post:
+      summary: Login a user and issue JWT
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  userId:
+                    type: string
+
+  /auth/google/callback:
+    get:
+      summary: Handle Google OAuth callback and store tokens
+      tags: [Auth]
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Google account successfully connected
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  userId:
+                    type: string
+
+  /users/{id}:
+    get:
+      summary: Retrieve user profile
+      tags: [Users]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    put:
+      summary: Update user info
+      tags: [Users]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+      responses:
+        "200":
+          description: Update success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+    delete:
+      summary: Delete user account
+      tags: [Users]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deletion confirmation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /users/{id}/token:
+    get:
+      summary: Retrieve user OAuth token
+      tags: [Users]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OAuth token info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserToken"
+    post:
+      summary: Store or update user OAuth token
+      tags: [Users]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserToken"
+      responses:
+        "200":
+          description: Token saved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /classes:
+    post:
+      summary: Create a new class
+      tags: [Classes]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        "200":
+          description: Created class
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Class"
+    get:
+      summary: Get all classes for authenticated user
+      tags: [Classes]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of user’s classes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Class"
+
+  /classes/{id}:
+    get:
+      summary: Get specific class details
+      tags: [Classes]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Class information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Class"
+    put:
+      summary: Update a class (e.g., add files)
+      tags: [Classes]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                files:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: Updated class
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Class"
+    delete:
+      summary: Delete a class
+      tags: [Classes]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Class deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /drive/search:
+    get:
+      summary: Search a user’s Google Drive
+      tags: [Drive]
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Matching files
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  query:
+                    type: string
+                  files:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/File"
+
+  /drive/read/{fileId}:
+    get:
+      summary: Read contents of a specific Google Drive file
+      tags: [Drive]
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: File metadata and content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileContent"
+
+  /chat:
+    post:
+      summary: Start or continue a tutoring session
+      tags: [Tutor]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                classId:
+                  type: string
+                message:
+                  type: string
+      responses:
+        "200":
+          description: AI Tutor response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessionId:
+                    type: string
+                  reply:
+                    type: string
+
+components:
+  schemas:
+    User:
+      type: object
+      description: Registered user of the AI Tutor system
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          format: email
+          example: "student@example.com"
+        password_hash:
+          type: string
+          example: "$2b$10$8df3e..."
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-10-04T08:30:00Z"
+
+    MCPToken:
+      type: object
+      description: OAuth token data for Google Drive access (linked to user)
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        access_token:
+          type: string
+          example: "ya29.a0AfH6SM..."
+        refresh_token:
+          type: string
+          example: "1//0gKJd..."
+        scope:
+          type: string
+          example: "https://www.googleapis.com/auth/drive.readonly"
+        expiry_date:
+          type: string
+          format: date-time
+          example: "2025-12-01T00:00:00Z"
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-10-04T08:30:00Z"
+
+    Class:
+      type: object
+      description: Represents a user's class or course container
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "CS 460 - Algorithms"
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-10-04T09:00:00Z"
+
+    File:
+      type: object
+      description: Represents an attached Google Drive file for a class
+      properties:
+        id:
+          type: integer
+          example: 1
+        class_id:
+          type: integer
+          example: 2
+        name:
+          type: string
+          example: "Lecture_Notes_Week_1"
+        mimeType:
+          type: string
+          example: "application/vnd.google-apps.document"
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-10-04T09:15:00Z"
+
+    TutorSession:
+      type: object
+      description: Represents an AI tutoring session linked to a class and file
+      properties:
+        id:
+          type: integer
+          example: 1
+        class_id:
+          type: integer
+          example: 2
+        fileId:
+          type: integer
+          example: 5
+        userPrompt:
+          type: string
+          example: "Explain dynamic programming in this lecture file."
+        aiResponse:
+          type: string
+          example: "Dynamic programming is a technique for optimizing recursive problems..."
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-10-04T10:00:00Z"
+
+    TutorMessage:
+      type: object
+      description: Stores an individual chat message between user and AI during a tutoring session
+      properties:
+        id:
+          type: integer
+          example: 1
+        session_id:
+          type: integer
+          example: 1
+        sender:
+          type: string
+          enum: [user, ai]
+          example: "user"
+        message:
+          type: string
+          example: "Can you explain how this algorithm works?"
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-10-04T10:05:00Z"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
