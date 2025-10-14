@@ -3,7 +3,7 @@
 ### Getting Started
 
 _Downloading UV_
-curl -LsSf https://astral.sh/uv/install.sh | sh
+`curl -LsSf https://astral.sh/uv/install.sh | sh`
 
 _Getting UV up to standard_
 `uv sync`
