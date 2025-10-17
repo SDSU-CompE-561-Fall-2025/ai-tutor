@@ -150,7 +150,6 @@ class UserService:
 
         if expiry and expiry < datetime.now(UTC):
             new_creds = refresh_credentials(user.auth_token.refresh_token)  # pyright: ignore[reportAttributeAccessIssue]
-            # add update to DB logic
             UserService.update_auth_token(db, user_id, new_creds)
             user = UserRepository.get_by_id(db, user_id)
             return user.auth_token  # pyright: ignore[reportOptionalMemberAccess]

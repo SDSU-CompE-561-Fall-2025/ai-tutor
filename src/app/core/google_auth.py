@@ -98,7 +98,7 @@ def refresh_credentials(refresh_token: str) -> dict:
     }
 
 
-def get_google_email(access_token: str) -> str | None:
+def get_google_email(access_token: str) -> str:
     try:
         r = requests.get(
             "https://www.googleapis.com/oauth2/v1/userinfo?alt=json",
