@@ -16,3 +16,10 @@ class User(Base):
     # Relationships
     files = relationship("File", back_populates="user")
     courses = relationship("Course", back_populates="user")
+
+    auth_token = relationship(
+        "AuthToken",
+        back_populates="user",
+        uselist=False,
+        lazy="joined",
+    )
