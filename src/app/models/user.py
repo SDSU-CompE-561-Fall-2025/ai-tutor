@@ -2,10 +2,8 @@
 User Model
 This model defines the user database URL
 """
-
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-
 from app.core.database import Base
 
 
