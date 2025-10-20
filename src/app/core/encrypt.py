@@ -2,7 +2,7 @@ from cryptography.fernet import Fernet
 
 from app.core.settings import settings
 
-fernet = Fernet(settings.feret_key)
+fernet = Fernet(settings.fernet_key.encode())
 
 
 def encrypt_key(api_key: str) -> str:

@@ -64,7 +64,7 @@ class Settings(BaseSettings):
         default="http://127.0.0.1:8000/mcp",
         description="FastMCP server URL",
     )
-    feret_key: str = Field(
+    fernet_key: str = Field(
         default="feret_secret_key",
         description="Secret key used to encrypt and decrypt google oauth2 tokens",
     )
@@ -73,6 +73,7 @@ class Settings(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
         extra = "allow"
+        fernet_key: str
 
 
 settings = Settings()

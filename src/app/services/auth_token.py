@@ -3,6 +3,7 @@ from datetime import UTC, datetime
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core.encrypt import decrypt_key, encrypt_key
 from app.core.google_auth import refresh_credentials
 from app.models.auth_token import AuthToken
 from app.repository.auth_token import AuthTokenRepository
@@ -34,11 +35,18 @@ class AuthTokenService:
         expiry = expiry.replace(tzinfo=UTC)
 
         if expiry and expiry < datetime.now(UTC):
-            new_creds = refresh_credentials(user.auth_token.refresh_token)  # pyright: ignore[reportAttributeAccessIssue]
+            new_creds = refresh_credentials(decrypt_key(user.auth_token.refresh_token))  # pyright: ignore[reportAttributeAccessIssue]
             AuthTokenService.update_auth_token(db, user_id, new_creds)
             user = UserRepository.get_by_id(db, user_id)
             return user.auth_token  # pyright: ignore[reportOptionalMemberAccess]
-        return user.auth_token
+        return AuthToken(
+            id=user.auth_token.id,
+            access_token=decrypt_key(user.auth_token.access_token),
+            refresh_token=decrypt_key(user.auth_token.refresh_token),
+            expiry=user.auth_token.expiry,
+            email=user.auth_token.email,
+            user_id=user.auth_token.user_id,
+        )
 
     @staticmethod
     def update_auth_token(db: Session, user_id: int, creds: dict) -> AuthToken | None:
@@ -60,8 +68,8 @@ class AuthTokenService:
         # prefer updating existing token, otherwise create
         existing = AuthTokenRepository.get_by_user_id(db, user_id)
         auth_data = {
-            "access_token": creds["access_token"],
-            "refresh_token": creds["refresh_token"],
+            "access_token": encrypt_key(creds["access_token"]),
+            "refresh_token": encrypt_key(creds["refresh_token"]),
             "expiry": creds["expiry"],
             "email": creds.get("email", ""),
             "user_id": user_id,
@@ -91,10 +99,9 @@ class AuthTokenService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User not found.",
             )
-
         auth_data = {
-            "access_token": creds["access_token"],
-            "refresh_token": creds["refresh_token"],
+            "access_token": encrypt_key(creds["access_token"]),
+            "refresh_token": encrypt_key(creds["refresh_token"]),
             "expiry": creds["expiry"],
             "email": creds.get("email", ""),
             "user_id": user_id,
