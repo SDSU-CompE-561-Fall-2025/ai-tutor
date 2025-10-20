@@ -64,6 +64,10 @@ class Settings(BaseSettings):
         default="gdrive-multiple",
         description="Google Cloud project ID",
     )
+    mcp_server: str = Field(
+        default="http://127.0.0.1:8000/mcp",
+        description="FastMCP server URL",
+    )
 
     class Config:
         env_file = ".env"

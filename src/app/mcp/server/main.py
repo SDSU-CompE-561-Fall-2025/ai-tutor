@@ -7,7 +7,7 @@ import io
 
 from fastmcp import FastMCP
 from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
+from googleapiclient.discovery import Resource, build
 from googleapiclient.http import MediaIoBaseDownload
 
 from app.core.database import SessionLocal
@@ -51,7 +51,7 @@ class GoogleDriveClient:
         )
         return creds  # type: ignore  # noqa: PGH003, RET504
 
-    def _get_service(self):
+    def _get_service(self) -> Resource:
         creds = self._get_credentials()
         return build("drive", "v3", credentials=creds)
 
@@ -59,7 +59,7 @@ class GoogleDriveClient:
         """Search for files in Google Drive."""
         try:
             results = (
-                self.service.files()
+                self.service.files()  # pyright: ignore[reportAttributeAccessIssue]
                 .list(
                     q=f"name contains '{query}'",
                     pageSize=page_size,
@@ -87,7 +87,7 @@ class GoogleDriveClient:
         try:
             # Get file metadata
             file_metadata = (
-                self.service.files()
+                self.service.files()  # pyright: ignore[reportAttributeAccessIssue]
                 .get(fileId=file_id, fields="id, name, mimeType, webViewLink")
                 .execute()
             )
@@ -106,7 +106,7 @@ class GoogleDriveClient:
                     export_mime = "text/plain"
 
                 exported = (
-                    self.service.files()
+                    self.service.files()  # pyright: ignore[reportAttributeAccessIssue]
                     .export(fileId=file_id, mimeType=export_mime)
                     .execute()
                 )
@@ -114,7 +114,7 @@ class GoogleDriveClient:
                 return {"metadata": file_metadata, "content": exported}
 
             # Otherwise, download file directly
-            request = self.service.files().get_media(fileId=file_id)
+            request = self.service.files().get_media(fileId=file_id)  # pyright: ignore[reportAttributeAccessIssue]
             fh = io.BytesIO()
             downloader = MediaIoBaseDownload(fh, request)
             done = False

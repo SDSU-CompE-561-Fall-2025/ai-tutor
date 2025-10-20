@@ -8,7 +8,10 @@ _Downloading UV_
 _Getting UV up to standard_
 `uv sync`
 
-_Starting the app_ \
+_Starting the MCP Server_
+`PYTHONPATH=src uv run python -m app.mcp.server.main`
+
+_Starting the app_
 `uv run  uvicorn app.main:app --reload --app-dir src --host localhost  --port 3000`
 
 #### .ENV Structure
@@ -28,5 +31,7 @@ SESSION_SECRET=
 FRONTEND_URL=
 
 BACKEND=
+
+MCP_SERVER="http://127.0.0.1:8000/mcp"
 
 PROJECT_ID="gdrive-multiple"
