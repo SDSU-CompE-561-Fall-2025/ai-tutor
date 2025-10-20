@@ -38,7 +38,7 @@ class GoogleDriveClient:
 
         tokens = UserService.get_auth_token(self.db, self.user_id)
         return Credentials(
-            tokens.access_token,  # pyright: ignore[reportOptionalMemberAccess]
+            token=tokens.access_token,  # pyright: ignore[reportOptionalMemberAccess]
             refresh_token=tokens.refresh_token,  # type: ignore  # noqa: PGH003
             token_uri=settings.token_uri,
             client_id=settings.client_id,
