@@ -26,16 +26,6 @@ async def search_with_query(
 async def search_user_files(
     current_user: Annotated[User, Depends(get_current_user)],
 ) -> list | dict:
-    """
-    Get current user profile.
-
-    Args:
-        current_user: Current authenticated user
-
-    Returns:
-        User: Current user data
-        AuthToken: Current user's auth token data
-    """
     return await GoogleDriveService.search_all(str(current_user.id))
 
 

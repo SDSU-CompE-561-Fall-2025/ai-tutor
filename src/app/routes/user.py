@@ -66,7 +66,7 @@ def auth_google_callback(
 
     if user:
         uid = cast("int", user.id)
-        UserService.create_or_update_auth_token(db, uid, creds)
+        UserService.create_auth_token(db, uid, creds)
 
     return JSONResponse(
         {

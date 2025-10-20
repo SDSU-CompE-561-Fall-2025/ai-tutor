@@ -187,13 +187,13 @@ class UserService:
         return AuthTokenRepository.create(db, auth_data)
 
     @staticmethod
-    def create_or_update_auth_token(
+    def create_auth_token(
         db: Session,
         user_id: int,
         creds: dict,
     ) -> AuthToken | None:
         """
-        Create or update OAuth2 tokens for a user.
+        Create or update OAuth2 tokens for a user if they have one already.
 
         Args:
             db: Database session
@@ -214,7 +214,6 @@ class UserService:
             "email": creds.get("email", ""),
             "user_id": user_id,
         }
-        # Delegate to repository which will insert or return the created token
         existing = AuthTokenRepository.get_by_user_id(db, user_id)
         if existing:
             return AuthTokenRepository.update(db, existing, auth_data)

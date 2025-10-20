@@ -14,10 +14,6 @@ from app.core.database import SessionLocal
 from app.core.settings import settings
 from app.services.user import UserService
 
-DATABASE_URL = settings.database_url
-CLIENT_ID = settings.client_id
-CLIENT_SECRET = settings.client_secret
-
 mcp = FastMCP()
 
 
@@ -41,15 +37,14 @@ class GoogleDriveClient:
         """
 
         tokens = UserService.get_auth_token(self.db, self.user_id)
-        creds = Credentials(
-            tokens.access_token,  # type: ignore  # noqa: PGH003
+        return Credentials(
+            tokens.access_token,  # pyright: ignore[reportOptionalMemberAccess]
             refresh_token=tokens.refresh_token,  # type: ignore  # noqa: PGH003
             token_uri=settings.token_uri,
             client_id=settings.client_id,
             client_secret=settings.client_secret,
             scopes=self.SCOPES,
         )
-        return creds  # type: ignore  # noqa: PGH003, RET504
 
     def _get_service(self) -> Resource:
         creds = self._get_credentials()
