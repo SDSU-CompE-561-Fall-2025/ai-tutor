@@ -21,7 +21,7 @@ class GoogleDriveService:
 
     @staticmethod
     async def search(
-        user_id: str,
+        user_id: int,
         query: str = "",
     ) -> list | dict | None:
         """
@@ -49,7 +49,7 @@ class GoogleDriveService:
 
     @staticmethod
     async def read_file(
-        user_id: str,
+        user_id: int,
         file_id: str,
     ) -> dict:
         """Read and extract a files metadata and content."""
@@ -69,7 +69,7 @@ class GoogleDriveService:
             }
 
     @staticmethod
-    async def search_all(user_id: str) -> list | dict:
+    async def search_all(user_id: int) -> list | dict:
         client = get_mcp_client()
         try:
             async with client:

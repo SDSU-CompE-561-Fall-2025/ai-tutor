@@ -18,15 +18,15 @@ async def search_with_query(
     q: Annotated[str | None, Query()] = None,
 ) -> list | dict | None:
     if q:
-        return await GoogleDriveService.search(str(current_user.id), q)
-    return await GoogleDriveService.search_all(str(current_user.id))
+        return await GoogleDriveService.search(current_user.id, q)  # pyright: ignore[reportArgumentType]
+    return await GoogleDriveService.search_all(current_user.id)  # pyright: ignore[reportArgumentType]
 
 
 @api_router.get("/search/all")
 async def search_user_files(
     current_user: Annotated[User, Depends(get_current_user)],
 ) -> list | dict:
-    return await GoogleDriveService.search_all(str(current_user.id))
+    return await GoogleDriveService.search_all(current_user.id)  # pyright: ignore[reportArgumentType]
 
 
 @api_router.get("/read/")
@@ -35,5 +35,5 @@ async def read_by_file_id(
     q: Annotated[str | None, Query()] = None,
 ) -> list | dict | None:
     if q:
-        return await GoogleDriveService.read_file(str(current_user.id), q)
+        return await GoogleDriveService.read_file(current_user.id, q)  # pyright: ignore[reportArgumentType]
     return {"Error": "Need File ID to read file"}

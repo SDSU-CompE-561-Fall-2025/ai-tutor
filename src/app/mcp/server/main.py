@@ -129,16 +129,16 @@ class GoogleDriveClient:
 # MCP Tool Definitions
 # -------------------------------
 @mcp.tool()
-def gdrive_search(query: str, user_id: str, page_size: int = 10) -> dict:
+def gdrive_search(query: str, user_id: int, page_size: int = 10) -> dict:
     """Search for files in Google Drive."""
     drive_client = GoogleDriveClient(int(user_id))
     return drive_client.search_files(query=query, page_size=page_size)
 
 
 @mcp.tool()
-def gdrive_read_file(file_id: str, user_id: str) -> dict:
+def gdrive_read_file(file_id: str, user_id: int) -> dict:
     """Read file content + metadata from Google Drive."""
-    drive_client = GoogleDriveClient(int(user_id))
+    drive_client = GoogleDriveClient(user_id)
     return drive_client.get_file(file_id=file_id)
 
 
