@@ -34,10 +34,6 @@ class Settings(BaseSettings):
         default="your_client_secret",
         description="Google OAuth2 client secret",
     )
-    user_id: str = Field(
-        default="local_user",
-        description="Internal or default user ID",
-    )
     redirect_uri: str = Field(
         default="http://localhost:3000/api/v1/user/auth/google/callback",
         description="Redirect URI for OAuth2",
@@ -63,6 +59,10 @@ class Settings(BaseSettings):
     project_id: str = Field(
         default="gdrive-multiple",
         description="Google Cloud project ID",
+    )
+    mcp_server: str = Field(
+        default="http://127.0.0.1:8000/mcp",
+        description="FastMCP server URL",
     )
 
     class Config:
