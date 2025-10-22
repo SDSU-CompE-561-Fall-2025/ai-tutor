@@ -54,9 +54,9 @@ class AuthTokenService:
         Update or create OAuth2 tokens for a user.
 
         Args:
-            db: Database session
-            user_id: User ID
-            creds: Credentials dictionary containing access_token, refresh_token, expiry, email
+         db: Database session
+         user_id: User ID
+         creds: Credentials dictionary containing access_token, refresh_token, expiry, email
         """
         user = UserRepository.get_by_id(db, user_id)
         if not user:
@@ -65,13 +65,24 @@ class AuthTokenService:
                 detail="User not found.",
             )
 
-        # prefer updating existing token, otherwise create
         existing = AuthTokenRepository.get_by_user_id(db, user_id)
+
+        # Handle refresh_token preservation
+        if creds.get("refresh_token"):
+            refresh_encrypted = encrypt_key(creds["refresh_token"])
+        elif existing and existing.refresh_token:  # pyright: ignore[reportGeneralTypeIssues]
+            refresh_encrypted = existing.refresh_token  # reuse existing encrypted blob
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Missing refresh_token and no existing token found.",
+            )
+
         auth_data = {
             "access_token": encrypt_key(creds["access_token"]),
-            "refresh_token": encrypt_key(creds["refresh_token"]),
+            "refresh_token": refresh_encrypted,
             "expiry": creds["expiry"],
-            "email": creds.get("email", ""),
+            "email": creds["email"],
             "user_id": user_id,
         }
 
