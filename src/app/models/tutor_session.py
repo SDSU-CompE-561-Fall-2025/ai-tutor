@@ -10,6 +10,22 @@ from app.core.database import Base
 
 
 class TutorSession(Base):
+    """
+    SQLAlchemy model representing a tutoring session between a user and a course. 
+    
+    Attributes:
+        id (int): Primary key identifier for the tutor session.
+        user_id (int): Foreign key reference to the user participating in the session.
+        course_id (int): Foreign key reference to the course being studied.
+        title (str): Optional title or description of the tutoring session.
+        created_at (datetime): timestamp .
+        ended_at (datetime): timestamp when the session was completed.
+
+    Relationships:
+        user (User): The user who owns this tutoring session.
+        course (Course): The course associated with this tutoring session.
+        chat_messages (List[ChatMessage]): All chat messages within this session,
+    """
     __tablename__ = "tutor_sessions"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
