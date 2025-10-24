@@ -7,6 +7,7 @@ from app.core.auth import oauth2_scheme, verify_token
 from app.core.database import get_db
 from app.models.auth_token import AuthToken
 from app.models.user import User
+from app.services.auth_token import AuthTokenService
 from app.services.user import UserService
 
 
@@ -82,7 +83,7 @@ def get_current_user_oauth_token(
     user = UserService.get_user_by_email(db, email=email)
     if user is None:
         raise credentials_exception
-    auth_token = UserService.get_auth_token(db, user_id=user.id)  # pyright: ignore[reportArgumentType]
+    auth_token = AuthTokenService.get_auth_token(db, user_id=user.id)  # pyright: ignore[reportArgumentType]
     if auth_token is None:
         raise credentials_exception
     user.auth_token = auth_token

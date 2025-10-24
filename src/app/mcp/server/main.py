@@ -12,7 +12,7 @@ from googleapiclient.http import MediaIoBaseDownload
 
 from app.core.database import SessionLocal
 from app.core.settings import settings
-from app.services.user import UserService
+from app.services.auth_token import AuthTokenService
 
 mcp = FastMCP()
 
@@ -36,7 +36,7 @@ class GoogleDriveClient:
             user_id: User ID
         """
 
-        tokens = UserService.get_auth_token(self.db, self.user_id)
+        tokens = AuthTokenService.get_auth_token(self.db, self.user_id)
         return Credentials(
             token=tokens.access_token,  # pyright: ignore[reportOptionalMemberAccess]
             refresh_token=tokens.refresh_token,  # type: ignore  # noqa: PGH003

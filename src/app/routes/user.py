@@ -23,6 +23,7 @@ from app.models.user import User
 from app.schemas.auth_token import AuthTokenBase
 from app.schemas.user import RedirectResponseSchema, Token, UserCreate
 from app.schemas.user import User as UserSchema
+from app.services.auth_token import AuthTokenService
 from app.services.user import UserService
 
 api_router = APIRouter(
@@ -66,7 +67,7 @@ def auth_google_callback(
 
     if user:
         uid = cast("int", user.id)
-        UserService.create_auth_token(db, uid, creds)
+        AuthTokenService.create_auth_token(db, uid, creds)
 
     return JSONResponse(
         {
