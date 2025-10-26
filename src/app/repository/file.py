@@ -11,7 +11,7 @@ class FileRepository:
     """Repository for File data access"""
 
     @staticmethod
-    def get_file_by_id(db: Session, file_id: int) -> File | None: 
+    def get_file_by_id(db: Session, file_id: int, user_id: int) -> File | None: 
         """
         Get file by ID
 
@@ -19,7 +19,7 @@ class FileRepository:
             db (Session): database session
             file_id (int): ID of the file to retrieve
         """
-        return db.query(File).filter(File.id == file_id).first()
+        return db.query(File).filter(File.id == file_id, File.user_id == user_id).first()
     
     @staticmethod
     def create(

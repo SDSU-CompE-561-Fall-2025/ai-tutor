@@ -73,7 +73,7 @@ def delete_file(db: Session, file_id: int, user_id: int) -> None:
     Returns:
         None
     """
-    file = FileRepository.get_file_by_id(db, file_id)
+    file = FileRepository.get_file_by_id(db, file_id, user_id)
     if file is None or file.user_id != user_id:
         raise ValueError(FILE_NOT_FOUND_MSG)
     FileRepository.delete(db, file)
@@ -96,7 +96,7 @@ def update_file_name(
     Returns:
         FileResponse: Updated file data
     """
-    file = FileRepository.get_file_by_id(db, file_id)
+    file = FileRepository.get_file_by_id(db, file_id, user_id)
     if file is None or file.user_id != user_id:
         raise ValueError(FILE_NOT_FOUND_MSG)
     
@@ -131,7 +131,7 @@ def get_file_by_id(
     Returns:
         File: Retrieved file instance
     """
-    file = FileRepository.get_file_by_id(db, file_id)
+    file = FileRepository.get_file_by_id(db, file_id, user_id)
     if file is None or file.user_id != user_id:
         raise ValueError(FILE_NOT_FOUND_MSG)
     return file
