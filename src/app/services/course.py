@@ -24,7 +24,7 @@ def create_course(
     existing_course = CourseRepository.get_course_by_name(db, course.name, user_id)
     if existing_course:
         msg = "Course with this name already exists."
-        return {"error": msg}
+        raise ValueError(msg)
 
     return CourseRepository.create(db, course, user_id)
 
