@@ -11,7 +11,8 @@ class Course(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     # A course is one to many with File
-    files = relationship("File", back_populates="course")
+    # If a course is deleted, all associated files should also be deleted
+    files = relationship("File", back_populates="course", cascade="all, delete-orphan")
     # A course is many to one with User
     user = relationship("User", back_populates="courses")
     
