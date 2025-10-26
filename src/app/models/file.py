@@ -1,5 +1,5 @@
 # ForeignKey - a column in one table that links to the primary key of another table (creates a relationship between the two)
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, func
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, UniqueConstraint, func
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
@@ -20,3 +20,6 @@ class File(Base):
     course = relationship("Course", back_populates="files")
     # A file is many to one with User
     user = relationship("User", back_populates="files")
+
+    # Unique constraint: same file name allowed for different courses, but not within same course
+    __table_args__ = (UniqueConstraint('name', 'course_id', name='unique_file_per_course'),)
