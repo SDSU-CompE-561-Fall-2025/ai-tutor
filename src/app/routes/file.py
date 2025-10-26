@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends 
+from fastapi import APIRouter, Depends, HTTPException 
 from sqlalchemy.orm import Session
 
 from app.models.course import Course
@@ -50,7 +50,7 @@ async def get_file(
     user = get_current_user(token, db)
     file = file_service.get_file_by_id(db, file_id, user.id)
     if file is None or file.user_id != user.id:
-        raise ValueError("File not found or access denied.")
+        raise HTTPException(status_code=404, detail="File not found or access denied.")
     
     # Get course name
     course = db.query(Course).filter(Course.id == file.course_id).first()
