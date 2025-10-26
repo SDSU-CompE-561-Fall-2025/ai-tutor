@@ -1,6 +1,6 @@
 """
 User Model
-This model defines the user database URL
+Defines the User model with relationships to File and Course models.
 """
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
