@@ -88,3 +88,19 @@ class FileRepository:
         db.commit()
         db.refresh(db_file)
         return db_file
+    
+    @staticmethod
+    def get_all_files_from_user_course(
+        db: Session, 
+        user_id: int, 
+        course_id: int
+    ) -> list[File]:
+        """
+        Get all files for a specific course of a user
+
+        Args:
+            db: database session
+            user_id: ID of the user to retrieve files for
+            course_id: ID of the course to retrieve files for
+        """
+        return db.query(File).filter(File.user_id == user_id, File.course_id == course_id).all()
