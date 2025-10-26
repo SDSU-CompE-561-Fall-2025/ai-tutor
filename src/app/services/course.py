@@ -30,7 +30,8 @@ def create_course(
 
 def get_courses(
     db: Session, 
-    user_id: int
+    user_id: int,
+    course_id: int
 ) -> list[Course]:
     """
     Get all courses for a user. 
@@ -39,7 +40,7 @@ def get_courses(
         db: database session
         user_id: id of the user
     """
-    return CourseRepository.get_all(db, user_id)
+    return CourseRepository.get_all(db, user_id, course_id)
 
 def delete_course(
     db: Session, 

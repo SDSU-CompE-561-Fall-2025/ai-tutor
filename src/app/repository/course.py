@@ -100,7 +100,7 @@ class CourseRepository:
         db.commit()
 
     @staticmethod
-    def get_all(db: Session, user_id: int) -> list[Course]:
+    def get_all(db: Session, user_id: int, course_id: int) -> list[Course]:
         """
         Get all courses for a user
 
@@ -108,4 +108,4 @@ class CourseRepository:
             db: database session
             user_id: ID of the user to retrieve courses for
         """
-        return db.query(Course).filter(Course.user_id == user_id).all()
+        return db.query(Course).filter(Course.id == course_id, Course.user_id == user_id).all()
