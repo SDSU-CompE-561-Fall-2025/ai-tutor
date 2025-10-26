@@ -14,7 +14,7 @@ api_router = APIRouter(
 )
 
 @api_router.post("/")
-async def create_category(
+async def create_course(
     course: CourseCreate,
     db: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
