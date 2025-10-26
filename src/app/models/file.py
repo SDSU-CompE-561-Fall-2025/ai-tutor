@@ -9,6 +9,8 @@ class File(Base):
     # id: int, primary key, auto-increment
     # sqlalchemy will auto-increment primary keys by default
     id = Column(Integer, primary_key=True)
+    # google drive file id
+    google_drive_id = Column(String, nullable=False)
     # name: str, required, unique per course
     name = Column(String, nullable=False)
     # user_id: int, required, foreign key to users.id
