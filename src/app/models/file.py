@@ -7,7 +7,8 @@ from app.core.database import Base
 class File(Base): 
     __tablename__ = "files"
     # id: int, primary key, auto-increment
-    id = Column(Integer, primary_key=True, index=True)
+    # sqlalchemy will auto-increment primary keys by default
+    id = Column(Integer, primary_key=True)
     # name: str, required, unique per course
     name = Column(String, nullable=False)
     # user_id: int, required, foreign key to users.id
