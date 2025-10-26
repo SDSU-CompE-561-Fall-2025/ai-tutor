@@ -118,9 +118,9 @@ def get_course_by_id(
     Returns:
         Course: Retrieved course instance
     """
-    category = CourseRepository.get_course_by_id(db, course_id)
-    if not category or category.user_id != user_id:
+    course = CourseRepository.get_course_by_id(db, course_id)
+    if not course or course.user_id != user_id:
         msg = "Course not found or access denied."
         raise ValueError(msg)
 
-    return category
+    return course
