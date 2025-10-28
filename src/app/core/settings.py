@@ -68,6 +68,14 @@ class Settings(BaseSettings):
         default="feret_secret_key",
         description="Secret key used to encrypt and decrypt google oauth2 tokens",
     )
+    eleven_key: str = Field(
+        default="elevenLabs_api_key",
+        description="The eleven labs api key from .env",
+    )
+    openai_key: str = Field(
+        default="open_ai_key",
+        description="The open ai api key from .env",
+    )
 
     class Config:
         env_file = ".env"
