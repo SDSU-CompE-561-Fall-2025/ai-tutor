@@ -34,4 +34,8 @@ MCP_SERVER="http://127.0.0.1:8000/mcp"
 
 PROJECT_ID="gdrive-multiple"
 
-FERNET_KEY=""
+FERNET_KEY= use ssh to create one
+
+OPENAI_KEY=
+
+ELEVEN_KEY=
