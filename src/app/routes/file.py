@@ -94,18 +94,6 @@ async def get_all_files_from_user_course(
     """get all files for a specific course of the current user"""
     user = get_current_user(token, db)
     files = file_service.get_all_files_from_user_course(db, user.id, course_id)
-    result = []
-    for file in files:
-        # Get course name for each file
-        course = db.query(Course).filter(Course.id == file.course_id).first()
-        course_name = course.name if course else "Unknown Course"
-        
-        result.append(FileResponse(
-            id=file.id,
-            name=file.name,
-            course_name=course_name,
-            created_at=file.created_at
-        ))
-    return result
+    return files
 
 
