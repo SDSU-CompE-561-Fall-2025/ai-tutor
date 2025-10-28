@@ -7,7 +7,6 @@ from app.routes import (
     google_drive,
     tutor_session,
     user,
-    video_generation,
 )
 
 api_router = APIRouter(prefix="/api/v1")
@@ -19,4 +18,3 @@ api_router.include_router(course.api_router)
 api_router.include_router(google_drive.api_router)
 api_router.include_router(tutor_session.api_router)
 api_router.include_router(chat_message.api_router)
-api_router.include_router(video_generation.api_router)
