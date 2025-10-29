@@ -8,9 +8,9 @@ from app.schemas.tutor_session import TutorSessionCreate, TutorSessionResponse
 
 
 def create_tutor_session(
-        db: Session,
-        tutor_session: TutorSessionCreate,
-        user_id: int,
+    db: Session,
+    tutor_session: TutorSessionCreate,
+    user_id: int,
 ) -> TutorSessionResponse:
     """
     Create a new tutor session.
@@ -26,18 +26,18 @@ def create_tutor_session(
     tutor_session = TutorSessionRepository.create(db, tutor_session, user_id)
     course_name = tutor_session.course.name
     return TutorSessionResponse(
-        id=tutor_session.id,
-        title=tutor_session.title,
+        id=tutor_session.id,  # pyright: ignore[reportArgumentType]
+        title=tutor_session.title,  # pyright: ignore[reportArgumentType]
         course_name=course_name,
         chat_messages=tutor_session.chat_messages,
-        created_at=tutor_session.created_at,
+        created_at=tutor_session.created_at,  # pyright: ignore[reportArgumentType]
     )
 
 
 def get_tutor_session(
-        db: Session,
-        tutor_session_id: int,
-        user_id: int,
+    db: Session,
+    tutor_session_id: int,
+    user_id: int,
 ) -> TutorSession:
     """
     Get a tutor session by ID.
@@ -56,10 +56,11 @@ def get_tutor_session(
 
     return tutor_session
 
+
 def get_tutor_session_by_course(
-        db: Session,
-        course_id: int,
-        user_id: int,
+    db: Session,
+    course_id: int,
+    user_id: int,
 ) -> TutorSession:
     """
     Get a tutor session by course ID.
@@ -78,9 +79,10 @@ def get_tutor_session_by_course(
 
     return tutor_session
 
+
 def get_tutor_session_by_user(
-        db: Session,
-        user_id: int,
+    db: Session,
+    user_id: int,
 ) -> TutorSession:
     """
     Get a tutor session by user ID.
@@ -97,6 +99,7 @@ def get_tutor_session_by_user(
         raise ValueError(msg)
 
     return tutor_session
+
 
 def get_tutor_sessions_for_user(db: Session, user_id: int) -> list[TutorSession]:
     """
@@ -116,7 +119,12 @@ def get_tutor_sessions_for_user(db: Session, user_id: int) -> list[TutorSession]
 
     return tutor_sessions
 
-def get_tutor_sessions_by_course(db: Session, course_id: int, user_id: int) -> list[TutorSession]:
+
+def get_tutor_sessions_by_course(
+    db: Session,
+    course_id: int,
+    user_id: int,
+) -> list[TutorSession]:
     """
     Get all tutor session by course ID.
 
@@ -127,7 +135,7 @@ def get_tutor_sessions_by_course(db: Session, course_id: int, user_id: int) -> l
     Returns:
         list[TutorSession]: list of retrieved tutor sessions
     """
-    tutor_sessions = TutorSessionRepository.get_all_by_course(db, course_id)
+    tutor_sessions = TutorSessionRepository.get_all_for_course(db, course_id)
     for session in tutor_sessions:
         if session is None or session.user_id != user_id:  # type: ignore[union-attr]
             msg = "Tutor session not found or access denied."
@@ -135,40 +143,42 @@ def get_tutor_sessions_by_course(db: Session, course_id: int, user_id: int) -> l
 
     return tutor_sessions
 
+
 def end_tutor_session(
-        db: Session,
-        tutor_session_id: int,
-        user_id: int,
+    db: Session,
+    tutor_session_id: int,
+    user_id: int,
 ) -> TutorSession:
     """Mark a tutor session as ended (sets ended_at) and return updated session."""
     tutor_session = TutorSessionRepository.get_by_id(db, tutor_session_id)
     if tutor_session is None or tutor_session.user_id != user_id:  # type: ignore[union-attr]
         msg = "Tutor session not found or access denied."
         raise ValueError(msg)
-    tutor_session.ended_at = datetime.now(UTC)
+    tutor_session.ended_at = datetime.now(UTC)  # pyright: ignore[reportAttributeAccessIssue]
 
     return TutorSessionRepository.update(db, tutor_session)
 
 
 def update_tutor_session_title(
-        db: Session,
-        tutor_session_id: int,
-        title: str, user_id: int,
+    db: Session,
+    tutor_session_id: int,
+    title: str,
+    user_id: int,
 ) -> TutorSession:
     """Update the session title."""
     tutor_session = TutorSessionRepository.get_by_id(db, tutor_session_id)
     if tutor_session is None or tutor_session.user_id != user_id:  # type: ignore[union-attr]
         msg = "Tutor session not found or access denied."
         raise ValueError(msg)
-    tutor_session.title = title
+    tutor_session.title = title  # pyright: ignore[reportAttributeAccessIssue]
 
     return TutorSessionRepository.update(db, tutor_session)
 
 
 def delete_tutor_session(
-        db: Session,
-        tutor_session_id: int,
-        user_id: int,
+    db: Session,
+    tutor_session_id: int,
+    user_id: int,
 ) -> None:
     """Delete a tutor session if owned by the user."""
     tutor_session = TutorSessionRepository.get_by_id(db, tutor_session_id)
