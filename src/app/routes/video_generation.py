@@ -33,13 +33,13 @@ async def generate_video(  # noqa: ANN201
         service = VideoGenerationService()
 
         # Generate unique filename for output
-        video_filename = f"video_{request.title.replace(' ', '_').lower()}.mp4"
+        video_filename = f"video_{request.title.replace(' ', '_').lower()}.mp4"  # pyright: ignore[reportOptionalMemberAccess]
 
         video_path = await service.create_video(
             fileid=query,
-            userid=current_user.id,
-            template_name=request.template_name,
-            title=request.title,
+            userid=current_user.id,  # pyright: ignore[reportArgumentType]
+            template_name=request.template_name,  # pyright: ignore[reportArgumentType]
+            title=request.title,  # pyright: ignore[reportArgumentType]
             output_filename=video_filename,
         )
 

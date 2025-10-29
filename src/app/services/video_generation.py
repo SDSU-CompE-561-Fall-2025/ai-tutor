@@ -164,4 +164,4 @@ class VideoGenerationService:
             generated_text = response.choices[0].message.content
         except Exception as e:  # noqa: BLE001
             generated_text = f"Error {e}"
-        return generated_text
+        return generated_text  # pyright: ignore[reportReturnType]
