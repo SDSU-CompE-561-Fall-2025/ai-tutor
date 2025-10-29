@@ -1,6 +1,7 @@
 from typing import Annotated
+
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session 
+from sqlalchemy.orm import Session
 
 import app.services.course as course_service
 from app.core.auth import oauth2_scheme
@@ -8,10 +9,8 @@ from app.core.database import get_db
 from app.core.dependencies import get_current_user
 from app.schemas.course import CourseCreate, CourseResponse
 
-api_router = APIRouter(
-    prefix="/courses",
-    tags=["courses"]
-)
+api_router = APIRouter(prefix="/courses", tags=["courses"])
+
 
 @api_router.post("/")
 async def create_course(
@@ -21,7 +20,8 @@ async def create_course(
 ) -> CourseResponse:
     """Create a new course"""
     user = get_current_user(token, db)
-    return course_service.create_course(db, course, user.id)
+    return course_service.create_course(db, course, user.id)  # pyright: ignore[reportArgumentType]
+
 
 @api_router.get("/")
 async def get_courses(
@@ -30,7 +30,8 @@ async def get_courses(
 ) -> list[CourseResponse]:
     """Get all courses for the current user"""
     user = get_current_user(token, db)
-    return course_service.get_courses(db, user.id)
+    return course_service.get_courses(db, user.id)  # pyright: ignore[reportReturnType, reportArgumentType]
+
 
 @api_router.delete("/{course_id}")
 async def delete_course(
@@ -40,7 +41,8 @@ async def delete_course(
 ) -> None:
     """Delete a course by ID"""
     user = get_current_user(token, db)
-    return course_service.delete_course(db, course_id, user.id)
+    return course_service.delete_course(db, course_id, user.id)  # pyright: ignore[reportArgumentType]
+
 
 @api_router.put("/{course_id}")
 async def update_course(
@@ -52,6 +54,7 @@ async def update_course(
     """Update a course by ID"""
     user = get_current_user(token, db)
     return course_service.update_course(db, course_id, course, user.id)
+
 
 @api_router.get("/{course_id}")
 async def get_course(

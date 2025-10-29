@@ -37,17 +37,6 @@ async def get_tutor_session(
     return tutor_session_service.get_tutor_session(db, tutor_session_id, user.id)  # pyright: ignore[reportArgumentType]
 
 
-@api_router.put("/endSession/{tutor_session_id}")
-async def end_tutor_session(
-    tutor_session_id: int,
-    db: Annotated[Session, Depends(get_db)],
-    token: Annotated[str, Depends(oauth2_scheme)],
-) -> TutorSessionResponse:
-    """End a tutor session by ID."""
-    user = get_current_user(token, db)
-    return tutor_session_service.end_tutor_session(db, tutor_session_id, user.id)  # pyright: ignore[reportArgumentType]
-
-
 @api_router.delete("/{tutor_session_id}")
 async def delete_tutor_session(
     tutor_session_id: int,

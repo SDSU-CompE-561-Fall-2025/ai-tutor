@@ -60,8 +60,8 @@ async def generate_video(  # noqa: ANN201
         raise HTTPException(status_code=500, detail=f"Video generation failed: {e}")  # noqa: B904
 
 
-@api_router.get("/{filename}")
-async def serve_video(filename: str) -> FileResponse | HTTPException:
+@api_router.get("/{filename}", response_model=None)
+async def serve_video(filename: str) -> FileResponse:
     """Serve generated video files."""
     service = VideoGenerationService()
     video_path = service.outputs_dir / filename

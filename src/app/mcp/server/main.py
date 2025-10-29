@@ -9,10 +9,41 @@ from fastmcp import FastMCP
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import Resource, build
 from googleapiclient.http import MediaIoBaseDownload
+from pydantic import BaseModel
 
 from app.core.database import SessionLocal
 from app.core.settings import settings
+from app.models.auth_token import AuthToken  # noqa: F401
+from app.models.chat_message import ChatMessage  # noqa: F401
+from app.models.course import Course  # noqa: F401
+from app.models.file import File  # noqa: F401
+from app.models.tutor_session import TutorSession  # noqa: F401
+from app.models.user import User  # noqa: F401
 from app.services.auth_token import AuthTokenService
+
+
+class FileResult(BaseModel):
+    """File search result model."""
+
+    id: str
+    name: str
+    mime_type: str
+    web_view_link: str
+
+
+class SearchResult(BaseModel):
+    """Search results model."""
+
+    files: list[FileResult]
+    next_page_token: str | None = None
+
+
+class FileContent(BaseModel):
+    """File content model."""
+
+    metadata: dict
+    content: str | bytes
+
 
 mcp = FastMCP()
 
@@ -50,7 +81,7 @@ class GoogleDriveClient:
         creds = self._get_credentials()
         return build("drive", "v3", credentials=creds)
 
-    def search_files(self, query: str, page_size: int = 10) -> dict:
+    def search_files(self, query: str, page_size: int = 10) -> SearchResult | dict:
         """Search for files in Google Drive."""
         try:
             results = (
@@ -63,22 +94,24 @@ class GoogleDriveClient:
                 .execute()
             )
 
-            return {
-                "files": [
-                    {
-                        "id": f["id"],
-                        "name": f["name"],
-                        "mime_type": f["mimeType"],
-                        "web_view_link": f["webViewLink"],
-                    }
-                    for f in results.get("files", [])
-                ],
-                "next_page_token": results.get("nextPageToken"),
-            }
+            files = [
+                FileResult(
+                    id=f["id"],
+                    name=f["name"],
+                    mime_type=f["mimeType"],
+                    web_view_link=f["webViewLink"],
+                )
+                for f in results.get("files", [])
+            ]
+
+            return SearchResult(
+                files=files,
+                next_page_token=results.get("nextPageToken"),
+            )
         except Exception as e:  # noqa: BLE001
             return {"error": str(e)}
 
-    def get_file(self, file_id: str) -> dict:
+    def get_file(self, file_id: str) -> FileContent | dict:
         try:
             # Get file metadata
             file_metadata = (
@@ -106,7 +139,7 @@ class GoogleDriveClient:
                     .execute()
                 )
 
-                return {"metadata": file_metadata, "content": exported}
+                return FileContent(metadata=file_metadata, content=exported)
 
             # Otherwise, download file directly
             request = self.service.files().get_media(fileId=file_id)  # pyright: ignore[reportAttributeAccessIssue]
@@ -116,10 +149,10 @@ class GoogleDriveClient:
             while not done:
                 done = downloader.next_chunk()
 
-            return {
-                "metadata": file_metadata,
-                "content": fh.getvalue().decode("utf-8", errors="ignore"),
-            }
+            return FileContent(
+                metadata=file_metadata,
+                content=fh.getvalue().decode("utf-8", errors="ignore"),
+            )
 
         except Exception as e:  # noqa: BLE001
             return {"error": str(e)}
@@ -129,14 +162,14 @@ class GoogleDriveClient:
 # MCP Tool Definitions
 # -------------------------------
 @mcp.tool()
-def gdrive_search(query: str, user_id: int, page_size: int = 10) -> dict:
+def gdrive_search(query: str, user_id: int, page_size: int = 10) -> SearchResult | dict:
     """Search for files in Google Drive."""
     drive_client = GoogleDriveClient(int(user_id))
     return drive_client.search_files(query=query, page_size=page_size)
 
 
 @mcp.tool()
-def gdrive_read_file(file_id: str, user_id: int) -> dict:
+def gdrive_read_file(file_id: str, user_id: int) -> FileContent | dict:
     """Read file content + metadata from Google Drive."""
     drive_client = GoogleDriveClient(user_id)
     return drive_client.get_file(file_id=file_id)

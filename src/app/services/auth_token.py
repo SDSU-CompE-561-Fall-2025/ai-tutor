@@ -78,11 +78,16 @@ class AuthTokenService:
                 detail="Missing refresh_token and no existing token found.",
             )
 
+        # Preserve existing email if not provided in creds (e.g., when refreshing tokens)
+        email = creds.get("email", "")
+        if not email and existing:
+            email = existing.email
+
         auth_data = {
             "access_token": encrypt_key(creds["access_token"]),
             "refresh_token": refresh_encrypted,
             "expiry": creds["expiry"],
-            "email": creds["email"],
+            "email": email,
             "user_id": user_id,
         }
 

@@ -4,6 +4,7 @@ file repository: data access layer for file operations
 
 from sqlalchemy.orm import Session
 
+from app.models.course import Course
 from app.models.file import File
 from app.schemas.file import FileCreate
 
@@ -108,3 +109,18 @@ class FileRepository:
             .filter(File.user_id == user_id, File.course_id == course_id)
             .all()
         )
+
+    @staticmethod
+    def get_course_name(db: Session, course_id: int) -> str:
+        """
+        Get course name by ID.
+
+        Args:
+            db: database session
+            course_id: ID of the course
+
+        Returns:
+            str: Course name or "Unknown Course" if not found
+        """
+        course = db.query(Course).filter(Course.id == course_id).first()
+        return str(course.name) if course else "Unknown Course"  # pyright: ignore[reportOptionalMemberAccess]

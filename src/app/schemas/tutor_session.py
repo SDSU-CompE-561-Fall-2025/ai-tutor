@@ -18,6 +18,5 @@ class TutorSessionResponse(TutorSessionBase):
     course_name: str
     chat_messages: list[ChatMessageResponse]
     created_at: datetime.datetime
-    ended_at: datetime.datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)

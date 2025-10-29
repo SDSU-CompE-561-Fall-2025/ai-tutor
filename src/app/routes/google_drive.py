@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Query
 
 from app.core.dependencies import get_current_user
 from app.models.user import User
+from app.schemas.google_drive import FileIdRequest
 from app.services.google_drive import GoogleDriveService
 
 api_router = APIRouter(
@@ -29,11 +30,9 @@ async def search_user_files(
     return await GoogleDriveService.search_all(current_user.id)  # pyright: ignore[reportArgumentType]
 
 
-@api_router.get("/read/")
+@api_router.post("/read")
 async def read_by_file_id(
     current_user: Annotated[User, Depends(get_current_user)],
-    query: Annotated[str | None, Query()] = None,
-) -> list | dict | None:
-    if query:
-        return await GoogleDriveService.read_file(current_user.id, query)  # pyright: ignore[reportArgumentType]
-    return {"Error": "Need File ID to read file"}
+    request: FileIdRequest,
+) -> list | dict:
+    return await GoogleDriveService.read_file(current_user.id, request.fileid)  # pyright: ignore[reportArgumentType]

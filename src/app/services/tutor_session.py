@@ -1,5 +1,3 @@
-from datetime import UTC, datetime
-
 from sqlalchemy.orm import Session
 
 from app.models.tutor_session import TutorSession
@@ -142,21 +140,6 @@ def get_tutor_sessions_by_course(
             raise ValueError(msg)
 
     return tutor_sessions
-
-
-def end_tutor_session(
-    db: Session,
-    tutor_session_id: int,
-    user_id: int,
-) -> TutorSession:
-    """Mark a tutor session as ended (sets ended_at) and return updated session."""
-    tutor_session = TutorSessionRepository.get_by_id(db, tutor_session_id)
-    if tutor_session is None or tutor_session.user_id != user_id:  # type: ignore[union-attr]
-        msg = "Tutor session not found or access denied."
-        raise ValueError(msg)
-    tutor_session.ended_at = datetime.now(UTC)  # pyright: ignore[reportAttributeAccessIssue]
-
-    return TutorSessionRepository.update(db, tutor_session)
 
 
 def update_tutor_session_title(

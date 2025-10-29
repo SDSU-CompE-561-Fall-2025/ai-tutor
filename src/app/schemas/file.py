@@ -17,8 +17,10 @@ class FileCreate(FileBase):
     course_id: int
 
 
-class FileResponse(FileBase):
+class FileResponse(BaseModel):
     id: int
+    name: str
+    google_drive_id: str | None = None
     course_name: str
     created_at: datetime
 
