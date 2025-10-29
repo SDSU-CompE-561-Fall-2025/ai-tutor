@@ -3,10 +3,12 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+import app.services.chat_message as chat_message_service
 import app.services.tutor_session as tutor_session_service
 from app.core.auth import oauth2_scheme
 from app.core.database import get_db
 from app.core.dependencies import get_current_user
+from app.schemas.chat_message import ChatMessageResponse
 from app.schemas.tutor_session import TutorSessionCreate, TutorSessionResponse
 
 api_router = APIRouter(
@@ -63,3 +65,28 @@ async def update_tutor_session_title(
         title,
         user.id,  # pyright: ignore[reportArgumentType]
     )
+
+
+@api_router.get("/{tutor_session_id}/messages")
+async def get_tutor_session_messages(
+    tutor_session_id: int,
+    db: Annotated[Session, Depends(get_db)],
+    token: Annotated[str, Depends(oauth2_scheme)],
+) -> list[ChatMessageResponse]:
+    """Get all messages in a tutor session."""
+    user = get_current_user(token, db)
+    chat_messages = chat_message_service.get_chat_messages_by_tutor_session(
+        db,
+        tutor_session_id,
+        user.id,
+    )
+    return [
+        ChatMessageResponse(
+            id=message.id,
+            role=message.role,
+            message=message.message,
+            tutor_session_title=message.tutor_session.title,
+            created_at=message.created_at,
+        )
+        for message in chat_messages
+    ]

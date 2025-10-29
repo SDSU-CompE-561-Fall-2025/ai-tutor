@@ -23,7 +23,6 @@ class ChatMessage(Base):
     Attributes:
         id (int): Primary key, unique identifier for the chat message.
         user_id (int): Foreign key reference to the user who sent/received the message.
-        course_id (int): Foreign key reference to the course this message relates to.
         tutor_session_id (int): Foreign key reference to the tutoring session.
         role (ChatMessageSenderType): Enum indicating whether message is from user or AI tutor.
         message (str): The actual text content of the chat message.
@@ -31,7 +30,6 @@ class ChatMessage(Base):
 
     Relationships:
         tutor_session: Back reference to the TutorSession this message belongs to.
-        course: Back reference to the Course this message is associated with.
         user: Back reference to the User who participated in this message exchange.
 
     Table:
@@ -41,7 +39,6 @@ class ChatMessage(Base):
     __tablename__ = "chat_messages"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    course_id = Column(Integer, ForeignKey("courses.id"), nullable=False)
     tutor_session_id = Column(Integer, ForeignKey("tutor_sessions.id"), nullable=False)
     role = Column(Enum(ChatMessageSenderType), nullable=False, name="chatrole")
     message = Column(Text, nullable=False)

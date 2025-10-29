@@ -1,8 +1,11 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.models.course import Course
 from app.models.file import File
+from app.models.tutor_session import TutorSession
 from app.repository.course import CourseRepository
+from app.repository.tutor_session import TutorSessionRepository
 from app.schemas.course import CourseBase, CourseCreate
 
 
@@ -119,3 +122,28 @@ def get_course_by_id(db: Session, course_id: int, user_id: int) -> Course:
         raise ValueError(msg)
 
     return course
+
+
+def get_tutor_sessions_by_course(
+    db: Session,
+    course_id: int,
+    user_id: int,
+) -> list[TutorSession]:
+    """
+    Get all tutor sessions for a course
+
+    Args:
+        db: database session
+        course_id: id of the course
+        user_id: id of the user
+
+    Returns:
+        list: List of tutor sessions for the course
+    """
+    # Verify course exists and belongs to user
+    course = CourseRepository.get_course_by_id(db, course_id)
+    if not course or course.user_id != user_id:
+        msg = "Course not found or access denied."
+        raise HTTPException(status_code=404, detail=msg)
+
+    return TutorSessionRepository.get_all_for_course(db, course_id)

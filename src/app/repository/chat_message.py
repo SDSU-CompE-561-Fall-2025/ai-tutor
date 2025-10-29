@@ -29,7 +29,10 @@ class ChatMessageRepository:
         return db.query(ChatMessage).filter(ChatMessage.id == chat_message_id).first()
 
     @staticmethod
-    def get_all_messages_by_tutor_session_id(db: Session, tutor_session_id: int) -> list[ChatMessage]:
+    def get_all_messages_by_tutor_session_id(
+        db: Session,
+        tutor_session_id: int,
+    ) -> list[ChatMessage]:
         """
         Get all chat messages from Tutor Session.
 
@@ -40,21 +43,11 @@ class ChatMessageRepository:
         Returns:
             list[ChatMessage]: List of ChatMessages
         """
-        return db.query(ChatMessage).filter(ChatMessage.tutor_session_id == tutor_session_id).all()
-
-    @staticmethod
-    def get_all_messages_by_course_id(db: Session, course_id: int) -> list[ChatMessage]:
-        """
-        Get all chat messages from Course.
-
-        Args:
-            db: Database session
-            course_id: Course ID
-
-        Returns:
-            list[ChatMessage]: List of ChatMessages
-        """
-        return db.query(ChatMessage).filter(ChatMessage.course_id == course_id).all()
+        return (
+            db.query(ChatMessage)
+            .filter(ChatMessage.tutor_session_id == tutor_session_id)
+            .all()
+        )
 
     @staticmethod
     def create(
@@ -76,7 +69,6 @@ class ChatMessageRepository:
             role=chat_message.role,
             message=chat_message.message,
             tutor_session_id=chat_message.tutor_session_id,
-            course_id=chat_message.course_id,
             user_id=user_id,
         )
 
