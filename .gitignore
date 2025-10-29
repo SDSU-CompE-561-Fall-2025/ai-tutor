@@ -211,3 +211,16 @@ __pycache__/
 .vscode/
 
 ai_tutor.db
+
+
+
+.vscode/
+settings.json
+
+# Video assets
+assets/outputs/
+assets/temp/
+*.mp4
+*.mp3
+*.mov
+*.avi

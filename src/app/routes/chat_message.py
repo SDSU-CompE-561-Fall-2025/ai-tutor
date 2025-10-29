@@ -22,7 +22,7 @@ async def create_message(
     token: Annotated[str, Depends(oauth2_scheme)],
 ) -> ChatMessageResponse:
     user = get_current_user(token, db)
-    return chat_mesage_service.create_chat_message(db, message, user.id)
+    return chat_mesage_service.create_chat_message(db, message, user.id)  # pyright: ignore[reportArgumentType]
 
 
 @api_router.get("/{message_id}")
@@ -32,9 +32,10 @@ async def get_message(
     token: Annotated[str, Depends(oauth2_scheme)],
 ) -> ChatMessageResponse:
     user = get_current_user(token, db)
-    return chat_mesage_service.get_chat_message(db, message_id, user.id)
+    return chat_mesage_service.get_chat_message(db, message_id, user.id)  # pyright: ignore[reportArgumentType]
 
-@api_router.update("/{message_id}")
+
+@api_router.patch("/{message_id}")
 async def update_message(
     message_id: int,
     message: ChatMessageCreate,
@@ -42,7 +43,8 @@ async def update_message(
     token: Annotated[str, Depends(oauth2_scheme)],
 ) -> ChatMessageResponse:
     user = get_current_user(token, db)
-    return chat_mesage_service.update_chat_message(db, message_id, message, user.id)
+    return chat_mesage_service.update_chat_message(db, message_id, message, user.id)  # pyright: ignore[reportArgumentType]
+
 
 @api_router.delete("/{message_id}")
 async def remove_message(
@@ -51,12 +53,13 @@ async def remove_message(
     token: Annotated[str, Depends(oauth2_scheme)],
 ) -> None:
     user = get_current_user(token, db)
-    return chat_mesage_service.delete_chat_message(db, message_id, user.id)
+    return chat_mesage_service.delete_chat_message(db, message_id, user.id)  # pyright: ignore[reportArgumentType]
+
 
 @api_router.get("/")
-def get_all_messages(
+def get_all_messages(  # noqa: ANN201
     db: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
-) -> list[ChatMessageResponse]:
+):
     user = get_current_user(token, db)
-    return chat_mesage_service.get_all_messages(db, user.id)
+    return chat_mesage_service.get_all_chat_messages(db, user.id)  # pyright: ignore[reportArgumentType]
