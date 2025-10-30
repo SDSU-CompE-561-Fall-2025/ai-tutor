@@ -9,7 +9,6 @@ from fastmcp import FastMCP
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import Resource, build
 from googleapiclient.http import MediaIoBaseDownload
-from pydantic import BaseModel
 
 from app.core.database import SessionLocal
 from app.core.settings import settings
@@ -19,31 +18,8 @@ from app.models.course import Course  # noqa: F401
 from app.models.file import File  # noqa: F401
 from app.models.tutor_session import TutorSession  # noqa: F401
 from app.models.user import User  # noqa: F401
+from app.schemas.mcp import FileContent, FileResult, SearchResult
 from app.services.auth_token import AuthTokenService
-
-
-class FileResult(BaseModel):
-    """File search result model."""
-
-    id: str
-    name: str
-    mime_type: str
-    web_view_link: str
-
-
-class SearchResult(BaseModel):
-    """Search results model."""
-
-    files: list[FileResult]
-    next_page_token: str | None = None
-
-
-class FileContent(BaseModel):
-    """File content model."""
-
-    metadata: dict
-    content: str | bytes
-
 
 mcp = FastMCP()
 
