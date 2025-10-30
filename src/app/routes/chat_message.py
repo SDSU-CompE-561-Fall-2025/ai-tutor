@@ -21,8 +21,31 @@ async def create_message(
     db: Annotated[Session, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
 ) -> ChatMessageResponse:
+    """Create a user message and generate an AI response."""
     user = get_current_user(token, db)
-    return chat_mesage_service.create_chat_message(db, message, user.id)  # pyright: ignore[reportArgumentType]
+    # First, save the user's message
+    chat_mesage_service.create_chat_message(
+        db,
+        message,
+        user.id,
+    )  # pyright: ignore[reportArgumentType]
+    # create a list of file IDs from the course gdrive_file_id field
+
+    # Then, generate and save the AI response
+    ai_response = await chat_mesage_service.ai_generate_response_gemini(
+        db,
+        message.tutor_session_id,
+        user.id,
+    )  # pyright: ignore[reportArgumentType]
+
+    # Return the AI response as the response to the user's message
+    return ChatMessageResponse(
+        id=ai_response.id,
+        role=ai_response.role,
+        message=ai_response.message,
+        tutor_session_title=ai_response.tutor_session.title,
+        created_at=ai_response.created_at,
+    )  # pyright: ignore[reportArgumentType]
 
 
 @api_router.get("/{message_id}")

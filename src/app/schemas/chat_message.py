@@ -1,7 +1,7 @@
 import datetime
 from enum import Enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class ChatMessageSenderType(str, Enum):
@@ -19,9 +19,8 @@ class ChatMessageCreate(ChatMessageBase):
 
 
 class ChatMessageResponse(ChatMessageBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     tutor_session_title: str | None = None
     created_at: datetime.datetime
-
-    class Config:
-        from_attributes = True

@@ -124,3 +124,20 @@ class FileRepository:
         """
         course = db.query(Course).filter(Course.id == course_id).first()
         return str(course.name) if course else "Unknown Course"  # pyright: ignore[reportOptionalMemberAccess]
+
+    @staticmethod
+    def get_all_files_by_course(
+        db: Session,
+        course_id: int,
+    ) -> list[File]:
+        """
+        Get all files for a specific course.
+
+        Args:
+            db: database session
+            course_id: ID of the course to retrieve files for
+
+        Returns:
+            list[File]: List of files for the course
+        """
+        return db.query(File).filter(File.course_id == course_id).all()

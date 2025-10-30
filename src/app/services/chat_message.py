@@ -1,8 +1,15 @@
 from sqlalchemy.orm import Session
 
+from app.core.gemini import generate_ai_response_with_mcp
 from app.models.chat_message import ChatMessage
 from app.repository.chat_message import ChatMessageRepository
-from app.schemas.chat_message import ChatMessageCreate, ChatMessageResponse
+from app.repository.file import FileRepository
+from app.repository.tutor_session import TutorSessionRepository
+from app.schemas.chat_message import (
+    ChatMessageCreate,
+    ChatMessageResponse,
+    ChatMessageSenderType,
+)
 
 
 def create_chat_message(
@@ -145,3 +152,64 @@ def get_chat_message(db: Session, chat_message_id: int, user_id: int) -> ChatMes
         raise ValueError(msg)
 
     return chat_message
+
+
+async def ai_generate_response_gemini(
+    db: Session,
+    tutor_session_id: int,
+    user_id: int,
+) -> ChatMessage:
+    """
+    Generate an AI response for a tutor session using Gemini with MCP tools.
+
+    Args:
+        db: Database session
+        tutor_session_id: ID of the tutor session
+        user_id: ID of the user
+    Returns:
+        ChatMessage: Generated AI chat message
+    """
+    # Get the course by tutor session ID
+    course = TutorSessionRepository.get_course_by_tutor_session(db, tutor_session_id)
+
+    # Get all files attached to the course
+    files = []
+    if course:
+        files = FileRepository.get_all_files_by_course(db, course.id)  # pyright: ignore[reportOptionalMemberAccess]
+
+    # Extract google_drive_ids from files
+    file_ids = [file.google_drive_id for file in files]  # pyright: ignore[reportGeneralTypeIssues]
+
+    messages = ChatMessageRepository.get_all_messages_by_tutor_session_id(
+        db,
+        tutor_session_id,
+    )
+
+    # Build chat history for Gemini
+    chat_history = [
+        {
+            "role": (
+                message.role.value
+                if hasattr(message.role, "value")
+                else str(message.role)
+            ),
+            "content": message.message,
+        }
+        for message in messages
+    ]
+
+    # Call Gemini with MCP tools
+    response_text = await generate_ai_response_with_mcp(
+        message=messages[-1].message if messages else "Hello",  # Last user message
+        chat_history=chat_history,
+        file_list=file_ids,
+        user_id=user_id,
+    )
+
+    new_chat_message = ChatMessageCreate(
+        role=ChatMessageSenderType.assistant,  # pyright: ignore[reportArgumentType]
+        message=response_text,  # pyright: ignore[reportArgumentType]
+        tutor_session_id=tutor_session_id,
+    )
+
+    return ChatMessageRepository.create(db, new_chat_message, user_id)

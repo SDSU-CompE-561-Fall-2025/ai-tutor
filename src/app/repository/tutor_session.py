@@ -3,12 +3,17 @@
 This module provides data access layer for tutor session operations.
 """
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy.orm import Session
 
 from app.models.tutor_session import TutorSession
 from app.schemas.tutor_session import (
     TutorSessionCreate,
 )
+
+if TYPE_CHECKING:
+    from app.models.course import Course
 
 
 class TutorSessionRepository:
@@ -26,7 +31,9 @@ class TutorSessionRepository:
         Returns:
             TutorSession | None: TutorSession if found, None otherwise
         """
-        return db.query(TutorSession).filter(TutorSession.id == tutor_session_id).first()
+        return (
+            db.query(TutorSession).filter(TutorSession.id == tutor_session_id).first()
+        )
 
     @staticmethod
     def get_by_course(db: Session, course_id: int) -> TutorSession | None:
@@ -40,7 +47,9 @@ class TutorSessionRepository:
         Returns:
             TutorSession | None: TutorSession if found, None otherwise
         """
-        return db.query(TutorSession).filter(TutorSession.course_id == course_id).first()
+        return (
+            db.query(TutorSession).filter(TutorSession.course_id == course_id).first()
+        )
 
     @staticmethod
     def get_by_user(db: Session, user_id: int) -> TutorSession | None:
@@ -147,3 +156,23 @@ class TutorSessionRepository:
             .order_by(TutorSession.created_at.desc())
             .all()
         )
+
+    @staticmethod
+    def get_course_by_tutor_session(
+        db: Session,
+        tutor_session_id: int,
+    ) -> "Course | None":  # pyright: ignore[reportReturnType]
+        """
+        Get course by tutor session ID.
+
+        Args:
+            db: Database session
+            tutor_session_id: ID of the tutor session
+
+        Returns:
+            Course | None: Course if found, None otherwise
+        """
+        tutor_session = (
+            db.query(TutorSession).filter(TutorSession.id == tutor_session_id).first()
+        )
+        return tutor_session.course if tutor_session else None  # pyright: ignore[reportOptionalMemberAccess]

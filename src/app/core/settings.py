@@ -1,12 +1,17 @@
 from dotenv import load_dotenv
 from pydantic import Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Load .env file early
 load_dotenv()
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="allow",
+    )
     # --- App Info ---
     app_name: str = "AI Tutor API"
     app_version: str = "0.1.0"
@@ -76,12 +81,10 @@ class Settings(BaseSettings):
         default="open_ai_key",
         description="The open ai api key from .env",
     )
-
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        extra = "allow"
-        fernet_key: str
+    gemini_key: str = Field(
+        default="gemini_api_key",
+        description="The gemini api key from .env",
+    )
 
 
 settings = Settings()
