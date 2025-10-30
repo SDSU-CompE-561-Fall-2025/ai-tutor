@@ -39,3 +39,5 @@ FERNET_KEY= use ssh to create one
 OPENAI_KEY=
 
 ELEVEN_KEY=
+
+GEMINI_KEY=
