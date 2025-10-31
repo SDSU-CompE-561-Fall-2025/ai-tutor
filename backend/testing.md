@@ -375,3 +375,90 @@ None
 Response: {
 "message": "Cleanup completed"
 }
+],
+"created_at": "2025-10-31T03:57:02.329Z"
+}
+
+# Chat_Messages
+
+## /api/v1/chat-messages/
+
+Body: Bearer Token in header
+
+Response: [
+{
+"id": 1,
+"tutor_session_id": 1,
+"role": "user",
+"message": "I am the goat",
+"user_id": 1,
+"created_at": "2025-10-29T22:45:49"
+},
+{
+"id": 2,
+"tutor_session_id": 1,
+"role": "user",
+"message": "I am dariel",
+"user_id": 1,
+"created_at": "2025-10-29T22:46:20"
+},
+{
+"id": 3,
+"tutor_session_id": 1,
+"role": "user",
+"message": "hello whats inthe chat history",
+"user_id": 1,
+"created_at": "2025-10-30T02:36:44"
+},]
+
+## Post: /api/v1/chat-messages/
+
+Body: {
+"role": "user",
+"message": "hello tell me about my documents",
+"tutor_session_id": 1
+}
+
+Response: {
+"role": "assistant",
+"message": "Hello Dariel!\n\nYour primary document is **A3 Written Assignment 3**, which is a practical exercise centered around **Constraint Satisfaction Problems (CSPs)** in Artificial Intelligence.\n\nHere's a breakdown of its content:\n\n* **Defining CSPs:** The assignment begins by asking you to define the fundamental components of a CSP—**Variables**, **Domains**, and **Constraints**—using a children's crossword puzzle as an example. This involves identifying word slots, possible English words, and rules like shared letters and unique word usage.\n\n* **Oz Map Coloring Problem:** This is the main part, applying CSP concepts to a 3-color map of Frank Baum's fictional land of Oz.\n _ You'll be asked to draw a **constraint hypergraph** to visually represent which regions touch each other.\n _ A significant portion involves simulating the **AC3 algorithm** step-by-step. You'll demonstrate how it enforces arc consistency by reducing variable domains and updating a queue, given initial assignments (Q=Green, W=Purple).\n \* Finally, you'll show how **Forward Checking** uses these same initial assignments to immediately prune the domains of neighboring variables, simplifying the problem early on.\n\nIn essence, the document guides you through understanding how to model problems as CSPs and then apply powerful algorithms like AC3 and Forward Checking to solve or simplify them.\n\nThe file ID for this material is: `1DxZBJqKNaAdjdmDKAq_bkb3BE62k1oFYIHtqYqs51ho`",
+"id": 38,
+"tutor_session_title": "test",
+"created_at": "2025-10-31T04:14:19"
+}
+
+## Get: /api/v1/chat-messages/{message_id}
+
+Parameter: message_id
+
+Response: {
+"role": "user",
+"message": "I am dariel",
+"id": 2,
+"tutor_session_title": null,
+"created_at": "2025-10-29T22:46:20"
+}
+
+## Patch: /api/v1/chat-messages/{message_id}
+
+Parameter: message_id
+
+Body: {
+"role": "user",
+"message": "no no no",
+"tutor_session_id": 1
+}
+
+Response: {
+"role": "user",
+"message": "no no no",
+"id": 2,
+"tutor_session_title": null,
+"created_at": "2025-10-29T22:46:20"
+}
+
+## Delete: /api/v1/chat-messages/{message_id}
+
+Parameter: message_id
+
+Response: null
