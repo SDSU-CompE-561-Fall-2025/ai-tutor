@@ -57,123 +57,123 @@ Response: {
 ## POST Route: /api/v1/courses/
 
 Request Body: {
-  "name": "math101"
+"name": "math101"
 }
 
 Response: {
-  "name": "math101",
-  "id": 1
+"name": "math101",
+"id": 1
 }
 
-## GET Route: /api/v1/courses/ 
+## GET Route: /api/v1/courses/
 
 Response: [
-  {
-    "name": "math101",
-    "id": 1
-  }
+{
+"name": "math101",
+"id": 1
+}
 ]
 
-## GET Route: /api/v1/courses/1 
+## GET Route: /api/v1/courses/1
 
-Parameters: course_id 
+Parameters: course_id
 
 Response: {
-  "name": "math101",
-  "id": 1
+"name": "math101",
+"id": 1
 }
 
-## PUT Route: /api/v1/courses/1 
+## PUT Route: /api/v1/courses/1
 
-Parameters: course_id 
+Parameters: course_id
 
 Body: {
-  "name": "physics102"
+"name": "physics102"
 }
 
 Response: {
-  "name": "physics102",
-  "id": 1
+"name": "physics102",
+"id": 1
 }
 
-## GET Route: /api/v1/courses/1/tutor-sessions 
+## GET Route: /api/v1/courses/1/tutor-sessions
 
-Parameters: course_id 
+Parameters: course_id
 
 Response: [
-  {
-    "title": "session1",
-    "id": 1,
-    "course_name": "physics102",
-    "chat_messages": [
-      {
-        "role": "user",
-        "message": "test",
-        "id": 1,
-        "tutor_session_title": "session1",
-        "created_at": "2025-10-31T02:59:49.339Z"
-      }
-    ],
-    "created_at": "2025-10-31T02:59:49.339Z"
-  }
+{
+"title": "session1",
+"id": 1,
+"course_name": "physics102",
+"chat_messages": [
+{
+"role": "user",
+"message": "test",
+"id": 1,
+"tutor_session_title": "session1",
+"created_at": "2025-10-31T02:59:49.339Z"
+}
+],
+"created_at": "2025-10-31T02:59:49.339Z"
+}
 ]
 
 ## DELETE Route: /api/v1/courses/1
 
-Parameters: course_id 
+Parameters: course_id
 
 Response: null
 
-# Files 
+# Files
 
-## POST Route: /api/v1/files/ 
+## POST Route: /api/v1/files/
 
 Body: {
-  "name": "test",
-  "google_drive_id": "2",
-  "course_id": 1
+"name": "test",
+"google_drive_id": "2",
+"course_id": 1
 }
 
 Response: {
-  "id": 2,
-  "name": "test",
-  "google_drive_id": "2",
-  "course_name": "physics102",
-  "created_at": "2025-10-31T03:05:03"
+"id": 2,
+"name": "test",
+"google_drive_id": "2",
+"course_name": "physics102",
+"created_at": "2025-10-31T03:05:03"
 }
 
-## GET Route: /api/v1/files/ 
+## GET Route: /api/v1/files/
 
 Response: [
-  {
-    "id": 1,
-    "name": "test",
-    "google_drive_id": "2",
-    "course_name": "physics102",
-    "created_at": "2025-10-31T03:49:27"
-  }
+{
+"id": 1,
+"name": "test",
+"google_drive_id": "2",
+"course_name": "physics102",
+"created_at": "2025-10-31T03:49:27"
+}
 ]
 
 ## PUT Route: /api/v1/files/{file_id}
 
 Body: {
-  "name": "test",
-  "google_drive_id": "2",
-  "course_id": 1
+"name": "test",
+"google_drive_id": "2",
+"course_id": 1
 }
 
 Response: {
-  "id": 2,
-  "name": "test",
-  "google_drive_id": "2",
-  "course_name": "physics102",
-  "created_at": "2025-10-31T03:05:03"
+"id": 2,
+"name": "test",
+"google_drive_id": "2",
+"course_name": "physics102",
+"created_at": "2025-10-31T03:05:03"
 }
 
 ## DELETE Route: /api/v1/files/{file_id}
 
 Body: {
-  "file_id": 2
+"file_id": 2
 }
 
 Response: null
@@ -181,31 +181,31 @@ Response: null
 ## GET Route: /api/v1/files/{file_id}
 
 Body: {
-  "file_id": 2
+"file_id": 2
 }
 
 Response: {
-  "id": 2,
-  "name": "test",
-  "google_drive_id": "2",
-  "course_name": "physics102",
-  "created_at": "2025-10-31T03:05:03"
+"id": 2,
+"name": "test",
+"google_drive_id": "2",
+"course_name": "physics102",
+"created_at": "2025-10-31T03:05:03"
 }
 
 ## GET Route: /api/v1/files/course/{course_id}
 
 Body: {
-  "course_id": 2
+"course_id": 2
 }
 
 Response: [
-  {
-    "id": 2,
-    "name": "test",
-    "google_drive_id": "2",
-    "course_name": "physics102",
-    "created_at": "2025-10-31T03:51:51.659Z"
-  }
+{
+"id": 2,
+"name": "test",
+"google_drive_id": "2",
+"course_name": "physics102",
+"created_at": "2025-10-31T03:51:51.659Z"
+}
 ]
 
 # Tutor Session
@@ -213,75 +213,75 @@ Response: [
 ## POST Route: /api/v1/tutor-session/chat
 
 Body: {
-  "title": session1,
-  "course_id": 1
+"title": session1,
+"course_id": 1
 }
 
 Response: {
-  "title": "session1",
-  "id": 1,
-  "course_name": "physics101",
-  "chat_messages": [
-    {
-      "role": "user",
-      "message": "Hello World!",
-      "id": 2,
-      "tutor_session_title": "session1",
-      "created_at": "2025-10-31T03:57:02.329Z"
-    }
-  ],
-  "created_at": "2025-10-31T03:57:02.329Z"
+"title": "session1",
+"id": 1,
+"course_name": "physics101",
+"chat_messages": [
+{
+"role": "user",
+"message": "Hello World!",
+"id": 2,
+"tutor_session_title": "session1",
+"created_at": "2025-10-31T03:57:02.329Z"
+}
+],
+"created_at": "2025-10-31T03:57:02.329Z"
 }
 
 ## GET Route: /api/v1/tutor-session/{tutor_session_id}
 
 Body: {
-  "tutor_session_id" = 2
+"tutor_session_id" = 2
 }
 
 Response: {
-  "title": "session1",
-  "id": 2,
-  "course_name": "physics101",
-  "chat_messages": [
-    {
-      "role": "user",
-      "message": "Hello World!",
-      "id": 2,
-      "tutor_session_title": "session1",
-      "created_at": "2025-10-31T03:57:02.329Z"
-    }
-  ],
-  "created_at": "2025-10-31T03:57:02.329Z"
+"title": "session1",
+"id": 2,
+"course_name": "physics101",
+"chat_messages": [
+{
+"role": "user",
+"message": "Hello World!",
+"id": 2,
+"tutor_session_title": "session1",
+"created_at": "2025-10-31T03:57:02.329Z"
+}
+],
+"created_at": "2025-10-31T03:57:02.329Z"
 }
 
 ## PUT Route: /api/v1/tutor-session/chat
 
 Body: {
-  "tutor_session_id": 1,
-  "title": session1
+"tutor_session_id": 1,
+"title": session1
 }
 
 Response: {
-  "title": "session1",
-  "id": 1,
-  "course_name": "physics101",
-  "chat_messages": [
-    {
-      "role": "user",
-      "message": "Hello World!",
-      "id": 2,
-      "tutor_session_title": "session1",
-      "created_at": "2025-10-31T03:57:02.329Z"
-    }
-  ],
-  "created_at": "2025-10-31T03:57:02.329Z"
+"title": "session1",
+"id": 1,
+"course_name": "physics101",
+"chat_messages": [
+{
+"role": "user",
+"message": "Hello World!",
+"id": 2,
+"tutor_session_title": "session1",
+"created_at": "2025-10-31T03:57:02.329Z"
+}
+],
+"created_at": "2025-10-31T03:57:02.329Z"
 }
 
 ## DELETE Route: /api/v1/tutor-session/chat
 
 Body: {
-  "tutor_session_id": 2
+"tutor_session_id": 2
 }
 
 Response: null
@@ -289,21 +289,89 @@ Response: null
 ## GET Route: /api/v1/tutor-session/{tutor_session_id}/messages
 
 Body: {
-  "tutor_session_id": 3
+"tutor_session_id": 3
 }
 
 Response: {
-  "title": "session2",
-  "id": 3,
-  "course_name": "math201",
-  "chat_messages": [
-    {
-      "role": "user",
-      "message": "Bye World!",
-      "id": 5,
-      "tutor_session_title": "session2",
-      "created_at": "2025-10-31T03:57:02.329Z"
-    }
-  ],
-  "created_at": "2025-10-31T03:57:02.329Z"
+"title": "session2",
+"id": 3,
+"course_name": "math201",
+"chat_messages": [
+{
+"role": "user",
+"message": "Bye World!",
+"id": 5,
+"tutor_session_title": "session2",
+"created_at": "2025-10-31T03:57:02.329Z"
+}
+],
+"created_at": "2025-10-31T03:57:02.329Z"
+}
+
+# Video
+
+## Post Route: /api/v1/video/generate
+
+Body:
+{
+"fileId": "string",
+"title": "AI Tutor Video",
+"template_name": "mc-template.mp4"
+}
+
+Response:
+{
+"video_id": "string",
+"video_url": "string",
+"status": "string"
+}
+
+## Get Route: /api/v1/video/my
+
+Body: {
+auth header jwt token
+}
+Response:
+{
+"videos": [
+{
+"video_id": "1_video_9129a1d6501c463a85cb5131eddbdc27",
+"filename": "1_video_9129a1d6501c463a85cb5131eddbdc27.mp4",
+"video_url": "/assets/outputs/1_video_9129a1d6501c463a85cb5131eddbdc27.mp4",
+"created": 1761868517.5804236
+}
+]
+}
+
+## Get Route: /api/v1/video/{filename}
+
+Query:
+1_video_9129a1d6501c463a85cb5131eddbdc27.mp4
+
+Response:{
+File to Download
+}
+
+# Get Route: /api/v1/video/templates/list
+
+Body:{
+None
+}
+Response Body: {
+"templates": [
+{
+"name": "mc-template.mp4",
+"size": 498264468,
+"created": 1761611871.1916223
+}
+]
+}
+
+# Delete Route: /api/v1/video/cleanup
+
+Body:{
+None
+}
+Response: {
+"message": "Cleanup completed"
 }
