@@ -41,7 +41,7 @@ def get_courses(
     """
     courses = CourseRepository.get_all(db, user_id)
 
-    if (courses is None) or (len(courses) == 0):
+    if courses is None:
         raise HTTPException(status_code=404, detail="No courses found for the user.")
 
     return courses

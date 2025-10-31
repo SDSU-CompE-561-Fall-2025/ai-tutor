@@ -62,7 +62,7 @@ def get_all_files(db: Session, user_id: int) -> list[FileResponse]:
     """
     files = FileRepository.get_all(db, user_id)
 
-    if (files is None) or (len(files) == 0):
+    if files is None:
         raise HTTPException(status_code=404, detail="No files found for the user.")
     return [
         FileResponse(
@@ -202,7 +202,7 @@ def get_all_files_from_user_course(
     files = FileRepository.get_all_files_from_user_course(db, user_id, course_id)
     course_name = FileRepository.get_course_name(db, course_id)
 
-    if (files is None) or (len(files) == 0):
+    if files is None:
         raise HTTPException(status_code=404, detail="No files found for the specified course and user.")
 
     return [
