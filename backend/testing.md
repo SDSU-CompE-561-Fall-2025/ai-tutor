@@ -308,6 +308,77 @@ Response: {
 "created_at": "2025-10-31T03:57:02.329Z"
 }
 
+# Video
+
+## Post Route: /api/v1/video/generate
+
+Body:
+{
+"fileId": "string",
+"title": "AI Tutor Video",
+"template_name": "mc-template.mp4"
+}
+
+Response:
+{
+"video_id": "string",
+"video_url": "string",
+"status": "string"
+}
+
+## Get Route: /api/v1/video/my
+
+Body: {
+auth header jwt token
+}
+Response:
+{
+"videos": [
+{
+"video_id": "1_video_9129a1d6501c463a85cb5131eddbdc27",
+"filename": "1_video_9129a1d6501c463a85cb5131eddbdc27.mp4",
+"video_url": "/assets/outputs/1_video_9129a1d6501c463a85cb5131eddbdc27.mp4",
+"created": 1761868517.5804236
+}
+]
+}
+
+## Get Route: /api/v1/video/{filename}
+
+Query:
+1_video_9129a1d6501c463a85cb5131eddbdc27.mp4
+
+Response:{
+File to Download
+}
+
+# Get Route: /api/v1/video/templates/list
+
+Body:{
+None
+}
+Response Body: {
+"templates": [
+{
+"name": "mc-template.mp4",
+"size": 498264468,
+"created": 1761611871.1916223
+}
+]
+}
+
+# Delete Route: /api/v1/video/cleanup
+
+Body:{
+None
+}
+Response: {
+"message": "Cleanup completed"
+}
+],
+"created_at": "2025-10-31T03:57:02.329Z"
+}
+
 # Chat_Messages
 
 ## /api/v1/chat-messages/
