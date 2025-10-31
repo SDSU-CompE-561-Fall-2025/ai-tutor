@@ -8,7 +8,6 @@ from app.schemas.file import FileCreate, FileResponse
 
 FILE_NOT_FOUND_MSG = "File not found or access denied."
 
-
 def create_file(
     db: Session,
     file: FileCreate,
@@ -57,8 +56,14 @@ def get_all_files(db: Session, user_id: int) -> list[FileResponse]:
 
     Returns:
         list[FileResponse]: List of FileResponse instances
+
+    Raises:
+        HTTPException: If no files are found for the user
     """
     files = FileRepository.get_all(db, user_id)
+
+    if files is None:
+        raise HTTPException(status_code=404, detail="No files found for the user.")
     return [
         FileResponse(
             id=file.id,  # pyright: ignore[reportArgumentType]
@@ -88,7 +93,7 @@ def delete_file(
     """
     file = FileRepository.get_file_by_id(db, file_id, user_id)
     if file is None or file.user_id != user_id:
-        raise ValueError(FILE_NOT_FOUND_MSG)
+        raise HTTPException(status_code=404, detail=FILE_NOT_FOUND_MSG)
     FileRepository.delete(db, file)
 
 
@@ -111,7 +116,7 @@ def update_file_name(
     """
     file = FileRepository.get_file_by_id(db, file_id, user_id)
     if not file or file.user_id != user_id:  # pyright: ignore[reportOptionalOperand]
-        raise ValueError(FILE_NOT_FOUND_MSG)
+        raise HTTPException(status_code=404, detail=FILE_NOT_FOUND_MSG)
 
     updated_file = FileRepository.update_file_name(db, file, new_name)
     course_name = FileRepository.get_course_name(db, updated_file.course_id)
@@ -142,7 +147,7 @@ def get_file_by_id(
     """
     file = FileRepository.get_file_by_id(db, file_id, user_id)
     if not file or file.user_id != user_id:  # pyright: ignore[reportOptionalOperand]
-        raise ValueError(FILE_NOT_FOUND_MSG)
+        raise HTTPException(status_code=404, detail=FILE_NOT_FOUND_MSG)
     return file
 
 
@@ -166,7 +171,7 @@ def get_file_response_by_id(
     """
     file = FileRepository.get_file_by_id(db, file_id, user_id)
     if not file or file.user_id != user_id:  # pyright: ignore[reportOptionalOperand]
-        raise ValueError(FILE_NOT_FOUND_MSG)
+        raise HTTPException(status_code=404, detail=FILE_NOT_FOUND_MSG)
 
     course_name = FileRepository.get_course_name(db, file.course_id)
 
@@ -196,6 +201,10 @@ def get_all_files_from_user_course(
     """
     files = FileRepository.get_all_files_from_user_course(db, user_id, course_id)
     course_name = FileRepository.get_course_name(db, course_id)
+
+    if files is None:
+        raise HTTPException(status_code=404, detail="No files found for the specified course and user.")
+
     return [
         FileResponse(
             id=file.id,  # pyright: ignore[reportArgumentType]

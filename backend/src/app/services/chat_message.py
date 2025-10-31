@@ -1,3 +1,5 @@
+from http.client import HTTPException
+
 from sqlalchemy.orm import Session
 
 from app.core.gemini import generate_ai_response_with_mcp
@@ -63,7 +65,7 @@ def get_chat_messages_by_tutor_session(
     for message in chat_messages:
         if message is None or message.user_id != user_id:  # type: ignore[union-attr]
             msg = "Access denied to chat messages."
-            raise ValueError(msg)
+            raise HTTPException(status_code=401, detail=msg)
 
     return chat_messages
 
@@ -82,7 +84,7 @@ def get_all_chat_messages(db: Session, user_id: int) -> list[ChatMessage]:
     for message in chat_messages:
         if message is None or message.user_id != user_id:  # type: ignore[union-attr]
             msg = "Access denied to chat messages."
-            raise ValueError(msg)
+            raise HTTPException(status_code=401, detail=msg)
 
     return chat_messages
 
@@ -101,7 +103,7 @@ def delete_chat_message(db: Session, message_id: int, user_id: int) -> None:
     chat_message = ChatMessageRepository.get_message_by_id(db, message_id)
     if not chat_message or chat_message.user_id != user_id:  # type: ignore[union-attr]
         msg = "Chat Message not found or access denied."
-        raise ValueError(msg)
+        raise HTTPException(status_code=401, detail=msg)
 
     ChatMessageRepository.delete(db, chat_message)
 
@@ -126,7 +128,7 @@ def update_chat_message(
     chat_message = ChatMessageRepository.get_message_by_id(db, message_id)
     if not chat_message or chat_message.user_id != user_id:  # type: ignore[union-attr]
         msg = "ChatMessage not found or access denied."
-        raise ValueError(msg)
+        raise HTTPException(status_code=401, detail=msg)
 
     chat_message.role = message_data.role
     chat_message.message = message_data.message
@@ -149,7 +151,7 @@ def get_chat_message(db: Session, chat_message_id: int, user_id: int) -> ChatMes
     chat_message = ChatMessageRepository.get_message_by_id(db, chat_message_id)
     if not chat_message or chat_message.user_id != user_id:  # type: ignore[union-attr]
         msg = "ChatMessage not found or access denied."
-        raise ValueError(msg)
+        raise HTTPException(status_code=401, detail=msg)
 
     return chat_message
 
@@ -176,6 +178,9 @@ async def ai_generate_response_gemini(
     files = []
     if course:
         files = FileRepository.get_all_files_by_course(db, course.id)  # pyright: ignore[reportOptionalMemberAccess]
+    else:
+        msg = "Course not found for the given tutor session."
+        raise HTTPException(status_code=404, detail=msg)
 
     # Extract google_drive_ids from files
     file_ids = [file.google_drive_id for file in files]  # pyright: ignore[reportGeneralTypeIssues]
