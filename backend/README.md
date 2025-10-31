@@ -15,7 +15,7 @@ _Starting the app_
 `uv run  uvicorn app.main:app --reload --app-dir src --host localhost  --port 3000`
 
 _Accessing Swagger Docs_
-`http://127.0.0.1:3000/docs`
+`http://localhost:3000/docs`
 
 #### .ENV Structure
 
