@@ -141,3 +141,41 @@ Response: {
   "course_name": "string",
   "created_at": "2025-10-31T03:05:03"
 }
+
+# Google Drive 
+
+## Search with Query 
+  {
+    "id": "1JXdqDzmalhX0zNM0-5asrAQyoDOrVdwS",
+    "name": "11/23/2021",
+    "mime_type": "application/vnd.google-apps.folder",
+    "web_view_link": "https://drive.google.com/drive/folders/1JXdqDzmalhX0zNM0-5asrAQyoDOrVdwS"
+  },
+
+  {
+    "id": "1-76wbyhUyVIC4XCbk9y-YK3SzTmfLQs1",
+    "name": "01/21/2022",
+    "mime_type": "application/vnd.google-apps.folder",
+    "web_view_link": "https://drive.google.com/drive/folders/1-76wbyhUyVIC4XCbk9y-YK3SzTmfLQs1"
+  }
+
+# Search User Files 
+{
+    "id": "1IQAdv1nQSyrIeboHicLiLlMmAH14WxZ0",
+    "name": "HTML learning Footage",
+    "mime_type": "application/vnd.google-apps.folder",
+    "web_view_link": "https://drive.google.com/drive/folders/1IQAdv1nQSyrIeboHicLiLlMmAH14WxZ0"
+  }
+
+# Read By File ID
+
+Body: 
+{
+  "fileid": "12vDv5EQ9cKl1ceBbYxEZN7rJAGFJ9J4zA9TNBo07v14"
+}
+
+Reponse body: 
+
+{
+  "content": "﻿World War II was a global conflict that lasted from 1939 to 1945, involving most of the world’s major nations. It began when Germany, led by Adolf Hitler, invaded Poland, prompting Britain and France to declare war. The war soon spread across Europe, Africa, and Asia, with the Axis powers—Germany, Italy, and Japan—fighting against the Allies, including the United States, the Soviet Union, and the United Kingdom. It was the deadliest conflict in history, marked by the Holocaust and the use of atomic bombs on Hiroshima and Nagasaki. The war ended with the defeat of the Axis powers and reshaped global politics, leading to the rise of the United States and the Soviet Union as superpowers."
+}
