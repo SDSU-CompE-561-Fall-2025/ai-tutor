@@ -5,7 +5,7 @@
 _Downloading UV_
 `curl -LsSf https://astral.sh/uv/install.sh | sh`
 
-_Getting UV up to standard_
+_Getting UV up to standard (downloading all dependencies)_
 `uv sync`
 
 _Starting the MCP Server_
@@ -13,6 +13,9 @@ _Starting the MCP Server_
 
 _Starting the app_
 `uv run  uvicorn app.main:app --reload --app-dir src --host localhost  --port 3000`
+
+_Accessing Swagger Docs_
+`http://localhost:3000/docs`
 
 #### .ENV Structure
 
@@ -34,7 +37,7 @@ MCP_SERVER="http://127.0.0.1:8000/mcp"
 
 PROJECT_ID="gdrive-multiple"
 
-FERNET_KEY= use ssh to create one
+FERNET_KEY= `openssl rand -base64 32 | tr '+/' '-*' | tr -d '='` run this in terminal
 
 OPENAI_KEY=
 

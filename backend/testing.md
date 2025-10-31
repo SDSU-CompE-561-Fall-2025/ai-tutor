@@ -2,7 +2,7 @@
 
 # User
 
-## Route: /api/v1/user/register
+## POST Route: /api/v1/user/register
 
 Body: {
 "email": "yourGmailToGiveAccessTo@gmail.com",
@@ -11,7 +11,7 @@ Body: {
 
 Response: A google auth redirect uri
 
-## Route: /api/v1/user/auth/google/callback
+## GET Route: /api/v1/user/auth/google/callback
 
 Body: {
 authCode: automatically called & created when using register
@@ -25,7 +25,7 @@ Response: {
 "email": "aronsanchez038@gmail.com"
 }
 
-## Route: /api/v1/user/login
+## POST Route: /api/v1/user/login
 
 Body: urlformEncoded - userName:'signedupEmail@gmail.com' Password:'pass'
 
@@ -34,7 +34,7 @@ Response: {
 "token_type": "bearer"
 }
 
-## Route: /api/v1/user/me
+## GET Route: /api/v1/user/me
 
 Body: Recieves JWT Token in header
 
@@ -43,7 +43,7 @@ Response: {
 "id": 2
 }
 
-## Route: /api/v1/user/token
+## GET Route: /api/v1/user/token
 
 Body: Recieves JWT Token in header
 
@@ -57,81 +57,239 @@ Response: {
 ## POST Route: /api/v1/courses/
 
 Request Body: {
-  "name": "string"
+"name": "math101"
 }
 
 Response: {
-  "name": "string",
-  "id": 1
+"name": "math101",
+"id": 1
 }
 
-## GET Route: /api/v1/courses/ 
+## GET Route: /api/v1/courses/
 
 Response: [
-  {
-    "name": "string",
-    "id": 1
-  }
+{
+"name": "math101",
+"id": 1
+}
 ]
 
-## GET Route: /api/v1/courses/1 
+## GET Route: /api/v1/courses/1
 
-Parameters: course_id 
+Parameters: course_id
 
 Response: {
-  "name": "string",
-  "id": 1
+"name": "math101",
+"id": 1
 }
 
-## PUT Route: /api/v1/courses/1 
+## PUT Route: /api/v1/courses/1
 
-Parameters: course_id 
+Parameters: course_id
 
 Body: {
-  "name": "updated_string"
+"name": "physics102"
 }
 
 Response: {
-  "name": "updated_string",
-  "id": 1
+"name": "physics102",
+"id": 1
 }
 
-## GET Route: /api/v1/courses/1/tutor-sessions 
+## GET Route: /api/v1/courses/1/tutor-sessions
 
-Parameters: course_id 
+Parameters: course_id
 
 Response: [
-  {
-    "title": "string",
-    "id": 0,
-    "course_name": "string",
-    "chat_messages": [
-      {
-        "role": "user",
-        "message": "string",
-        "id": 0,
-        "tutor_session_title": "string",
-        "created_at": "2025-10-31T02:59:49.339Z"
-      }
-    ],
-    "created_at": "2025-10-31T02:59:49.339Z"
-  }
+{
+"title": "session1",
+"id": 1,
+"course_name": "physics102",
+"chat_messages": [
+{
+"role": "user",
+"message": "test",
+"id": 1,
+"tutor_session_title": "session1",
+"created_at": "2025-10-31T02:59:49.339Z"
+}
+],
+"created_at": "2025-10-31T02:59:49.339Z"
+}
 ]
 
 ## DELETE Route: /api/v1/courses/1
 
-Parameters: course_id 
+Parameters: course_id
 
-Response: null 
+Response: null
 
-# Files 
+# Files
 
-## POST Route: /api/v1/files/ 
+## POST Route: /api/v1/files/
 
 Body: {
-  "name": "string",
-  "google_drive_id": "string",
-  "course_id": 1
+"name": "test",
+"google_drive_id": "2",
+"course_id": 1
+}
+
+Response: {
+"id": 2,
+"name": "test",
+"google_drive_id": "2",
+"course_name": "physics102",
+"created_at": "2025-10-31T03:05:03"
+}
+
+## GET Route: /api/v1/files/
+
+Response: [
+{
+"id": 1,
+"name": "test",
+"google_drive_id": "2",
+"course_name": "physics102",
+"created_at": "2025-10-31T03:49:27"
+}
+]
+
+## PUT Route: /api/v1/files/{file_id}
+
+Body: {
+"name": "test",
+"google_drive_id": "2",
+"course_id": 1
+}
+
+Response: {
+"id": 2,
+"name": "test",
+"google_drive_id": "2",
+"course_name": "physics102",
+"created_at": "2025-10-31T03:05:03"
+}
+
+## DELETE Route: /api/v1/files/{file_id}
+
+Body: {
+"file_id": 2
+}
+
+Response: null
+
+## GET Route: /api/v1/files/{file_id}
+
+Body: {
+"file_id": 2
+}
+
+Response: {
+"id": 2,
+"name": "test",
+"google_drive_id": "2",
+"course_name": "physics102",
+"created_at": "2025-10-31T03:05:03"
+}
+
+## GET Route: /api/v1/files/course/{course_id}
+
+Body: {
+"course_id": 2
+}
+
+Response: [
+{
+"id": 2,
+"name": "test",
+"google_drive_id": "2",
+"course_name": "physics102",
+"created_at": "2025-10-31T03:51:51.659Z"
+}
+]
+
+# Tutor Session
+
+## POST Route: /api/v1/tutor-session/chat
+
+Body: {
+"title": session1,
+"course_id": 1
+}
+
+Response: {
+"title": "session1",
+"id": 1,
+"course_name": "physics101",
+"chat_messages": [
+{
+"role": "user",
+"message": "Hello World!",
+"id": 2,
+"tutor_session_title": "session1",
+"created_at": "2025-10-31T03:57:02.329Z"
+}
+],
+"created_at": "2025-10-31T03:57:02.329Z"
+}
+
+## GET Route: /api/v1/tutor-session/{tutor_session_id}
+
+Body: {
+"tutor_session_id" = 2
+}
+
+Response: {
+"title": "session1",
+"id": 2,
+"course_name": "physics101",
+"chat_messages": [
+{
+"role": "user",
+"message": "Hello World!",
+"id": 2,
+"tutor_session_title": "session1",
+"created_at": "2025-10-31T03:57:02.329Z"
+}
+],
+"created_at": "2025-10-31T03:57:02.329Z"
+}
+
+## PUT Route: /api/v1/tutor-session/chat
+
+Body: {
+"tutor_session_id": 1,
+"title": session1
+}
+
+Response: {
+"title": "session1",
+"id": 1,
+"course_name": "physics101",
+"chat_messages": [
+{
+"role": "user",
+"message": "Hello World!",
+"id": 2,
+"tutor_session_title": "session1",
+"created_at": "2025-10-31T03:57:02.329Z"
+}
+],
+"created_at": "2025-10-31T03:57:02.329Z"
+}
+
+## DELETE Route: /api/v1/tutor-session/chat
+
+Body: {
+"tutor_session_id": 2
+}
+
+Response: null
+
+## GET Route: /api/v1/tutor-session/{tutor_session_id}/messages
+
+Body: {
+"tutor_session_id": 3
 }
 
 Response: {
@@ -179,3 +337,172 @@ Reponse body:
 {
   "content": "﻿World War II was a global conflict that lasted from 1939 to 1945, involving most of the world’s major nations. It began when Germany, led by Adolf Hitler, invaded Poland, prompting Britain and France to declare war. The war soon spread across Europe, Africa, and Asia, with the Axis powers—Germany, Italy, and Japan—fighting against the Allies, including the United States, the Soviet Union, and the United Kingdom. It was the deadliest conflict in history, marked by the Holocaust and the use of atomic bombs on Hiroshima and Nagasaki. The war ended with the defeat of the Axis powers and reshaped global politics, leading to the rise of the United States and the Soviet Union as superpowers."
 }
+"title": "session2",
+"id": 3,
+"course_name": "math201",
+"chat_messages": [
+{
+"role": "user",
+"message": "Bye World!",
+"id": 5,
+"tutor_session_title": "session2",
+"created_at": "2025-10-31T03:57:02.329Z"
+}
+],
+"created_at": "2025-10-31T03:57:02.329Z"
+}
+
+# Video
+
+## Post Route: /api/v1/video/generate
+
+Body:
+{
+"fileId": "string",
+"title": "AI Tutor Video",
+"template_name": "mc-template.mp4"
+}
+
+Response:
+{
+"video_id": "string",
+"video_url": "string",
+"status": "string"
+}
+
+## Get Route: /api/v1/video/my
+
+Body: {
+auth header jwt token
+}
+Response:
+{
+"videos": [
+{
+"video_id": "1_video_9129a1d6501c463a85cb5131eddbdc27",
+"filename": "1_video_9129a1d6501c463a85cb5131eddbdc27.mp4",
+"video_url": "/assets/outputs/1_video_9129a1d6501c463a85cb5131eddbdc27.mp4",
+"created": 1761868517.5804236
+}
+]
+}
+
+## Get Route: /api/v1/video/{filename}
+
+Query:
+1_video_9129a1d6501c463a85cb5131eddbdc27.mp4
+
+Response:{
+File to Download
+}
+
+# Get Route: /api/v1/video/templates/list
+
+Body:{
+None
+}
+Response Body: {
+"templates": [
+{
+"name": "mc-template.mp4",
+"size": 498264468,
+"created": 1761611871.1916223
+}
+]
+}
+
+# Delete Route: /api/v1/video/cleanup
+
+Body:{
+None
+}
+Response: {
+"message": "Cleanup completed"
+}
+],
+"created_at": "2025-10-31T03:57:02.329Z"
+}
+
+# Chat_Messages
+
+## /api/v1/chat-messages/
+
+Body: Bearer Token in header
+
+Response: [
+{
+"id": 1,
+"tutor_session_id": 1,
+"role": "user",
+"message": "I am the goat",
+"user_id": 1,
+"created_at": "2025-10-29T22:45:49"
+},
+{
+"id": 2,
+"tutor_session_id": 1,
+"role": "user",
+"message": "I am dariel",
+"user_id": 1,
+"created_at": "2025-10-29T22:46:20"
+},
+{
+"id": 3,
+"tutor_session_id": 1,
+"role": "user",
+"message": "hello whats inthe chat history",
+"user_id": 1,
+"created_at": "2025-10-30T02:36:44"
+},]
+
+## Post: /api/v1/chat-messages/
+
+Body: {
+"role": "user",
+"message": "hello tell me about my documents",
+"tutor_session_id": 1
+}
+
+Response: {
+"role": "assistant",
+"message": "Hello Dariel!\n\nYour primary document is **A3 Written Assignment 3**, which is a practical exercise centered around **Constraint Satisfaction Problems (CSPs)** in Artificial Intelligence.\n\nHere's a breakdown of its content:\n\n* **Defining CSPs:** The assignment begins by asking you to define the fundamental components of a CSP—**Variables**, **Domains**, and **Constraints**—using a children's crossword puzzle as an example. This involves identifying word slots, possible English words, and rules like shared letters and unique word usage.\n\n* **Oz Map Coloring Problem:** This is the main part, applying CSP concepts to a 3-color map of Frank Baum's fictional land of Oz.\n _ You'll be asked to draw a **constraint hypergraph** to visually represent which regions touch each other.\n _ A significant portion involves simulating the **AC3 algorithm** step-by-step. You'll demonstrate how it enforces arc consistency by reducing variable domains and updating a queue, given initial assignments (Q=Green, W=Purple).\n \* Finally, you'll show how **Forward Checking** uses these same initial assignments to immediately prune the domains of neighboring variables, simplifying the problem early on.\n\nIn essence, the document guides you through understanding how to model problems as CSPs and then apply powerful algorithms like AC3 and Forward Checking to solve or simplify them.\n\nThe file ID for this material is: `1DxZBJqKNaAdjdmDKAq_bkb3BE62k1oFYIHtqYqs51ho`",
+"id": 38,
+"tutor_session_title": "test",
+"created_at": "2025-10-31T04:14:19"
+}
+
+## Get: /api/v1/chat-messages/{message_id}
+
+Parameter: message_id
+
+Response: {
+"role": "user",
+"message": "I am dariel",
+"id": 2,
+"tutor_session_title": null,
+"created_at": "2025-10-29T22:46:20"
+}
+
+## Patch: /api/v1/chat-messages/{message_id}
+
+Parameter: message_id
+
+Body: {
+"role": "user",
+"message": "no no no",
+"tutor_session_id": 1
+}
+
+Response: {
+"role": "user",
+"message": "no no no",
+"id": 2,
+"tutor_session_title": null,
+"created_at": "2025-10-29T22:46:20"
+}
+
+## Delete: /api/v1/chat-messages/{message_id}
+
+Parameter: message_id
+
+Response: null
