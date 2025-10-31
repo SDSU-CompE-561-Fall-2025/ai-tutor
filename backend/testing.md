@@ -2,7 +2,7 @@
 
 # User
 
-## Route: /api/v1/user/register
+## POST Route: /api/v1/user/register
 
 Body: {
 "email": "yourGmailToGiveAccessTo@gmail.com",
@@ -11,7 +11,7 @@ Body: {
 
 Response: A google auth redirect uri
 
-## Route: /api/v1/user/auth/google/callback
+## GET Route: /api/v1/user/auth/google/callback
 
 Body: {
 authCode: automatically called & created when using register
@@ -25,7 +25,7 @@ Response: {
 "email": "aronsanchez038@gmail.com"
 }
 
-## Route: /api/v1/user/login
+## POST Route: /api/v1/user/login
 
 Body: urlformEncoded - userName:'signedupEmail@gmail.com' Password:'pass'
 
@@ -34,7 +34,7 @@ Response: {
 "token_type": "bearer"
 }
 
-## Route: /api/v1/user/me
+## GET Route: /api/v1/user/me
 
 Body: Recieves JWT Token in header
 
@@ -43,7 +43,7 @@ Response: {
 "id": 2
 }
 
-## Route: /api/v1/user/token
+## GET Route: /api/v1/user/token
 
 Body: Recieves JWT Token in header
 
@@ -57,11 +57,11 @@ Response: {
 ## POST Route: /api/v1/courses/
 
 Request Body: {
-  "name": "string"
+  "name": "math101"
 }
 
 Response: {
-  "name": "string",
+  "name": "math101",
   "id": 1
 }
 
@@ -69,7 +69,7 @@ Response: {
 
 Response: [
   {
-    "name": "string",
+    "name": "math101",
     "id": 1
   }
 ]
@@ -79,7 +79,7 @@ Response: [
 Parameters: course_id 
 
 Response: {
-  "name": "string",
+  "name": "math101",
   "id": 1
 }
 
@@ -88,11 +88,11 @@ Response: {
 Parameters: course_id 
 
 Body: {
-  "name": "updated_string"
+  "name": "physics102"
 }
 
 Response: {
-  "name": "updated_string",
+  "name": "physics102",
   "id": 1
 }
 
@@ -102,15 +102,15 @@ Parameters: course_id
 
 Response: [
   {
-    "title": "string",
-    "id": 0,
-    "course_name": "string",
+    "title": "session1",
+    "id": 1,
+    "course_name": "physics102",
     "chat_messages": [
       {
         "role": "user",
-        "message": "string",
-        "id": 0,
-        "tutor_session_title": "string",
+        "message": "test",
+        "id": 1,
+        "tutor_session_title": "session1",
         "created_at": "2025-10-31T02:59:49.339Z"
       }
     ],
@@ -122,22 +122,188 @@ Response: [
 
 Parameters: course_id 
 
-Response: null 
+Response: null
 
 # Files 
 
 ## POST Route: /api/v1/files/ 
 
 Body: {
-  "name": "string",
-  "google_drive_id": "string",
+  "name": "test",
+  "google_drive_id": "2",
   "course_id": 1
 }
 
 Response: {
   "id": 2,
-  "name": "string",
-  "google_drive_id": "string",
-  "course_name": "string",
+  "name": "test",
+  "google_drive_id": "2",
+  "course_name": "physics102",
   "created_at": "2025-10-31T03:05:03"
+}
+
+## GET Route: /api/v1/files/ 
+
+Response: [
+  {
+    "id": 1,
+    "name": "test",
+    "google_drive_id": "2",
+    "course_name": "physics102",
+    "created_at": "2025-10-31T03:49:27"
+  }
+]
+
+## PUT Route: /api/v1/files/{file_id}
+
+Body: {
+  "name": "test",
+  "google_drive_id": "2",
+  "course_id": 1
+}
+
+Response: {
+  "id": 2,
+  "name": "test",
+  "google_drive_id": "2",
+  "course_name": "physics102",
+  "created_at": "2025-10-31T03:05:03"
+}
+
+## DELETE Route: /api/v1/files/{file_id}
+
+Body: {
+  "file_id": 2
+}
+
+Response: null
+
+## GET Route: /api/v1/files/{file_id}
+
+Body: {
+  "file_id": 2
+}
+
+Response: {
+  "id": 2,
+  "name": "test",
+  "google_drive_id": "2",
+  "course_name": "physics102",
+  "created_at": "2025-10-31T03:05:03"
+}
+
+## GET Route: /api/v1/files/course/{course_id}
+
+Body: {
+  "course_id": 2
+}
+
+Response: [
+  {
+    "id": 2,
+    "name": "test",
+    "google_drive_id": "2",
+    "course_name": "physics102",
+    "created_at": "2025-10-31T03:51:51.659Z"
+  }
+]
+
+# Tutor Session
+
+## POST Route: /api/v1/tutor-session/chat
+
+Body: {
+  "title": session1,
+  "course_id": 1
+}
+
+Response: {
+  "title": "session1",
+  "id": 1,
+  "course_name": "physics101",
+  "chat_messages": [
+    {
+      "role": "user",
+      "message": "Hello World!",
+      "id": 2,
+      "tutor_session_title": "session1",
+      "created_at": "2025-10-31T03:57:02.329Z"
+    }
+  ],
+  "created_at": "2025-10-31T03:57:02.329Z"
+}
+
+## GET Route: /api/v1/tutor-session/{tutor_session_id}
+
+Body: {
+  "tutor_session_id" = 2
+}
+
+Response: {
+  "title": "session1",
+  "id": 2,
+  "course_name": "physics101",
+  "chat_messages": [
+    {
+      "role": "user",
+      "message": "Hello World!",
+      "id": 2,
+      "tutor_session_title": "session1",
+      "created_at": "2025-10-31T03:57:02.329Z"
+    }
+  ],
+  "created_at": "2025-10-31T03:57:02.329Z"
+}
+
+## PUT Route: /api/v1/tutor-session/chat
+
+Body: {
+  "tutor_session_id": 1,
+  "title": session1
+}
+
+Response: {
+  "title": "session1",
+  "id": 1,
+  "course_name": "physics101",
+  "chat_messages": [
+    {
+      "role": "user",
+      "message": "Hello World!",
+      "id": 2,
+      "tutor_session_title": "session1",
+      "created_at": "2025-10-31T03:57:02.329Z"
+    }
+  ],
+  "created_at": "2025-10-31T03:57:02.329Z"
+}
+
+## DELETE Route: /api/v1/tutor-session/chat
+
+Body: {
+  "tutor_session_id": 2
+}
+
+Response: null
+
+## GET Route: /api/v1/tutor-session/{tutor_session_id}/messages
+
+Body: {
+  "tutor_session_id": 3
+}
+
+Response: {
+  "title": "session2",
+  "id": 3,
+  "course_name": "math201",
+  "chat_messages": [
+    {
+      "role": "user",
+      "message": "Bye World!",
+      "id": 5,
+      "tutor_session_title": "session2",
+      "created_at": "2025-10-31T03:57:02.329Z"
+    }
+  ],
+  "created_at": "2025-10-31T03:57:02.329Z"
 }
