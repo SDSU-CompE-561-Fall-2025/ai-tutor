@@ -25,26 +25,24 @@ repos:
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: mixed-line-ending
-        args:
-          - --fix=auto
+        args: ["--fix=auto"]
       - id: name-tests-test
       - id: trailing-whitespace
       - id: pretty-format-json
-        args:
-          - --autofix
+        args: ["--autofix"]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.13.1
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
-        files: ^src/.*\.py$
+        files: ^backend/src/.*\.py$
       - id: ruff-format
-        files: ^src/.*\.py$
+        files: ^backend/src/.*\.py$
 
   - repo: https://github.com/PyCQA/bandit
     rev: 1.8.6
     hooks:
       - id: bandit
-        args: ["-c", "pyproject.toml", "-r", "src"]
+        args: ["-c", "backend/pyproject.toml", "-r", "backend/src"]
         pass_filenames: false

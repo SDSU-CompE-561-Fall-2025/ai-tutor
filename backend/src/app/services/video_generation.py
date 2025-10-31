@@ -99,8 +99,7 @@ class VideoGenerationService:
 
         final = CompositeVideoClip([video, caption])
 
-        if output_filename is None:
-            output_filename = f"{userid}_video_{uuid.uuid4().hex}.mp4"
+        output_filename = f"{userid}_video_{uuid.uuid4().hex}.mp4"
 
         output_path = self.outputs_dir / output_filename
 
@@ -120,6 +119,37 @@ class VideoGenerationService:
         # This would be used with your FastAPI static file serving
         relative_path = video_path.relative_to(self.project_root)
         return f"/assets/outputs/{relative_path.name}"
+
+    def list_videos_for_user(self, userid: int) -> list[dict]:
+        """List generated videos for a user.
+
+        This uses the filename convention where generated videos start with
+        the user's id (e.g., "{userid}_video_<uuid>.mp4"). Returns a list of
+        metadata dictionaries sorted by modification time (newest first).
+        """
+        videos = []
+        prefix = f"{userid}_"
+
+        # Collect files that start with the user's id prefix
+        for video_file in sorted(
+            self.outputs_dir.glob(f"{prefix}*.mp4"),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        ):
+            try:
+                videos.append(
+                    {
+                        "video_id": video_file.stem,
+                        "filename": video_file.name,
+                        "video_url": self.get_video_url(video_file),
+                        "created": video_file.stat().st_mtime,
+                    },
+                )
+            except (FileNotFoundError, OSError):
+                # If a file disappears between glob and stat or there is an OS error, skip it
+                continue
+
+        return videos
 
     def cleanup_old_videos(self, max_age_hours: int = 24) -> None:
         """Clean up old generated videos."""
@@ -153,7 +183,7 @@ class VideoGenerationService:
                             "You are an AI tutor who creates short, engaging educational scripts for Instagram Reels-style videos. "
                             "Your task is to summarize the user's Google Doc content into a spoken dialogue script — no narration instructions or scene descriptions, only the spoken text itself. "
                             "The tone should be friendly, concise, and helpful, like a teacher explaining something interesting and easy to understand. "
-                            "Keep the dialogue under 30 seconds of speech (aim for less than 70 words). "
+                            "Keep the dialogue under 30 seconds of speech (aim for less than 100 words). "
                             "Make sure it flows naturally when read aloud, as the text will be converted directly into an AI voiceover. "
                             "If the topic is technical, use simple analogies or examples to make it relatable."
                         ),
