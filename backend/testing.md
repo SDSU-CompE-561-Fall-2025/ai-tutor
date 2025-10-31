@@ -54,17 +54,72 @@ Response: {
 
 # Course
 
-## Route: /api/v1/courses/
+## POST Route: /api/v1/courses/
 
-Body: JWT Token in header
+Request Body: {
+  "name": "string"
+}
 
 Response: {
-[
-{
-"name": "cs-450",
-"id": 1
-}
-] or []
+  "name": "string",
+  "id": 1
 }
 
-## Route:
+## GET Route: /api/v1/courses/ 
+
+Response: [
+  {
+    "name": "string",
+    "id": 1
+  }
+]
+
+## GET Route: /api/v1/courses/1 
+
+Parameters: course_id 
+
+Response: {
+  "name": "string",
+  "id": 1
+}
+
+## PUT Route: /api/v1/courses/1 
+
+Parameters: course_id 
+
+Body: {
+  "name": "updated_string"
+}
+
+Response: {
+  "name": "updated_string",
+  "id": 1
+}
+
+## GET Route: /api/v1/courses/1/tutor-sessions 
+
+Parameters: course_id 
+
+Response: [
+  {
+    "title": "string",
+    "id": 0,
+    "course_name": "string",
+    "chat_messages": [
+      {
+        "role": "user",
+        "message": "string",
+        "id": 0,
+        "tutor_session_title": "string",
+        "created_at": "2025-10-31T02:59:49.339Z"
+      }
+    ],
+    "created_at": "2025-10-31T02:59:49.339Z"
+  }
+]
+
+## DELETE Route: /api/v1/courses/1
+
+Parameters: course_id 
+
+Response: null 
