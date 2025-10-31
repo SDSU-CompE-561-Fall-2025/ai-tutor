@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.models.tutor_session import TutorSession
@@ -50,7 +51,7 @@ def get_tutor_session(
     tutor_session = TutorSessionRepository.get_by_id(db, tutor_session_id)
     if tutor_session is None or tutor_session.user_id != user_id:  # type: ignore[union-attr]
         msg = "Tutor session not found or access denied."
-        raise ValueError(msg)
+        raise HTTPException(status=404, message=msg)
 
     return tutor_session
 
@@ -73,7 +74,7 @@ def get_tutor_session_by_course(
     tutor_session = TutorSessionRepository.get_by_course(db, course_id)
     if tutor_session is None or tutor_session.user_id != user_id:  # type: ignore[union-attr]
         msg = "Tutor session not found or access denied."
-        raise ValueError(msg)
+        raise HTTPException(status=404, message=msg)
 
     return tutor_session
 
@@ -94,7 +95,7 @@ def get_tutor_session_by_user(
     tutor_session = TutorSessionRepository.get_by_user(db, user_id)
     if tutor_session is None:  # type: ignore[union-attr]
         msg = "Tutor session not found or access denied."
-        raise ValueError(msg)
+        raise HTTPException(status=404, message=msg)
 
     return tutor_session
 
@@ -113,7 +114,7 @@ def get_tutor_sessions_for_user(db: Session, user_id: int) -> list[TutorSession]
     for session in tutor_sessions:
         if session is None or session.user_id != user_id:  # type: ignore[union-attr]
             msg = "Tutor session not found or access denied."
-            raise ValueError(msg)
+            raise HTTPException(status=404, message=msg)
 
     return tutor_sessions
 
@@ -137,7 +138,7 @@ def get_tutor_sessions_by_course(
     for session in tutor_sessions:
         if session is None or session.user_id != user_id:  # type: ignore[union-attr]
             msg = "Tutor session not found or access denied."
-            raise ValueError(msg)
+            raise HTTPException(status=404, message=msg)
 
     return tutor_sessions
 
@@ -152,7 +153,7 @@ def update_tutor_session_title(
     tutor_session = TutorSessionRepository.get_by_id(db, tutor_session_id)
     if tutor_session is None or tutor_session.user_id != user_id:  # type: ignore[union-attr]
         msg = "Tutor session not found or access denied."
-        raise ValueError(msg)
+        raise HTTPException(status=404, message=msg)
     tutor_session.title = title  # pyright: ignore[reportAttributeAccessIssue]
 
     return TutorSessionRepository.update(db, tutor_session)
@@ -167,6 +168,6 @@ def delete_tutor_session(
     tutor_session = TutorSessionRepository.get_by_id(db, tutor_session_id)
     if tutor_session is None or tutor_session.user_id != user_id:  # type: ignore[union-attr]
         msg = "Tutor session not found or access denied."
-        raise ValueError(msg)
+        raise HTTPException(status=404, message=msg)
 
     TutorSessionRepository.delete(db, tutor_session)

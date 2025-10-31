@@ -2,7 +2,6 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.models.course import Course
-from app.models.file import File
 from app.models.tutor_session import TutorSession
 from app.repository.course import CourseRepository
 from app.repository.tutor_session import TutorSessionRepository
@@ -24,7 +23,7 @@ def create_course(db: Session, course: CourseBase, user_id: int) -> Course:
     existing_course = CourseRepository.get_course_by_name(db, course.name, user_id)
     if existing_course:
         msg = "Course with this name already exists."
-        raise ValueError(msg)
+        raise HTTPException(status_code=409, detail=msg)
 
     return CourseRepository.create(db, course, user_id)
 
@@ -40,11 +39,12 @@ def get_courses(
         db: database session
         user_id: id of the user
     """
-    return CourseRepository.get_all(
-        db,
-        user_id,
-    )
+    courses = CourseRepository.get_all(db, user_id)
 
+    if (courses is None) or (len(courses) == 0):
+        raise HTTPException(status_code=404, detail="No courses found for the user.")
+
+    return courses
 
 def delete_course(db: Session, course_id: int, user_id: int) -> None:
     """
@@ -61,13 +61,7 @@ def delete_course(db: Session, course_id: int, user_id: int) -> None:
     course = CourseRepository.get_course_by_id(db, course_id)
     if course is None or course.user_id != user_id:
         msg = "Course not found or access denied."
-        raise ValueError(msg)
-
-    # Check if course has associated files
-    associated_files = db.query(File).filter(File.course_id == course_id).count()
-    if associated_files > 0:
-        msg = "Cannot delete course with associated files. Delete the files first."
-        raise ValueError(msg)
+        raise HTTPException(status_code=404, detail=msg)
 
     CourseRepository.delete(db, course)
 
@@ -93,12 +87,12 @@ def update_course(
     course = CourseRepository.get_course_by_id(db, course_id)
     if course is None or course.user_id != user_id:
         msg = "Course not found or access denied."
-        raise ValueError(msg)
+        raise HTTPException(status_code=404, detail=msg)
 
     existing_course = CourseRepository.get_course_by_name(db, course_data.name, user_id)
     if existing_course and existing_course.id != course_id:
         msg = "Course with this name already exists."
-        raise ValueError(msg)
+        raise HTTPException(status_code=409, detail=msg)
 
     course.name = course_data.name
     return CourseRepository.update(db, course)
@@ -119,7 +113,7 @@ def get_course_by_id(db: Session, course_id: int, user_id: int) -> Course:
     course = CourseRepository.get_course_by_id(db, course_id)
     if not course or course.user_id != user_id:
         msg = "Course not found or access denied."
-        raise ValueError(msg)
+        raise HTTPException(status_code=404, detail=msg)
 
     return course
 
