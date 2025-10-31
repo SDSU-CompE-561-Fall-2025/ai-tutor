@@ -123,3 +123,21 @@ Response: [
 Parameters: course_id 
 
 Response: null 
+
+# Files 
+
+## POST Route: /api/v1/files/ 
+
+Body: {
+  "name": "string",
+  "google_drive_id": "string",
+  "course_id": 1
+}
+
+Response: {
+  "id": 2,
+  "name": "string",
+  "google_drive_id": "string",
+  "course_name": "string",
+  "created_at": "2025-10-31T03:05:03"
+}
