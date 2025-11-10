@@ -37,15 +37,20 @@ class GoogleDriveService:
         """
         client = get_mcp_client()
 
-        async with client:
-            result = await client.call_tool(
-                "gdrive_search",
-                {"query": query, "user_id": user_id},
-            )
-            if result.structured_content["files"] == []:  # pyright: ignore[reportOptionalSubscript]
-                return {"Error": "Try Another Query"}
+        try:
+            async with client:
+                result = await client.call_tool(
+                    "gdrive_search",
+                    {"query": query, "user_id": user_id},
+                )
 
-            return result.structured_content["files"]  # pyright: ignore[reportOptionalSubscript]
+                # Extract text and parse JSON
+                raw_text = result.content[0].text  # pyright: ignore[reportAttributeAccessIssue]
+                parsed = json.loads(raw_text)
+
+                return parsed.get("files", [])
+        except Exception as e:  # noqa: BLE001
+            return {"error": str(e)}
 
     @staticmethod
     async def read_file(
