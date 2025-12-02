@@ -15,6 +15,7 @@ export default function Home() {
               AI
             </div>
             <span> Tutor</span>
+            <Image src="/logo.png" alt="AI Tutor Logo" width={68} height={68} />
           </div>
           <nav className="flex flex-end gap-6 text-sm font-medium text-muted-foreground px-4 mr-1">
             <Link href="/login" className="hover:font-bold">

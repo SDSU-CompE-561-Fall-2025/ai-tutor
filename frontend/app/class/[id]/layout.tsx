@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Ai Tutor",
   description: "Your personal AI-powered tutor for learning and growth.",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 export default function RootLayout({
