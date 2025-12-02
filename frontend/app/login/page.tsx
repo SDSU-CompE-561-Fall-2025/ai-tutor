@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Loader } from "@/components/ui/loader";
-import { register, storeAuthTokens } from "@/lib/api";
+import { login } from "@/lib/api";
 
 const page = () => {
   const [error, setError] = useState("");
@@ -11,40 +11,18 @@ const page = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  // Handle OAuth callback
-  useEffect(() => {
-    const accessToken = searchParams.get("access_token");
-    const refreshToken = searchParams.get("refresh_token");
-    const expiry = searchParams.get("expiry");
-    const userEmail = searchParams.get("email");
-
-    if (accessToken && refreshToken && expiry && userEmail) {
-      // Store tokens from OAuth callback
-      storeAuthTokens({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-        expiry: expiry,
-        email: userEmail,
-      });
-      // Redirect to dashboard
-      router.push("/dashboard");
-    }
-  }, [searchParams, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Clear previous error
     setError("");
-
     try {
-      const data = await register(email, password);
-      // Redirect to Google OAuth URL
-      if (data.redirect_url) {
-        window.location.href = data.redirect_url;
-      }
+      const data = await login(email, password);
+      // Store access token from login response
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("token_type", data.token_type);
+      localStorage.setItem("email", email);
+      router.push("/dashboard");
     } catch (err: any) {
       setError(err.message);
       setLoading(false);
@@ -77,9 +55,9 @@ const page = () => {
       <main className="flex-1 mt-10 px-4 py-8">
         <div className="container mx-auto flex flex-col items-center justify-center min-h-[500px]">
           <div className="w-full max-w-md border-2 border-gray-900 rounded-2xl p-8 bg-white">
-            <h1 className="text-2xl font-bold mb-2">Create an account</h1>
+            <h1 className="text-2xl font-bold mb-2">Log in to your account</h1>
             <p className="text-sm text-gray-600 mb-6">
-              Enter your email below to create your account
+              Enter your email below to log in to your account
             </p>
 
             <form className="space-y-4" onSubmit={handleSubmit}>
@@ -123,19 +101,19 @@ const page = () => {
                   loading ? "disabled" : ""
                 }`}
               >
-                Sign Up
+                Log In
               </button>
-              {loading && <Loader className="mt-2 mx-auto" />}
             </form>
             {error && <p className="text-red-500 mt-2">{error}</p>}
+            {loading && <Loader className="mt-2" />}
 
             <div className="mt-4 text-center text-sm text-gray-600">
-              Already have an account?{" "}
+              Don't have an account?{" "}
               <a
-                href="/login"
+                href="/signup"
                 className="text-primary font-semibold hover:underline"
               >
-                Log in
+                Sign up
               </a>
             </div>
           </div>
