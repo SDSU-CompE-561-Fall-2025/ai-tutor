@@ -30,9 +30,9 @@ const page = () => {
       <main className="flex-1 mt-10 px-4 py-8">
         <div className="container mx-auto flex flex-col items-center justify-center min-h-[500px]">
           <div className="w-full max-w-md border-2 border-gray-900 rounded-2xl p-8 bg-white">
-            <h1 className="text-2xl font-bold mb-2">Create an account</h1>
+            <h1 className="text-2xl font-bold mb-2">Log in to your account</h1>
             <p className="text-sm text-gray-600 mb-6">
-              Enter your email below to create your account
+              Enter your email below to log in to your account
             </p>
 
             <form className="space-y-4">
@@ -70,17 +70,17 @@ const page = () => {
                 type="submit"
                 className="w-full bg-gray-900 text-white py-2 px-4 rounded-lg font-semibold hover:bg-gray-800 transition mt-6"
               >
-                Sign Up
+                Log In
               </button>
             </form>
 
             <div className="mt-4 text-center text-sm text-gray-600">
-              Already have an account?{" "}
+              Don't have an account?{" "}
               <a
-                href="/login"
+                href="/signup"
                 className="text-primary font-semibold hover:underline"
               >
-                Log in
+                Sign up
               </a>
             </div>
           </div>
