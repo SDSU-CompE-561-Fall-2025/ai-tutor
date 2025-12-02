@@ -1,8 +1,33 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Loader } from "@/components/ui/loader";
+import { login } from "@/lib/api";
+
 const page = () => {
+  const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const data = await login(email, password);
+      // Store access token from login response
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("token_type", data.token_type);
+      localStorage.setItem("email", email);
+      router.push("/dashboard");
+    } catch (err: any) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header className="sticky top-0 z-10 w-full border-b bg-background/95 backdrop-blur">
@@ -35,7 +60,7 @@ const page = () => {
               Enter your email below to log in to your account
             </p>
 
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label
                   htmlFor="email"
@@ -48,6 +73,8 @@ const page = () => {
                   id="email"
                   className="w-full px-4 py-2 border-2 border-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   placeholder="m@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
 
@@ -63,16 +90,22 @@ const page = () => {
                   id="password"
                   className="w-full px-4 py-2 border-2 border-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-gray-900 text-white py-2 px-4 rounded-lg font-semibold hover:bg-gray-800 transition mt-6"
+                className={`w-full bg-gray-900 text-white py-2 px-4 rounded-lg font-semibold hover:bg-gray-800 transition mt-6 ${
+                  loading ? "disabled" : ""
+                }`}
               >
                 Log In
               </button>
             </form>
+            {error && <p className="text-red-500 mt-2">{error}</p>}
+            {loading && <Loader className="mt-2" />}
 
             <div className="mt-4 text-center text-sm text-gray-600">
               Don't have an account?{" "}

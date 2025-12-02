@@ -5,9 +5,10 @@ This module defines API routes for user management and authentication.
 
 import os
 from typing import Annotated, cast
+from urllib.parse import urlencode
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -19,6 +20,7 @@ from app.core.google_auth import (
     get_google_email,
     handle_oauth_callback,
 )
+from app.core.settings import settings
 from app.models.user import User
 from app.schemas.auth_token import AuthTokenBase
 from app.schemas.user import RedirectResponseSchema, Token, UserCreate
@@ -52,7 +54,17 @@ def register(
 def auth_google_callback(
     code: str,
     db: Annotated[Session, Depends(get_db)],
-) -> JSONResponse:
+) -> RedirectResponse:
+    """
+    Handle Google OAuth2 callback and redirect to frontend with tokens.
+
+    Args:
+        code: OAuth2 authorization code from Google
+        db: Database session
+
+    Returns:
+        RedirectResponse: Redirects to frontend signup page with tokens as query params
+    """
     creds = handle_oauth_callback(code)
     email = get_google_email(creds["access_token"])
     if not email:
@@ -69,15 +81,15 @@ def auth_google_callback(
         uid = cast("int", user.id)
         AuthTokenService.create_auth_token(db, uid, creds)
 
-    return JSONResponse(
-        {
-            "message": "OAuth signup successful!",
-            "access_token": creds["access_token"],
-            "refresh_token": creds["refresh_token"],
-            "expiry": creds["expiry"],
-            "email": email,
-        },
-    )
+    # Build redirect URL with tokens as query parameters
+    redirect_params = {
+        "access_token": creds["access_token"],
+        "refresh_token": creds["refresh_token"],
+        "expiry": creds["expiry"],
+        "email": email,
+    }
+    redirect_url = f"{settings.frontend_url}/signup?{urlencode(redirect_params)}"
+    return RedirectResponse(url=redirect_url, status_code=status.HTTP_302_FOUND)
 
 
 @api_router.post("/login")

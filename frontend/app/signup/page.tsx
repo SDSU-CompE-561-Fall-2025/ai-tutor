@@ -1,8 +1,55 @@
 "use client";
 import React from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Loader } from "@/components/ui/loader";
+import { register, storeAuthTokens } from "@/lib/api";
+
 const page = () => {
+  const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Handle OAuth callback
+  useEffect(() => {
+    const accessToken = searchParams.get("access_token");
+    const refreshToken = searchParams.get("refresh_token");
+    const expiry = searchParams.get("expiry");
+    const userEmail = searchParams.get("email");
+
+    if (accessToken && refreshToken && expiry && userEmail) {
+      // Store tokens from OAuth callback
+      storeAuthTokens({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+        expiry: expiry,
+        email: userEmail,
+      });
+      // Redirect to dashboard
+      router.push("/dashboard");
+    }
+  }, [searchParams, router]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    // Clear previous error
+    setError("");
+
+    try {
+      const data = await register(email, password);
+      // Redirect to Google OAuth URL
+      if (data.redirect_url) {
+        window.location.href = data.redirect_url;
+      }
+    } catch (err: any) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header className="sticky top-0 z-10 w-full border-b bg-background/95 backdrop-blur">
@@ -35,7 +82,7 @@ const page = () => {
               Enter your email below to create your account
             </p>
 
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label
                   htmlFor="email"
@@ -48,6 +95,8 @@ const page = () => {
                   id="email"
                   className="w-full px-4 py-2 border-2 border-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   placeholder="m@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
 
@@ -63,16 +112,22 @@ const page = () => {
                   id="password"
                   className="w-full px-4 py-2 border-2 border-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                   placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-gray-900 text-white py-2 px-4 rounded-lg font-semibold hover:bg-gray-800 transition mt-6"
+                className={`w-full bg-gray-900 text-white py-2 px-4 rounded-lg font-semibold hover:bg-gray-800 transition mt-6 ${
+                  loading ? "disabled" : ""
+                }`}
               >
                 Sign Up
               </button>
+              {loading && <Loader className="mt-2 mx-auto" />}
             </form>
+            {error && <p className="text-red-500 mt-2">{error}</p>}
 
             <div className="mt-4 text-center text-sm text-gray-600">
               Already have an account?{" "}
