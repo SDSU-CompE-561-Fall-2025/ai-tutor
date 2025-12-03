@@ -1,10 +1,18 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Plus, Search, BookOpen, FileText } from "lucide-react";
 import Link from "next/link";
 import CreateClassModal from "@/components/CreateClassModal";
-import { createCourse } from "@/lib/api";
+import { useRouter } from "next/navigation";
+import {
+  createCourse,
+  getCourses,
+  getFilesForCourse,
+  getStoredAccessToken,
+  clearAuthTokens,
+  ApiError,
+} from "@/lib/api";
 
 interface Class {
   id: string;
@@ -14,37 +22,7 @@ interface Class {
   color: "blue" | "green" | "purple" | "orange";
 }
 
-// Mock data - replace with API call later
-const MOCK_CLASSES: Class[] = [
-  {
-    id: "1",
-    name: "Introduction to Machine Learning",
-    description: "Learn the basics of ML algorithms and data...",
-    docCount: 12,
-    color: "blue",
-  },
-  {
-    id: "2",
-    name: "Advanced Python Patterns",
-    description: "Deep dive into decorators, generators, and context...",
-    docCount: 8,
-    color: "green",
-  },
-  {
-    id: "3",
-    name: "System Design Fundamentals",
-    description: "Scalability, reliability, and maintainability of large...",
-    docCount: 24,
-    color: "purple",
-  },
-  {
-    id: "4",
-    name: "React Server Components",
-    description: "Understanding the new architecture of React and...",
-    docCount: 5,
-    color: "orange",
-  },
-];
+const COLOR_OPTIONS: Class["color"][] = ["blue", "green", "purple", "orange"];
 
 const getColorClasses = (color: string) => {
   const colors: Record<string, { icon: string; bg: string }> = {
@@ -88,9 +66,61 @@ const ClassCard = ({ cls }: { cls: Class }) => {
 };
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [classes, setClasses] = useState(MOCK_CLASSES);
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchClasses = async () => {
+      const token = getStoredAccessToken();
+      if (!token) {
+        setIsLoading(false);
+        router.push("/login");
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+        const courses = await getCourses();
+        const enrichedCourses = await Promise.all(
+          courses.map(async (course, index) => {
+            let docCount = 0;
+            try {
+              const files = await getFilesForCourse(course.id);
+              docCount = files.length;
+            } catch (err) {
+              console.error(`Failed to load files for course ${course.id}`, err);
+            }
+
+            return {
+              id: course.id.toString(),
+              name: course.name,
+              description: "",
+              docCount,
+              color: COLOR_OPTIONS[index % COLOR_OPTIONS.length],
+            } satisfies Class;
+          }),
+        );
+
+        setClasses(enrichedCourses);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Failed to load classes";
+        setError(message);
+        if (err instanceof ApiError && err.status === 401) {
+          clearAuthTokens();
+          router.push("/login");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchClasses();
+  }, [router]);
 
   // Filter classes based on search query
   const filteredClasses = useMemo(() => {
@@ -101,31 +131,26 @@ export default function DashboardPage() {
   }, [searchQuery, classes]);
 
   const handleCreateClass = async (data: { name: string; description: string }) => {
-    // TODO: Uncomment to call backend API when ready
-    // try {
-    //   const response = await createCourse(data);
-    //   const newClass: Class = {
-    //     id: response.id.toString(),
-    //     name: response.name,
-    //     description: data.description || "",
-    //     docCount: 0,
-    //     color: ["blue", "green", "purple", "orange"][Math.floor(Math.random() * 4)] as Class["color"],
-    //   };
-    //   setClasses([...classes, newClass]);
-    // } catch (error) {
-    //   console.error("Failed to create class:", error);
-    //   alert(`Error creating class: ${error instanceof Error ? error.message : "Unknown error"}`);
-    // }
-
-    // Use placeholder values for now
-    const newClass: Class = {
-      id: Date.now().toString(),
-      name: data.name,
-      description: data.description,
-      docCount: 0,
-      color: ["blue", "green", "purple", "orange"][Math.floor(Math.random() * 4)] as Class["color"],
-    };
-    setClasses([...classes, newClass]);
+    try {
+      setError(null);
+      const response = await createCourse({ name: data.name });
+      const newClass: Class = {
+        id: response.id.toString(),
+        name: response.name,
+        description: data.description || "",
+        docCount: 0,
+        color: COLOR_OPTIONS[classes.length % COLOR_OPTIONS.length],
+      };
+      setClasses([...classes, newClass]);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to create class";
+      setError(message);
+      if (err instanceof ApiError && err.status === 401) {
+        clearAuthTokens();
+        router.push("/login");
+      }
+      throw err;
+    }
   };
 
   return (
@@ -156,7 +181,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Add Class button */}
-            <button 
+            <button
               onClick={() => setIsModalOpen(true)}
               className="flex items-center gap-2 bg-white border border-gray-300 text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors font-medium"
             >
@@ -168,7 +193,16 @@ export default function DashboardPage() {
 
         {/* Classes grid */}
         <div className="flex-1 overflow-auto px-8 py-6">
-          {filteredClasses.length > 0 ? (
+          {error && (
+            <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </div>
+          )}
+          {isLoading ? (
+            <div className="flex items-center justify-center h-full text-gray-500">
+              Loading classes...
+            </div>
+          ) : filteredClasses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredClasses.map((cls) => (
                 <ClassCard key={cls.id} cls={cls} />
