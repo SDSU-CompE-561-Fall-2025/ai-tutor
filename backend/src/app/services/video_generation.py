@@ -130,12 +130,7 @@ class VideoGenerationService:
         videos = []
         prefix = f"{userid}_"
 
-        # Collect files that start with the user's id prefix
-        for video_file in sorted(
-            self.outputs_dir.glob(f"{prefix}*.mp4"),
-            key=lambda p: p.stat().st_mtime,
-            reverse=True,
-        ):
+        def append_file(video_file: Path) -> None:
             try:
                 videos.append(
                     {
@@ -147,7 +142,24 @@ class VideoGenerationService:
                 )
             except (FileNotFoundError, OSError):
                 # If a file disappears between glob and stat or there is an OS error, skip it
-                continue
+                return
+
+        # Collect files that start with the user's id prefix
+        matches = sorted(
+            self.outputs_dir.glob(f"{prefix}*.mp4"),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        )
+
+        # If no matches (e.g., legacy files without prefix), include all .mp4 files
+        target_files = matches or sorted(
+            self.outputs_dir.glob("*.mp4"),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        )
+
+        for video_file in target_files:
+            append_file(video_file)
 
         return videos
 

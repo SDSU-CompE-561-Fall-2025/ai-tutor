@@ -46,6 +46,22 @@ type UserProfile = {
   email: string;
 };
 
+type VideoItem = {
+  filename: string;
+  url: string;
+  created: number;
+};
+
+type VideoListResponse = {
+  videos: VideoItem[];
+};
+
+type VideoGenerationResponse = {
+  video_id: string;
+  video_url: string;
+  status: string;
+};
+
 export class ApiError extends Error {
   status: number;
 
@@ -194,6 +210,31 @@ export const getCurrentUser = async (): Promise<UserProfile> => {
   });
 
   return handleResponse<UserProfile>(response);
+};
+
+export const listMyVideos = async (): Promise<VideoListResponse> => {
+  const headers = buildAuthHeaders();
+  const response = await fetch(`${API_URL}/api/v1/video/my`, {
+    method: "GET",
+    headers,
+  });
+
+  return handleResponse<VideoListResponse>(response);
+};
+
+export const generateVideo = async (payload: {
+  file_id: string;
+  title: string;
+  template_name?: string;
+}): Promise<VideoGenerationResponse> => {
+  const headers = buildAuthHeaders({ "Content-Type": "application/json" });
+  const response = await fetch(`${API_URL}/api/v1/video/generate`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(payload),
+  });
+
+  return handleResponse<VideoGenerationResponse>(response);
 };
 
 export const getCourseById = async (courseId: number): Promise<Course> => {
