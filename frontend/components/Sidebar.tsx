@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BookOpen, Video, User, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { getCurrentUser, clearAuthTokens, ApiError } from "@/lib/api";
 
 interface NavItem {
   label: string;
@@ -31,6 +32,21 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [email, setEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const user = await getCurrentUser();
+        setEmail(user.email);
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 401) {
+          clearAuthTokens();
+        }
+      }
+    };
+    loadUser();
+  }, []);
 
   return (
     <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-screen fixed left-0 top-0">
@@ -66,8 +82,7 @@ export default function Sidebar() {
       {/* User profile section */}
       <div className="border-t border-gray-200 px-4 py-4 space-y-4">
         <div className="px-4 py-3">
-          <p className="text-sm font-medium text-gray-900">John Doe</p>
-          <p className="text-xs text-gray-500">john@example.com</p>
+          <p className="text-sm font-bold text-gray-900">{email || "Loading..."}</p>
         </div>
         <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
           <LogOut className="w-4 h-4" />
