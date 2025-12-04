@@ -95,7 +95,8 @@ export default function Sidebar() {
       {/* Navigation items */}
       <nav className="flex-1 px-4 py-6 space-y-2">
         {NAV_ITEMS.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+          const isActive =
+            pathname === item.href || pathname.startsWith(item.href + "/");
           return (
             <Link key={item.href} href={item.href}>
               <div
@@ -114,32 +115,31 @@ export default function Sidebar() {
       </nav>
 
       {/* User profile section */}
-<div className="flex items-center gap-3 px-2">
-  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-    <span className="text-sm font-semibold text-white">
-      {displayName ? getInitials(displayName) : "U"}
-    </span>
-  </div>
+      <div className="flex items-center gap-3 px-2">
+        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+          <span className="text-sm font-semibold text-white">
+            {displayName ? getInitials(displayName) : "U"}
+          </span>
+        </div>
 
-  <div className="flex-1 min-w-0">
-    <p className="text-sm font-medium text-gray-900 truncate">
-      {displayName || "User"}
-    </p>
-    <p className="text-xs text-gray-500 truncate">
-      {user?.email || "Loading..."}
-    </p>
-  </div>
-</div>
-
-        {/* Logout button */}
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200"
-        >
-          <LogOut className="w-4 h-4" />
-          <span>Logout</span>
-        </button>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-gray-900 truncate">
+            {displayName || "User"}
+          </p>
+          <p className="text-xs text-gray-500 truncate">
+            {user?.email || "Loading..."}
+          </p>
+        </div>
       </div>
+
+      {/* Logout button */}
+      <button
+        onClick={handleLogout}
+        className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200"
+      >
+        <LogOut className="w-4 h-4" />
+        <span>Logout</span>
+      </button>
     </div>
   );
 }

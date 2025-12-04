@@ -48,8 +48,12 @@ const page = () => {
 
     try {
       const data = await register(email, password);
-      // Redirect to dashboard
-      router.push("/dashboard");
+      // Register returns a redirect_url for Google OAuth
+      if (data.redirect_url) {
+        window.location.href = data.redirect_url;
+      } else {
+        router.push("/dashboard");
+      }
     } catch (err: any) {
       setError(err.message);
       setLoading(false);
