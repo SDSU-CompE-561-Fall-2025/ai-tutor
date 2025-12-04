@@ -85,13 +85,14 @@ class VideoGenerationService:
         # Prepare video clip
         video = video.subclipped(0, duration).with_audio(audio)
 
-        # Create caption
         caption = (
             TextClip(
-                text=title,
+                text=title,  # Use the AI-generated educational content
                 font="Arial.ttf",
-                font_size=50,
+                font_size=50,  
                 color="white",
+                method='caption',  # Enable text wrapping
+                size=(video.w - 100, None),  # Set width with margins
             )
             .with_duration(duration)
             .with_position(("center", "center"))
@@ -99,7 +100,11 @@ class VideoGenerationService:
 
         final = CompositeVideoClip([video, caption])
 
-        output_filename = f"{userid}_video_{uuid.uuid4().hex}.mp4"
+        # Use provided output_filename or generate a default one with title
+        if output_filename:
+            output_filename = f"{userid}_{output_filename}"
+        else:
+            output_filename = f"{userid}_video_{uuid.uuid4().hex}.mp4"
 
         output_path = self.outputs_dir / output_filename
 
@@ -164,6 +169,7 @@ class VideoGenerationService:
     async def create_text(self, fileid: str, userid: int) -> str:
         # use openai Client to summarize a google drive video
         result = await GoogleDriveService.read_file(userid, fileid)
+        
         # Handle both dict and object styles safely
         if isinstance(result, dict):
             extracted_text = result.get("content", "")
@@ -172,6 +178,19 @@ class VideoGenerationService:
 
         if not isinstance(extracted_text, str):
             extracted_text = str(extracted_text)
+        
+        # Debug logging
+        print(f"[VIDEO GEN] File ID: {fileid}, User ID: {userid}")
+        print(f"[VIDEO GEN] Extracted text length: {len(extracted_text)}")
+        print(f"[VIDEO GEN] First 200 chars: {extracted_text[:200]}")
+        
+        # Check if the extracted text is empty or too short
+        if not extracted_text or len(extracted_text.strip()) < 10:
+            return (
+                "Unable to extract meaningful content from the document. "
+                "Please ensure the Google Doc contains readable text content."
+            )
+        
         try:
             response = self.openAiClient.chat.completions.create(
                 model="gpt-4.1-nano",
@@ -193,5 +212,6 @@ class VideoGenerationService:
             )
             generated_text = response.choices[0].message.content
         except Exception as e:  # noqa: BLE001
-            generated_text = f"Error {e}"
+            print(f"[VIDEO GEN] OpenAI Error: {e}")
+            generated_text = f"Error generating content: {e}"
         return generated_text  # pyright: ignore[reportReturnType]
