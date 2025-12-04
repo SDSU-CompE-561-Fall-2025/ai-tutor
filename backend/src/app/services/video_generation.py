@@ -85,16 +85,14 @@ class VideoGenerationService:
         # Prepare video clip
         video = video.subclipped(0, duration).with_audio(audio)
 
-        # Create caption using the generated educational text instead of just the title
-        # Use smaller font and better sizing to prevent overflow
         caption = (
             TextClip(
-                text=text,  # Use the AI-generated educational content
+                text=title,  # Use the AI-generated educational content
                 font="Arial.ttf",
-                font_size=40,  # Reduced from 50 to prevent overflow
+                font_size=50,  
                 color="white",
                 method='caption',  # Enable text wrapping
-                size=(video.w - 200, None),  # Increased margins (100px each side)
+                size=(video.w - 100, None),  # Set width with margins
             )
             .with_duration(duration)
             .with_position(("center", "center"))
