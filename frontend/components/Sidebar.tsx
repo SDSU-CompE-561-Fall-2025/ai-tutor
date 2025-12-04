@@ -3,13 +3,17 @@
 import React, { useEffect, useState } from "react";
 import { BookOpen, Video, User, LogOut } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getCurrentUser, clearAuthTokens, ApiError } from "@/lib/api";
 
 interface NavItem {
   label: string;
   icon: React.ReactNode;
   href: string;
+}
+
+interface UserData {
+  email: string;
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -32,13 +36,16 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [email, setEmail] = useState<string | null>(null);
+  const router = useRouter();
+  const [user, setUser] = useState<UserData | null>(null);
 
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const user = await getCurrentUser();
-        setEmail(user.email);
+        const userData = await getCurrentUser();
+        setUser({
+          email: userData.email,
+        });
       } catch (err) {
         if (err instanceof ApiError && err.status === 401) {
           clearAuthTokens();
@@ -47,6 +54,21 @@ export default function Sidebar() {
     };
     loadUser();
   }, []);
+
+  const handleLogout = async () => {
+    clearAuthTokens();
+    router.push("/");
+  };
+
+  // Get user initials for avatar
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   return (
     <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-screen fixed left-0 top-0">
@@ -81,10 +103,28 @@ export default function Sidebar() {
 
       {/* User profile section */}
       <div className="border-t border-gray-200 px-4 py-4 space-y-4">
-        <div className="px-4 py-3">
-          <p className="text-sm font-bold text-gray-900">{email || "Loading..."}</p>
+        {/* User info with avatar */}
+        <div className="flex items-center gap-3 px-2">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+            <span className="text-sm font-semibold text-white">
+              {user ? getInitials(user.email.split("@")[0]) : "U"}
+            </span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-gray-900 truncate">
+              {user?.email.split("@")[0] || "User"}
+            </p>
+            <p className="text-xs text-gray-500 truncate">
+              {user?.email || "Loading..."}
+            </p>
+          </div>
         </div>
-        <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+
+        {/* Logout button */}
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200"
+        >
           <LogOut className="w-4 h-4" />
           <span>Logout</span>
         </button>

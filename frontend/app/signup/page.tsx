@@ -14,7 +14,7 @@ const page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Handle OAuth callback
+  // Handle OAuth callback from Google
   useEffect(() => {
     const accessToken = searchParams.get("access_token");
     const refreshToken = searchParams.get("refresh_token");
@@ -34,7 +34,8 @@ const page = () => {
       if (tokenType) {
         localStorage.setItem("token_type", tokenType);
       }
-      // Redirect to dashboard
+      // Mark setup as complete and redirect to dashboard
+      localStorage.setItem("google_drive_setup_complete", "true");
       router.push("/dashboard");
     }
   }, [searchParams, router]);
@@ -47,10 +48,8 @@ const page = () => {
 
     try {
       const data = await register(email, password);
-      // Redirect to Google OAuth URL
-      if (data.redirect_url) {
-        window.location.href = data.redirect_url;
-      }
+      // Redirect to dashboard
+      router.push("/dashboard");
     } catch (err: any) {
       setError(err.message);
       setLoading(false);
