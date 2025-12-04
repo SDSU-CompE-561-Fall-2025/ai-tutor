@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 type Course = {
   id: number;
@@ -68,6 +68,11 @@ type VideoGenerationResponse = {
   status: string;
 };
 
+type LoginResponse = {
+  access_token: string;
+  token_type: string;
+};
+
 export class ApiError extends Error {
   status: number;
 
@@ -119,7 +124,7 @@ const handleResponse = async <T>(response: Response) => {
   return response.json() as Promise<T>;
 };
 
-export const login = async (email: string, password: string) => {
+export const login = async (email: string, password: string): Promise<LoginResponse> => {
   try {
     const formData = new URLSearchParams();
     formData.append("username", email);
@@ -133,12 +138,12 @@ export const login = async (email: string, password: string) => {
       body: formData,
     });
     if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.message || "Login failed");
+      const data = await response.json().catch(() => ({}));
+      const errorMessage = data.message || data.detail || "Login failed";
+      throw new Error(errorMessage);
     }
     return response.json();
   } catch (error) {
-    console.error("Login error:", error);
     throw error;
   }
 };
@@ -153,8 +158,9 @@ export const register = async (email: string, password: string) => {
       body: JSON.stringify({ email, password }),
     });
     if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.message || "Registration failed");
+      const data = await response.json().catch(() => ({}));
+      const errorMessage = data.message || data.detail || "Registration failed";
+      throw new Error(errorMessage);
     }
     return response.json();
   } catch (error) {

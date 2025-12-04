@@ -23,6 +23,8 @@ const page = () => {
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("token_type", data.token_type);
       localStorage.setItem("email", email);
+      
+      // Redirect to dashboard
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message);
@@ -108,8 +110,12 @@ const page = () => {
               >
                 Log In
               </button>
+              {error && (
+                <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+              )}
             </form>
-            {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
             {loading && <Loader className="mt-2" />}
 
             <div className="mt-4 text-center text-sm text-gray-600">
