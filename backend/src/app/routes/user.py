@@ -23,7 +23,7 @@ from app.core.google_auth import (
 from app.core.settings import settings
 from app.models.user import User
 from app.schemas.auth_token import AuthTokenBase
-from app.schemas.user import RedirectResponseSchema, Token, UserCreate
+from app.schemas.user import RedirectResponseSchema, Token, UserCreate, UserUpdate
 from app.schemas.user import User as UserSchema
 from app.services.auth_token import AuthTokenService
 from app.services.user import UserService
@@ -152,6 +152,28 @@ def read_users_me(
         User: Current user data
         AuthToken: Current user's auth token data
     """
+    return current_user
+
+
+@api_router.put("/me", response_model=UserSchema)
+def update_user_profile(
+    user_update: UserUpdate,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[Session, Depends(get_db)],
+) -> User:
+    """
+    Update current user's profile.
+
+    Args:
+        user_update: User update data
+        current_user: Current authenticated user
+        db: Database session
+
+    Returns:
+        User: Updated user data
+    """
+    if user_update.name is not None:
+        return UserService.update_user_name(db, current_user.id, user_update.name)  # type: ignore[arg-type]
     return current_user
 
 

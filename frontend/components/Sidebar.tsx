@@ -38,6 +38,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<UserData | null>(null);
+  const [displayName, setDisplayName] = useState<string | null>(null);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -46,6 +47,17 @@ export default function Sidebar() {
         setUser({
           email: userData.email,
         });
+        // Use saved name, or generate from email if no name is saved
+        if (user.name) {
+          setDisplayName(user.name);
+        } else {
+          const emailName = user.email.split("@")[0];
+          const formattedName = emailName
+            .split(/[._-]/)
+            .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+          setDisplayName(formattedName);
+        }
       } catch (err) {
         if (err instanceof ApiError && err.status === 401) {
           clearAuthTokens();
@@ -102,23 +114,22 @@ export default function Sidebar() {
       </nav>
 
       {/* User profile section */}
-      <div className="border-t border-gray-200 px-4 py-4 space-y-4">
-        {/* User info with avatar */}
-        <div className="flex items-center gap-3 px-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-            <span className="text-sm font-semibold text-white">
-              {user ? getInitials(user.email.split("@")[0]) : "U"}
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">
-              {user?.email.split("@")[0] || "User"}
-            </p>
-            <p className="text-xs text-gray-500 truncate">
-              {user?.email || "Loading..."}
-            </p>
-          </div>
-        </div>
+<div className="flex items-center gap-3 px-2">
+  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+    <span className="text-sm font-semibold text-white">
+      {displayName ? getInitials(displayName) : "U"}
+    </span>
+  </div>
+
+  <div className="flex-1 min-w-0">
+    <p className="text-sm font-medium text-gray-900 truncate">
+      {displayName || "User"}
+    </p>
+    <p className="text-xs text-gray-500 truncate">
+      {user?.email || "Loading..."}
+    </p>
+  </div>
+</div>
 
         {/* Logout button */}
         <button
