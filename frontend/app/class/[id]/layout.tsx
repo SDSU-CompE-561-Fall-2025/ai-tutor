@@ -27,15 +27,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <div className="flex">
-          <Sidebar />
-          <div className="flex-1 ml-64">{children}</div>
-        </div>
-      </body>
-    </html>
+    <div className="flex">
+      <Sidebar />
+      <div className="flex-1 ml-64">{children}</div>
+    </div>
   );
 }

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ButtonColorful } from "@/components/ui/button-colorful";
 import { useRouter } from "next/navigation";
+import { SplineScene } from "@/components/ui/splite";
 export default function Home() {
   const router = useRouter();
   return (
@@ -97,6 +98,18 @@ export default function Home() {
                 study materials in one place.
               </p>
             </div>
+          </div>
+        </section>
+
+        <section className="container mx-auto py-8">
+          <div className="bg-white/5 p-6 rounded-lg border border-white/10 transition-shadow">
+            <h2 className="text-2xl text-black  mb-4 text-center">
+              Experience the Future of Learning
+            </h2>
+            <SplineScene
+              scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+              className="w-full h-full hover:shadow-none"
+            />
           </div>
         </section>
       </main>

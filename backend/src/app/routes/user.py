@@ -80,6 +80,15 @@ def auth_google_callback(
     if user:
         uid = cast("int", user.id)
         AuthTokenService.create_auth_token(db, uid, creds)
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found. Please register first.",
+        )
+
+    # Create JWT token for the user
+    jwt_token = create_access_token(data={"sub": user.email})
+    token_type = os.environ.get("TOKEN_TYPE", "bearer")
 
     # Build redirect URL with tokens as query parameters
     redirect_params = {
@@ -87,6 +96,8 @@ def auth_google_callback(
         "refresh_token": creds["refresh_token"],
         "expiry": creds["expiry"],
         "email": email,
+        "jwt_token": jwt_token,
+        "token_type": token_type,
     }
     redirect_url = f"{settings.frontend_url}/signup?{urlencode(redirect_params)}"
     return RedirectResponse(url=redirect_url, status_code=status.HTTP_302_FOUND)
