@@ -32,13 +32,23 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [email, setEmail] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState<string | null>(null);
 
   useEffect(() => {
     const loadUser = async () => {
       try {
         const user = await getCurrentUser();
-        setEmail(user.email);
+        // Use saved name, or generate from email if no name is saved
+        if (user.name) {
+          setDisplayName(user.name);
+        } else {
+          const emailName = user.email.split("@")[0];
+          const formattedName = emailName
+            .split(/[._-]/)
+            .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+          setDisplayName(formattedName);
+        }
       } catch (err) {
         if (err instanceof ApiError && err.status === 401) {
           clearAuthTokens();
@@ -82,7 +92,7 @@ export default function Sidebar() {
       {/* User profile section */}
       <div className="border-t border-gray-200 px-4 py-4 space-y-4">
         <div className="px-4 py-3">
-          <p className="text-sm font-bold text-gray-900">{email || "Loading..."}</p>
+          <p className="text-sm font-bold text-gray-900">{displayName || "Loading..."}</p>
         </div>
         <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
           <LogOut className="w-4 h-4" />
