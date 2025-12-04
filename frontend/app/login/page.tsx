@@ -99,14 +99,17 @@ const page = () => {
 
               <button
                 type="submit"
-                className={`w-full bg-gray-900 text-white py-2 px-4 rounded-lg font-semibold hover:bg-gray-800 transition mt-6 ${
-                  loading ? "disabled" : ""
+                disabled={!email || !password || loading}
+                className={`w-full bg-gray-900 text-white py-2 px-4 rounded-lg font-semibold transition mt-6 ${
+                  !email || !password || loading
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-gray-800"
                 }`}
               >
                 Log In
               </button>
             </form>
-            {error && <p className="text-red-500 mt-2">{error}</p>}
+            {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
             {loading && <Loader className="mt-2" />}
 
             <div className="mt-4 text-center text-sm text-gray-600">
