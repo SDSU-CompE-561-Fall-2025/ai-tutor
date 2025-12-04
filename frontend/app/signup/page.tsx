@@ -20,15 +20,20 @@ const page = () => {
     const refreshToken = searchParams.get("refresh_token");
     const expiry = searchParams.get("expiry");
     const userEmail = searchParams.get("email");
+    const jwtToken = searchParams.get("jwt_token");
+    const tokenType = searchParams.get("token_type");
 
-    if (accessToken && refreshToken && expiry && userEmail) {
-      // Store tokens from OAuth callback
+    if (accessToken && refreshToken && expiry && userEmail && jwtToken) {
+      // Store tokens from OAuth callback - use JWT token as the access_token for API calls
       storeAuthTokens({
-        access_token: accessToken,
+        access_token: jwtToken,
         refresh_token: refreshToken,
         expiry: expiry,
         email: userEmail,
       });
+      if (tokenType) {
+        localStorage.setItem("token_type", tokenType);
+      }
       // Redirect to dashboard
       router.push("/dashboard");
     }
