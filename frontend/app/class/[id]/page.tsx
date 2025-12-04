@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import {
-  ArrowLeft,
-  Search,
-  Send,
-  FileText,
-  Download,
-  Plus,
-} from "lucide-react";
+import { ArrowLeft, Search, Send, FileText, Trash2, Plus } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -25,6 +18,7 @@ import {
   sendMessage,
   updateCourse,
   deleteCourse,
+  deleteFile,
 } from "@/lib/api";
 
 interface Document {
@@ -273,6 +267,31 @@ export default function ClassDetailPage() {
     }
   };
 
+  const handleDeleteDocument = async (documentId: string) => {
+    try {
+      setError(null);
+      const fileId = parseInt(documentId, 10);
+      await deleteFile(fileId);
+      const files = await getFilesForCourse(courseId);
+      setDocuments(
+        files.map((f) => ({
+          id: f.id.toString(),
+          name: f.name,
+          uploadedAt: new Date(f.created_at).toLocaleString(),
+        }))
+      );
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to delete file";
+      setError(message);
+      if (err instanceof ApiError && err.status === 401) {
+        clearAuthTokens();
+        router.push("/login");
+        return;
+      }
+    }
+  };
+
   const handleUpdateCourse = async () => {
     if (!courseNameInput.trim()) {
       setError("Course name cannot be empty");
@@ -509,10 +528,12 @@ export default function ClassDetailPage() {
                           </div>
                         </div>
                         <button
-                          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                          aria-label="Download"
+                          onClick={() => handleDeleteDocument(doc.id)}
+                          className="p-2 hover:bg-red-100 rounded-lg transition-colors"
+                          aria-label="Delete"
+                          title="Delete document"
                         >
-                          <Download className="w-4 h-4 text-gray-600" />
+                          <Trash2 className="w-4 h-4 text-red-600" />
                         </button>
                       </div>
                     ))

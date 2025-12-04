@@ -151,7 +151,9 @@ export const getCourses = async (): Promise<Course[]> => {
   return handleResponse<Course[]>(response);
 };
 
-export const createCourse = async (course: { name: string }): Promise<Course> => {
+export const createCourse = async (course: {
+  name: string;
+}): Promise<Course> => {
   const headers = buildAuthHeaders({ "Content-Type": "application/json" });
   const response = await fetch(`${API_URL}/api/v1/courses/`, {
     method: "POST",
@@ -164,7 +166,7 @@ export const createCourse = async (course: { name: string }): Promise<Course> =>
 
 export const updateCourse = async (
   courseId: number,
-  course: { name: string },
+  course: { name: string }
 ): Promise<Course> => {
   const headers = buildAuthHeaders({ "Content-Type": "application/json" });
   const response = await fetch(`${API_URL}/api/v1/courses/${courseId}`, {
@@ -207,7 +209,7 @@ export const getCourseById = async (courseId: number): Promise<Course> => {
 };
 
 export const getFilesForCourse = async (
-  courseId: number,
+  courseId: number
 ): Promise<FileResponse[]> => {
   const headers = buildAuthHeaders();
   const response = await fetch(`${API_URL}/api/v1/files/course/${courseId}`, {
@@ -218,7 +220,9 @@ export const getFilesForCourse = async (
   return handleResponse<FileResponse[]>(response);
 };
 
-export const createFile = async (payload: FileCreate): Promise<FileResponse> => {
+export const createFile = async (
+  payload: FileCreate
+): Promise<FileResponse> => {
   const headers = buildAuthHeaders({ "Content-Type": "application/json" });
   const response = await fetch(`${API_URL}/api/v1/files/`, {
     method: "POST",
@@ -227,6 +231,16 @@ export const createFile = async (payload: FileCreate): Promise<FileResponse> => 
   });
 
   return handleResponse<FileResponse>(response);
+};
+
+export const deleteFile = async (fileId: number): Promise<void> => {
+  const headers = buildAuthHeaders();
+  const response = await fetch(`${API_URL}/api/v1/files/${fileId}`, {
+    method: "DELETE",
+    headers,
+  });
+
+  return handleResponse<void>(response);
 };
 
 export const searchDrive = async (query?: string): Promise<DriveFile[]> => {
@@ -245,20 +259,24 @@ export const searchDrive = async (query?: string): Promise<DriveFile[]> => {
 };
 
 export const getTutorSessionsByCourse = async (
-  courseId: number,
+  courseId: number
 ): Promise<TutorSession[]> => {
   const headers = buildAuthHeaders();
-  const response = await fetch(`${API_URL}/api/v1/courses/${courseId}/tutor-sessions`, {
-    method: "GET",
-    headers,
-  });
+  const response = await fetch(
+    `${API_URL}/api/v1/courses/${courseId}/tutor-sessions`,
+    {
+      method: "GET",
+      headers,
+    }
+  );
 
   return handleResponse<TutorSession[]>(response);
 };
 
-export const createTutorSession = async (
-  payload: { course_id: number; title?: string | null },
-): Promise<TutorSession> => {
+export const createTutorSession = async (payload: {
+  course_id: number;
+  title?: string | null;
+}): Promise<TutorSession> => {
   const headers = buildAuthHeaders({ "Content-Type": "application/json" });
   const response = await fetch(`${API_URL}/api/v1/tutor-session/chat`, {
     method: "POST",
@@ -273,7 +291,7 @@ export const createTutorSession = async (
 };
 
 export const getTutorSessionMessages = async (
-  tutorSessionId: number,
+  tutorSessionId: number
 ): Promise<ChatMessage[]> => {
   const headers = buildAuthHeaders();
   const response = await fetch(
@@ -281,15 +299,16 @@ export const getTutorSessionMessages = async (
     {
       method: "GET",
       headers,
-    },
+    }
   );
 
   return handleResponse<ChatMessage[]>(response);
 };
 
-export const sendMessage = async (
-  payload: { tutor_session_id: number; message: string },
-): Promise<ChatMessage> => {
+export const sendMessage = async (payload: {
+  tutor_session_id: number;
+  message: string;
+}): Promise<ChatMessage> => {
   const headers = buildAuthHeaders({ "Content-Type": "application/json" });
   const response = await fetch(`${API_URL}/api/v1/chat-messages/`, {
     method: "POST",
