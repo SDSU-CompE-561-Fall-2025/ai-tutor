@@ -22,7 +22,14 @@ class User(UserBase):
     """Schema for user response."""
 
     id: int
+    name: str | None = None
     model_config = {"from_attributes": True}
+
+
+class UserUpdate(BaseModel):
+    """Schema for updating user profile."""
+
+    name: str | None = None
 
 
 class Token(BaseModel):

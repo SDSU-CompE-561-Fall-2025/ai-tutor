@@ -44,6 +44,11 @@ type ChatMessage = {
 type UserProfile = {
   id: number;
   email: string;
+  name?: string | null;
+};
+
+type UserUpdate = {
+  name?: string;
 };
 
 type VideoResponse = {
@@ -215,6 +220,17 @@ export const getCurrentUser = async (): Promise<UserProfile> => {
   return handleResponse<UserProfile>(response);
 };
 
+export const updateUserProfile = async (data: UserUpdate): Promise<UserProfile> => {
+  const headers = buildAuthHeaders({ "Content-Type": "application/json" });
+  const response = await fetch(`${API_URL}/api/v1/user/me`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(data),
+  });
+
+  return handleResponse<UserProfile>(response);
+};
+
 export const getCourseById = async (courseId: number): Promise<Course> => {
   const headers = buildAuthHeaders();
   const response = await fetch(`${API_URL}/api/v1/courses/${courseId}`, {
@@ -230,6 +246,16 @@ export const getFilesForCourse = async (
 ): Promise<FileResponse[]> => {
   const headers = buildAuthHeaders();
   const response = await fetch(`${API_URL}/api/v1/files/course/${courseId}`, {
+    method: "GET",
+    headers,
+  });
+
+  return handleResponse<FileResponse[]>(response);
+};
+
+export const getAllFiles = async (): Promise<FileResponse[]> => {
+  const headers = buildAuthHeaders();
+  const response = await fetch(`${API_URL}/api/v1/files/`, {
     method: "GET",
     headers,
   });
