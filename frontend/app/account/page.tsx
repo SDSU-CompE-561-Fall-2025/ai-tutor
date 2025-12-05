@@ -8,7 +8,8 @@ import { useRouter } from "next/navigation";
 interface UserData {
   id: number;
   email: string;
-  name?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
 }
 
 interface UsageStats {
@@ -20,8 +21,10 @@ interface UsageStats {
 export default function AccountPage() {
   const router = useRouter();
   const [user, setUser] = useState<UserData | null>(null);
-  const [fullName, setFullName] = useState("");
-  const [originalName, setOriginalName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [originalFirstName, setOriginalFirstName] = useState("");
+  const [originalLastName, setOriginalLastName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -38,18 +41,23 @@ export default function AccountPage() {
         const userData = await getCurrentUser();
         setUser(userData);
         
-        // Use saved name or generate from email
-        if (userData.name) {
-          setFullName(userData.name);
-          setOriginalName(userData.name);
+        // Load first and last names from user data
+        if (userData.first_name && userData.last_name) {
+          setFirstName(userData.first_name);
+          setLastName(userData.last_name);
+          setOriginalFirstName(userData.first_name);
+          setOriginalLastName(userData.last_name);
         } else {
           const emailName = userData.email.split("@")[0];
           const formattedName = emailName
             .split(/[._-]/)
             .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
             .join(" ");
-          setFullName(formattedName);
-          setOriginalName("");
+          const nameParts = formattedName.split(" ");
+          setFirstName(nameParts[0] || "");
+          setLastName(nameParts.slice(1).join(" ") || "");
+          setOriginalFirstName("");
+          setOriginalLastName("");
         }
 
         // Fetch usage statistics
@@ -78,8 +86,8 @@ export default function AccountPage() {
   }, [router]);
 
   const handleSaveChanges = async () => {
-    if (!fullName.trim()) {
-      setSaveMessage({ type: "error", text: "Name cannot be empty" });
+    if (!firstName.trim() || !lastName.trim()) {
+      setSaveMessage({ type: "error", text: "First and last name cannot be empty" });
       return;
     }
 
@@ -87,9 +95,13 @@ export default function AccountPage() {
     setSaveMessage(null);
 
     try {
-      const updatedUser = await updateUserProfile({ name: fullName.trim() });
+      const updatedUser = await updateUserProfile({ 
+        first_name: firstName.trim(), 
+        last_name: lastName.trim()
+      });
       setUser(updatedUser);
-      setOriginalName(fullName.trim());
+      setOriginalFirstName(firstName.trim());
+      setOriginalLastName(lastName.trim());
       setSaveMessage({ type: "success", text: "Changes saved successfully!" });
       
       // Clear success message after 3 seconds
@@ -105,7 +117,7 @@ export default function AccountPage() {
     }
   };
 
-  const hasChanges = fullName.trim() !== originalName;
+  const hasChanges = firstName.trim() !== originalFirstName || lastName.trim() !== originalLastName;
 
   if (isLoading) {
     return (
@@ -140,7 +152,7 @@ export default function AccountPage() {
       <div className="grid grid-cols-2 gap-6 mb-8">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Full Name
+            First Name
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -148,13 +160,34 @@ export default function AccountPage() {
             </div>
             <input
               type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
               className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-              placeholder="John Doe"
+              placeholder="John"
             />
           </div>
         </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Last Name
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <User className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+              placeholder="Doe"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Email Section */}
+      <div className="grid grid-cols-2 gap-6 mb-8">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Email Address

@@ -14,6 +14,8 @@ _Starting the MCP Server_
 _Starting the app_
 `uv run  uvicorn app.main:app --reload --app-dir src --host localhost  --port 3000`
 
+**Note**: Backend must run on port 3000 as that is required for deployment on Google Cloud Console
+
 _Accessing Swagger Docs_
 `http://localhost:3000/docs`
 

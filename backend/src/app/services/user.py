@@ -121,14 +121,15 @@ class UserService:
         return {"message": "User deleted successfully."}
 
     @staticmethod
-    def update_user_name(db: Session, user_id: int, name: str) -> User:
+    def update_user_name(db: Session, user_id: int, first_name: str, last_name: str) -> User:
         """
         Update user's name.
 
         Args:
             db: Database session
             user_id: User ID
-            name: New name
+            firstName: New first name
+            lastName: New last name
 
         Raises:
             HTTPException: If user not found
@@ -143,5 +144,6 @@ class UserService:
                 detail="User not found.",
             )
 
-        user.name = name  # type: ignore[assignment]
+        user.first_name = first_name
+        user.last_name = last_name
         return UserRepository.update(db, user)

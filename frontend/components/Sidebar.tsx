@@ -14,6 +14,8 @@ interface NavItem {
 
 interface UserData {
   email: string;
+  first_name?: string;
+  last_name?: string;
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -47,11 +49,11 @@ export default function Sidebar() {
         setUser({
           email: userData.email,
         });
-        // Use saved name, or generate from email if no name is saved
-        if (user.name) {
-          setDisplayName(user.name);
+        // Build display name from first and last name
+        if (userData.first_name && userData.last_name) {
+          setDisplayName(`${userData.first_name} ${userData.last_name}`);
         } else {
-          const emailName = user.email.split("@")[0];
+          const emailName = userData.email.split("@")[0];
           const formattedName = emailName
             .split(/[._-]/)
             .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))

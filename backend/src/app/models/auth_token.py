@@ -15,6 +15,6 @@ class AuthToken(Base):
     refresh_token = Column(String)
     expiry = Column(String)
     email = Column(String)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True)
 
     user = relationship("User", back_populates="auth_token")
