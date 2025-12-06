@@ -58,8 +58,9 @@ ignore = [
     "D107",  # missing docstring in __init__
     "D104",  # missing docstring in package
     "D", # missing docstring in public modules, classes, functions, and methods
+    "S101", # allow asserts in tests
+    "PLR2004" # allow magic numbers in tests
 ]
-
 
 [tool.ruff.isort]
 known-first-party = ["src"]
