@@ -75,20 +75,17 @@ class BaseTestCase(unittest.TestCase):
         self.test_file_data = {
             "name": "test_document.pdf",
             "google_drive_id": "test_drive_id_123",
-            "course_id": 1,  # Will be updated in tests
+            "course_id": 1,
         }
 
     def tearDown(self) -> None:
         """Clean up after each test."""
-        # Rollback any uncommitted changes
         self.db_session.rollback()
-        # Close the session
         self.db_session.close()
         # Clear all data from tables for next test
         with self.engine.begin() as connection:
             for table in reversed(Base.metadata.sorted_tables):
                 connection.execute(table.delete())
-        # Clear dependency overrides
         app.dependency_overrides.clear()
 
     def create_registered_user(self) -> User:
