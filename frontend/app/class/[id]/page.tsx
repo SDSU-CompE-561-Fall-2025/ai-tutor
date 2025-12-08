@@ -15,7 +15,6 @@ import {
   getTutorSessionsByCourse,
   createTutorSession,
   getTutorSessionMessages,
-  sendMessage,
   updateCourse,
   deleteCourse,
   deleteFile,
