@@ -87,11 +87,11 @@ class VideoGenerationService:
 
         caption = (
             TextClip(
-                text=title,  # Use the AI-generated educational content
+                text="",  # Use the AI-generated educational content
                 font="Arial.ttf",
-                font_size=50,  
+                font_size=50,
                 color="white",
-                method='caption',  # Enable text wrapping
+                method="caption",  # Enable text wrapping
                 size=(video.w - 100, None),  # Set width with margins
             )
             .with_duration(duration)
@@ -169,7 +169,7 @@ class VideoGenerationService:
     async def create_text(self, fileid: str, userid: int) -> str:
         # use openai Client to summarize a google drive video
         result = await GoogleDriveService.read_file(userid, fileid)
-        
+
         # Handle both dict and object styles safely
         if isinstance(result, dict):
             extracted_text = result.get("content", "")
@@ -178,19 +178,19 @@ class VideoGenerationService:
 
         if not isinstance(extracted_text, str):
             extracted_text = str(extracted_text)
-        
+
         # Debug logging
         print(f"[VIDEO GEN] File ID: {fileid}, User ID: {userid}")
         print(f"[VIDEO GEN] Extracted text length: {len(extracted_text)}")
         print(f"[VIDEO GEN] First 200 chars: {extracted_text[:200]}")
-        
+
         # Check if the extracted text is empty or too short
         if not extracted_text or len(extracted_text.strip()) < 10:
             return (
                 "Unable to extract meaningful content from the document. "
                 "Please ensure the Google Doc contains readable text content."
             )
-        
+
         try:
             response = self.openAiClient.chat.completions.create(
                 model="gpt-4.1-nano",

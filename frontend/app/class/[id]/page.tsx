@@ -15,6 +15,7 @@ import {
   getTutorSessionsByCourse,
   createTutorSession,
   getTutorSessionMessages,
+  sendMessage,
   updateCourse,
   deleteCourse,
   deleteFile,
@@ -352,6 +353,10 @@ export default function ClassDetailPage() {
     try {
       setIsSending(true);
       setIsWaitingForAi(true);
+      await sendMessage({
+        tutor_session_id: activeSessionId,
+        message: chatInput,
+      });
       const refreshedMessages = await getTutorSessionMessages(activeSessionId);
       setMessages(
         refreshedMessages.map((m) => ({
