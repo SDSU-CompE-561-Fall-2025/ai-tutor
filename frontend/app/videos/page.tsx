@@ -24,11 +24,6 @@ type Video = {
   created: string;
 };
 
-type Course = {
-  id: number;
-  name: string;
-};
-
 type FileResponse = {
   id: number;
   name: string;
