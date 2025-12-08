@@ -1,0 +1,44 @@
+name: Backend Unit & Integration Tests
+
+on:
+  push:
+    branches: [ main, unit-and-integration-tests ]
+  pull_request:
+    types: [ opened ]
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        
+    - name: Install UV
+      run: curl -LsSf https://astral.sh/uv/install.sh | sh
+      
+    - name: Add UV to PATH
+      run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      
+    - name: Install dependencies
+      working-directory: ./backend
+      run: uv sync
+      
+    - name: Run unit tests
+      working-directory: ./backend/src
+      run: uv run python -m unittest discover -s tests/unit -p "test_*.py" -v
+      
+    - name: Run integration tests
+      working-directory: ./backend/src
+      run: uv run python -m unittest discover -s tests/integration -p "test_*.py" -v
+      
+    - name: Run all tests with coverage
+      working-directory: ./backend/src
+      run: |
+        uv run python -m unittest discover -s tests -p "test_*.py" -v
