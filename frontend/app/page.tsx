@@ -62,7 +62,7 @@ export default function Home() {
                 label="See Demo"
                 className="dark hover:cursor-pointer"
                 onClick={() => {
-                  router.push("https://youtube.com");
+                  router.push("https://youtu.be/ihNwD7CMXH0");
                 }}
               />
             </div>
