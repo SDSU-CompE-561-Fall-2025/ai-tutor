@@ -44,11 +44,13 @@ type ChatMessage = {
 type UserProfile = {
   id: number;
   email: string;
-  name?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
 };
 
 type UserUpdate = {
-  name?: string;
+  first_name?: string;
+  last_name?: string;
 };
 
 type VideoResponse = {
@@ -148,14 +150,19 @@ export const login = async (email: string, password: string): Promise<LoginRespo
   }
 };
 
-export const register = async (email: string, password: string) => {
+export const register = async (
+  email: string,
+  password: string,
+  firstName: string,
+  lastName: string
+) => {
   try {
     const response = await fetch(`${API_URL}/api/v1/user/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, first_name: firstName, last_name: lastName }),
     });
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));

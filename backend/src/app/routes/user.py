@@ -135,7 +135,11 @@ def login(
 
     access_token = create_access_token(data={"sub": user.email})
     token_type = os.environ.get("TOKEN_TYPE", "bearer")
-    return Token(access_token=access_token, token_type=token_type)
+
+    return Token(
+        access_token=access_token,
+        token_type=token_type,
+    )
 
 
 @api_router.get("/me", response_model=UserSchema)
@@ -172,8 +176,8 @@ def update_user_profile(
     Returns:
         User: Updated user data
     """
-    if user_update.name is not None:
-        return UserService.update_user_name(db, current_user.id, user_update.name)  # type: ignore[arg-type]
+    if user_update.first_name is not None and user_update.last_name is not None:
+        return UserService.update_user_name(db, current_user.id, user_update.first_name, user_update.last_name)  # type: ignore[arg-type]
     return current_user
 
 

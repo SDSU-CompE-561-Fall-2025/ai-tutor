@@ -16,20 +16,24 @@ class UserCreate(UserBase):
     """Schema for creating a new user."""
 
     password: str
+    first_name: str
+    last_name: str
 
 
 class User(UserBase):
     """Schema for user response."""
 
     id: int
-    name: str | None = None
+    first_name: str
+    last_name: str
     model_config = {"from_attributes": True}
 
 
 class UserUpdate(BaseModel):
     """Schema for updating user profile."""
 
-    name: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
 
 
 class Token(BaseModel):

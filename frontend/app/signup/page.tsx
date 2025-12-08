@@ -10,6 +10,8 @@ const page = () => {
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -47,7 +49,7 @@ const page = () => {
     setError("");
 
     try {
-      const data = await register(email, password);
+      const data = await register(email, password, firstName, lastName);
       // Register returns a redirect_url for Google OAuth
       if (data.redirect_url) {
         window.location.href = data.redirect_url;
@@ -110,6 +112,43 @@ const page = () => {
                 />
               </div>
 
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label
+                    htmlFor="firstName"
+                    className="block text-sm font-medium text-gray-900 mb-2"
+                  >
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    className="w-full px-4 py-2 border-2 border-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="John"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="lastName"
+                    className="block text-sm font-medium text-gray-900 mb-2"
+                  >
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    className="w-full px-4 py-2 border-2 border-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Doe"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
               <div>
                 <label
                   htmlFor="password"
@@ -129,9 +168,9 @@ const page = () => {
 
               <button
                 type="submit"
-                disabled={!email || !password || loading}
+                disabled={!email || !password || !firstName || !lastName || loading}
                 className={`w-full bg-gray-900 text-white py-2 px-4 rounded-lg font-semibold transition mt-6 ${
-                  !email || !password || loading
+                  !email || !password || !firstName || !lastName || loading
                     ? "opacity-50 cursor-not-allowed"
                     : "hover:bg-gray-800"
                 }`}
