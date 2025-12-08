@@ -3,6 +3,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 type Course = {
   id: number;
   name: string;
+  description: string;
 };
 
 type FileResponse = {
@@ -188,6 +189,7 @@ export const getCourses = async (): Promise<Course[]> => {
 
 export const createCourse = async (course: {
   name: string;
+  description?: string;
 }): Promise<Course> => {
   const headers = buildAuthHeaders({ "Content-Type": "application/json" });
   const response = await fetch(`${API_URL}/api/v1/courses/`, {
@@ -201,7 +203,7 @@ export const createCourse = async (course: {
 
 export const updateCourse = async (
   courseId: number,
-  course: { name: string }
+  course: { name: string; description?: string }
 ): Promise<Course> => {
   const headers = buildAuthHeaders({ "Content-Type": "application/json" });
   const response = await fetch(`${API_URL}/api/v1/courses/${courseId}`, {
