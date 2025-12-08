@@ -62,7 +62,6 @@ fix = true
 
 ignore = [
     "S", # ignore assert again
-    "S101",  # ignore use of assert
     "T201",   # allow print()
     "PLR2004", # magic number
     "E501",  # line too long (handled by line-length)
