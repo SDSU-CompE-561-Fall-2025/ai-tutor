@@ -36,7 +36,8 @@ jobs:
         run: uv run ruff check .
 
       - name: Run Bandit (Security)
-        run: uv run bandit -r . -x .venv,venv,env,__pycache__,src/tests,src/tests/*
+        run: uv run bandit -r . -x .venv -x venv -x env -x __pycache__ -x src/tests
+
 
   frontend-checks:
     name: Frontend (Lint & Build)
