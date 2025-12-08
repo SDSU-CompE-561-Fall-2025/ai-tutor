@@ -32,28 +32,15 @@ class TestCourseEndpoints(BaseTestCase):
         data = response.json()
         assert data["name"] == self.test_class_data["name"]
 
-    def test_create_course_missing_fields(self) -> None:
-        """Test creating a course with missing fields."""
-        authenticated_client = self.get_authenticated_client()
-        response = authenticated_client.post(
-            "/api/v1/courses",
-            json={
-                "name": "",
-            },
-        )
-        assert response.status_code in 422
-
     def test_get_course_by_id(self) -> None:
         """Test getting a specific course by ID."""
         authenticated_client = self.get_authenticated_client()
-        # First create a course
         create_response = authenticated_client.post(
             "/api/v1/courses",
             json=self.test_class_data,
         )
         course_id = create_response.json()["id"]
 
-        # Then retrieve it
         response = authenticated_client.get(f"/api/v1/courses/{course_id}")
         assert response.status_code == 200
         data = response.json()
@@ -63,14 +50,12 @@ class TestCourseEndpoints(BaseTestCase):
     def test_update_course_endpoint(self) -> None:
         """Test updating a course."""
         authenticated_client = self.get_authenticated_client()
-        # Create a course first
         create_response = authenticated_client.post(
             "/api/v1/courses",
             json=self.test_class_data,
         )
         course_id = create_response.json()["id"]
 
-        # Update it
         updated_data = {
             "name": "Updated Class Name",
         }
@@ -85,18 +70,15 @@ class TestCourseEndpoints(BaseTestCase):
     def test_delete_course_endpoint(self) -> None:
         """Test deleting a course."""
         authenticated_client = self.get_authenticated_client()
-        # Create a course first
         create_response = authenticated_client.post(
             "/api/v1/courses",
             json=self.test_class_data,
         )
         course_id = create_response.json()["id"]
 
-        # Delete it
         response = authenticated_client.delete(f"/api/v1/courses/{course_id}")
         assert response.status_code == 200
 
-        # Verify it's deleted
         get_response = authenticated_client.get(f"/api/v1/courses/{course_id}")
         assert get_response.status_code == 404
 

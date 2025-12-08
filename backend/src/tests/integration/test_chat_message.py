@@ -10,7 +10,6 @@ from app.schemas.course import CourseCreate
 from app.schemas.tutor_session import TutorSessionCreate
 from tests.base import BaseTestCase
 
-
 _MOCK_TIMESTAMP = datetime.datetime.now(datetime.UTC)
 
 
@@ -27,7 +26,7 @@ class TestChatMessageEndpoints(BaseTestCase):
             course_data,
             self.user.id,
         )
-        # Create a tutor session via repository
+        # Create a tutor session for chat message tests
         session_data = TutorSessionCreate(
             title="Test Session",
             course_id=self.course.id,
@@ -60,7 +59,6 @@ class TestChatMessageEndpoints(BaseTestCase):
             "/api/v1/chat-messages",
             json=message_data,
         )
-        # Response might be 200 or 201
         assert response.status_code in [200, 201]
         if response.status_code in [200, 201]:
             data = response.json()
