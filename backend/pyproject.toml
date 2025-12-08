@@ -38,6 +38,12 @@ dev = [
 [tool.ruff]
 line-length = 88
 select = ["ALL"]
+exclude = [
+    ".venv",
+    "venv",
+    "env",
+    "__pycache__",
+]
 # select = [
 #     "E",  # pycodestyle errors
 #     "W",  # pycodestyle warnings
