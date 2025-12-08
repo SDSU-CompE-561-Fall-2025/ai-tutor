@@ -31,6 +31,7 @@ class TestCourseEndpoints(BaseTestCase):
         assert response.status_code == 200
         data = response.json()
         assert data["name"] == self.test_class_data["name"]
+        assert data["description"] == self.test_class_data["description"]
 
     def test_get_course_by_id(self) -> None:
         """Test getting a specific course by ID."""
@@ -46,6 +47,7 @@ class TestCourseEndpoints(BaseTestCase):
         data = response.json()
         assert data["id"] == course_id
         assert data["name"] == self.test_class_data["name"]
+        assert data["description"] == self.test_class_data["description"]
 
     def test_update_course_endpoint(self) -> None:
         """Test updating a course."""
@@ -58,6 +60,7 @@ class TestCourseEndpoints(BaseTestCase):
 
         updated_data = {
             "name": "Updated Class Name",
+            "description": "Updated course description",
         }
         response = authenticated_client.put(
             f"/api/v1/courses/{course_id}",
@@ -66,6 +69,7 @@ class TestCourseEndpoints(BaseTestCase):
         assert response.status_code == 200
         data = response.json()
         assert data["name"] == updated_data["name"]
+        assert data["description"] == updated_data["description"]
 
     def test_delete_course_endpoint(self) -> None:
         """Test deleting a course."""
@@ -81,6 +85,19 @@ class TestCourseEndpoints(BaseTestCase):
 
         get_response = authenticated_client.get(f"/api/v1/courses/{course_id}")
         assert get_response.status_code == 404
+
+    def test_create_course_without_description(self) -> None:
+        """Test creating a course without a description defaults to empty string."""
+        authenticated_client = self.get_authenticated_client()
+        course_data = {"name": "Course Without Description"}
+        response = authenticated_client.post(
+            "/api/v1/courses",
+            json=course_data,
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["name"] == course_data["name"]
+        assert data["description"] == ""
 
 
 if __name__ == "__main__":

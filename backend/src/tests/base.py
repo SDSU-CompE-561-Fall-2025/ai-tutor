@@ -70,6 +70,7 @@ class BaseTestCase(unittest.TestCase):
 
         self.test_class_data = {
             "name": "Test Class",
+            "description": "A test course description",
         }
 
         self.test_file_data = {

@@ -95,6 +95,7 @@ def update_course(
         raise HTTPException(status_code=409, detail=msg)
 
     course.name = course_data.name
+    course.description = course_data.description
     return CourseRepository.update(db, course)
 
 
