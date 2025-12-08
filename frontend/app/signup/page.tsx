@@ -1,12 +1,12 @@
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader } from "@/components/ui/loader";
 import { register, storeAuthTokens } from "@/lib/api";
 import Image from "next/image";
 
-const page = () => {
+const SignupContent = () => {
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -56,8 +56,8 @@ const page = () => {
       } else {
         router.push("/dashboard");
       }
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An error occurred");
       setLoading(false);
     }
   };
@@ -197,4 +197,12 @@ const page = () => {
   );
 };
 
-export default page;
+const Page = () => {
+  return (
+    <Suspense fallback={<Loader />}>
+      <SignupContent />
+    </Suspense>
+  );
+};
+
+export default Page;

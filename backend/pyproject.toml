@@ -38,6 +38,12 @@ dev = [
 [tool.ruff]
 line-length = 88
 select = ["ALL"]
+exclude = [
+    ".venv",
+    "venv",
+    "env",
+    "__pycache__",
+]
 # select = [
 #     "E",  # pycodestyle errors
 #     "W",  # pycodestyle warnings
@@ -55,6 +61,9 @@ select = ["ALL"]
 fix = true
 
 ignore = [
+    "S", # ignore assert again
+    "T201",   # allow print()
+    "PLR2004", # magic number
     "E501",  # line too long (handled by line-length)
     "D107",  # missing docstring in __init__
     "D104",  # missing docstring in package
