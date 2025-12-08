@@ -353,10 +353,6 @@ export default function ClassDetailPage() {
     try {
       setIsSending(true);
       setIsWaitingForAi(true);
-      const response = await sendMessage({
-        tutor_session_id: activeSessionId,
-        message: optimistic.content,
-      });
       const refreshedMessages = await getTutorSessionMessages(activeSessionId);
       setMessages(
         refreshedMessages.map((m) => ({

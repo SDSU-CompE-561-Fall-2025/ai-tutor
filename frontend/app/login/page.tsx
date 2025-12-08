@@ -6,7 +6,7 @@ import { Loader } from "@/components/ui/loader";
 import { login } from "@/lib/api";
 import Image from "next/image";
 
-const page = () => {
+const Page = () => {
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,8 +26,8 @@ const page = () => {
       
       // Redirect to dashboard
       router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An error occurred");
       setLoading(false);
     }
   };
@@ -119,7 +119,7 @@ const page = () => {
             {loading && <Loader className="mt-2" />}
 
             <div className="mt-4 text-center text-sm text-gray-600">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <a
                 href="/signup"
                 className="text-primary font-semibold hover:underline"
@@ -134,4 +134,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
