@@ -8,8 +8,12 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  run-tests:
+    name: Run Unit & Integration Tests for backend functionality
     runs-on: ubuntu-latest
+    
+    env:
+      FERNET_KEY: ${{ secrets.FERNET_KEY }}
     
     steps:
     - name: Checkout code
@@ -29,6 +33,15 @@ jobs:
     - name: Install dependencies
       working-directory: ./backend
       run: uv sync
+      
+    - name: Verify FERNET_KEY is set
+      run: |
+        if [ -z "$FERNET_KEY" ]; then
+          echo "ERROR: FERNET_KEY is not set"
+          exit 1
+        else
+          echo "FERNET_KEY is set (length: ${#FERNET_KEY})"
+        fi
       
     - name: Run unit tests
       working-directory: ./backend/src
