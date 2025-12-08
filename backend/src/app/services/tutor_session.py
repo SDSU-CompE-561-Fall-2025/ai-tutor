@@ -37,7 +37,7 @@ def get_tutor_session(
     db: Session,
     tutor_session_id: int,
     user_id: int,
-) -> TutorSession:
+) -> TutorSessionResponse:
     """
     Get a tutor session by ID.
 
@@ -46,14 +46,21 @@ def get_tutor_session(
         tutor_session_id: ID of the tutor session to retrieve
         user_id: ID of the user
     Returns:
-        TutorSession: Retrieved tutor session
+        TutorSessionResponse: Retrieved tutor session
     """
     tutor_session = TutorSessionRepository.get_by_id(db, tutor_session_id)
     if tutor_session is None or tutor_session.user_id != user_id:  # type: ignore[union-attr]
         msg = "Tutor session not found or access denied."
         raise HTTPException(status=404, message=msg)
 
-    return tutor_session
+    course_name = tutor_session.course.name
+    return TutorSessionResponse(
+        id=tutor_session.id,  # pyright: ignore[reportArgumentType]
+        title=tutor_session.title,  # pyright: ignore[reportArgumentType]
+        course_name=course_name,
+        chat_messages=tutor_session.chat_messages,
+        created_at=tutor_session.created_at,  # pyright: ignore[reportArgumentType]
+    )
 
 
 def get_tutor_session_by_course(
@@ -148,7 +155,7 @@ def update_tutor_session_title(
     tutor_session_id: int,
     title: str,
     user_id: int,
-) -> TutorSession:
+) -> TutorSessionResponse:
     """Update the session title."""
     tutor_session = TutorSessionRepository.get_by_id(db, tutor_session_id)
     if tutor_session is None or tutor_session.user_id != user_id:  # type: ignore[union-attr]
@@ -156,7 +163,15 @@ def update_tutor_session_title(
         raise HTTPException(status=404, message=msg)
     tutor_session.title = title  # pyright: ignore[reportAttributeAccessIssue]
 
-    return TutorSessionRepository.update(db, tutor_session)
+    updated_session = TutorSessionRepository.update(db, tutor_session)
+    course_name = updated_session.course.name
+    return TutorSessionResponse(
+        id=updated_session.id,  # pyright: ignore[reportArgumentType]
+        title=updated_session.title,  # pyright: ignore[reportArgumentType]
+        course_name=course_name,
+        chat_messages=updated_session.chat_messages,
+        created_at=updated_session.created_at,  # pyright: ignore[reportArgumentType]
+    )
 
 
 def delete_tutor_session(

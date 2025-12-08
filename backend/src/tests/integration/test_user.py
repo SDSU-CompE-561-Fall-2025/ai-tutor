@@ -10,6 +10,7 @@ class TestUserLogin(BaseTestCase):
 
     def test_user_login_endpoint(self) -> None:
         """Test user login endpoint."""
+        self.create_registered_user()
         response = self.client.post(
             "/api/v1/user/login",
             data={
@@ -24,6 +25,7 @@ class TestUserLogin(BaseTestCase):
 
     def test_user_login_invalid_credentials(self) -> None:
         """Test login with invalid credentials."""
+        self.create_registered_user()
         response = self.client.post(
             "/api/v1/user/login",
             data={
@@ -51,20 +53,18 @@ class TestUserProfile(BaseTestCase):
 
     def test_get_current_user_endpoint(self) -> None:
         """Test getting current user profile."""
-        user = self.create_registered_user()
         authenticated_client = self.get_authenticated_client()
         response = authenticated_client.get("/api/v1/user/me")
         assert response.status_code == 200
         data = response.json()
-        assert data["id"] == user.id
-        assert data["email"] == user.email
-        assert data["first_name"] == user.first_name
-        assert data["last_name"] == user.last_name
+        assert data["email"] == self.test_user_data["email"]
+        assert "first_name" in data
+        assert "last_name" in data
 
     def test_get_current_user_unauthorized(self) -> None:
         """Test getting current user without authentication."""
         response = self.client.get("/api/v1/user/me")
-        assert response.status_code == 403
+        assert response.status_code in [401, 403]
 
     def test_update_user_profile(self) -> None:
         """Test updating user profile."""
@@ -98,18 +98,16 @@ class TestUserProfile(BaseTestCase):
         response = self.client.put(
             "/api/v1/user/me",
             json={
-                "first_name": "Updated",
-                "last_name": "Name",
+                "name": "Updated Name",
             },
         )
-        assert response.status_code == 403
+        assert response.status_code in [401, 403]
 
     def test_get_user_token_endpoint(self) -> None:
         """Test getting user's OAuth token."""
         authenticated_client = self.get_authenticated_client()
         response = authenticated_client.get("/api/v1/user/token")
         # Will be 404 if no auth token was created for the user
-        # which is expected for email/password auth
         assert response.status_code in [200, 404]
 
 

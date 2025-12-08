@@ -15,6 +15,7 @@ from app.core.database import Base
 from app.core.dependencies import get_db
 from app.main import app
 from app.models.user import User
+from app.repository.user import UserRepository
 
 
 class BaseTestCase(unittest.TestCase):
@@ -69,18 +70,25 @@ class BaseTestCase(unittest.TestCase):
 
         self.test_class_data = {
             "name": "Test Class",
-            "description": "A test class for testing",
-            "semester": "Fall 2025",
         }
 
         self.test_file_data = {
-            "filename": "test_document.pdf",
-            "file_type": "pdf",
+            "name": "test_document.pdf",
+            "google_drive_id": "test_drive_id_123",
+            "course_id": 1,  # Will be updated in tests
         }
 
     def tearDown(self) -> None:
         """Clean up after each test."""
+        # Rollback any uncommitted changes
+        self.db_session.rollback()
+        # Close the session
         self.db_session.close()
+        # Clear all data from tables for next test
+        with self.engine.begin() as connection:
+            for table in reversed(Base.metadata.sorted_tables):
+                connection.execute(table.delete())
+        # Clear dependency overrides
         app.dependency_overrides.clear()
 
     def create_registered_user(self) -> User:
@@ -89,8 +97,8 @@ class BaseTestCase(unittest.TestCase):
         user = User(
             email=self.test_user_data["email"],
             hashed_password=hashed_password,
-            first_name=self.test_user_data["first_name"],
-            last_name=self.test_user_data["last_name"],
+            first_name="Test",
+            last_name="User",
         )
         self.db_session.add(user)
         self.db_session.commit()
@@ -106,10 +114,20 @@ class BaseTestCase(unittest.TestCase):
                 "password": self.test_user_data["password"],
             },
         )
+        if response.status_code != 200:
+            msg = f"Login failed: {response.status_code} - {response.text}"
+            raise Exception(msg)  # noqa: TRY002
         return response.json()["access_token"]
 
     def get_authenticated_client(self) -> TestClient:
         """Helper to get test client with authentication headers."""
+        # Only create user if not already created (e.g., in setUp)
+        existing_user = UserRepository.get_by_email(
+            self.db_session,
+            self.test_user_data["email"],
+        )
+        if not existing_user:
+            self.create_registered_user()
         token = self.get_auth_token()
         self.client.headers = {"Authorization": f"Bearer {token}"}
         return self.client

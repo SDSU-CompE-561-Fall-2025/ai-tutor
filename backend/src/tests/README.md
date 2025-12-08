@@ -1,181 +1,383 @@
-"""Tests README
+# AI Tutor Backend Tests
 
-# Testing Structure
+Comprehensive unit and integration tests for the AI Tutor backend API using Python's `unittest` framework.
 
-This directory contains comprehensive unit and integration tests for the AI Tutor backend API.
+## Testing Architecture
+
+The test suite follows a **layered testing approach**:
+
+- **Unit Tests**: Test the **repository layer** (data access) in isolation
+- **Integration Tests**: Test the **API route layer** (HTTP endpoints) end-to-end
 
 ## Directory Structure
 
 ```
 tests/
-├── conftest.py                # Shared pytest fixtures and configuration
-├── unit/                      # Unit tests
-│   ├── __init__.py
-│   ├── test_user.py          # User model and service tests
-│   ├── test_class.py         # Course model and service tests
-│   └── test_file.py          # File model and service tests
-└── integration/              # Integration tests
-    ├── __init__.py
-    ├── test_user.py          # User endpoint tests
-    ├── test_class.py         # Course endpoint tests
-    └── test_file.py          # File endpoint tests
+├── base.py                        # Base test class with fixtures and helpers
+├── unit/                          # Repository layer tests
+│   ├── test_user.py              # UserRepository operations
+│   ├── test_course.py            # CourseRepository operations
+│   ├── test_file.py              # FileRepository operations
+│   ├── test_tutor_session.py     # TutorSessionRepository operations
+│   └── test_chat_message.py      # ChatMessageRepository operations
+└── integration/                   # API route/endpoint tests
+    ├── test_user.py              # User authentication and profile endpoints
+    ├── test_course.py            # Course endpoints
+    ├── test_file.py              # File upload and retrieval endpoints
+    ├── test_tutor_session.py     # Tutor session endpoints
+    └── test_chat_message.py      # Chat message endpoints
 ```
-
 ## Running Tests
 
 ### Prerequisites
+
+Ensure all dependencies are installed:
 ```bash
-pip install pytest pytest-cov
+cd backend
+uv sync
 ```
 
-### Run all tests
+### Run All Tests (Easiest Way)
+
 ```bash
-pytest
+# From the backend/src directory (recommended)
+cd backend/src
+uv run python -m unittest discover -s tests -p "test_*.py" -v
 ```
 
-### Run specific test file
+Or from the backend directory:
 ```bash
-pytest tests/unit/test_user.py
-pytest tests/integration/test_user.py
+cd backend
+uv run python -m unittest discover -s src/tests -p "test_*.py" -v
 ```
 
-### Run specific test function
+### Run Tests by Category
+
+**Unit tests only (repository layer):**
 ```bash
-pytest tests/unit/test_user.py::test_user_registration_validation
+cd backend/src
+uv run python -m unittest discover -s tests/unit -p "test_*.py" -v
 ```
 
-### Run with coverage
+**Integration tests only (API route layer):**
 ```bash
-pytest --cov=app --cov-report=html
+cd backend/src
+uv run python -m unittest discover -s tests/integration -p "test_*.py" -v
 ```
 
-### Run only unit tests
+### Run Specific Test File
+
 ```bash
-pytest tests/unit/
+# Unit tests example
+uv run python -m unittest src.tests.unit.test_user -v
+
+# Integration tests example
+uv run python -m unittest src.tests.integration.test_user -v
 ```
 
-### Run only integration tests
+### Run Specific Test Class or Method
+
 ```bash
-pytest tests/integration/
+# Run specific test class
+uv run python -m unittest src.tests.unit.test_user.TestUserRepository -v
+
+# Run specific test method
+uv run python -m unittest src.tests.unit.test_user.TestUserRepository.test_user_create -v
 ```
 
-## Test Categories
+## Test Structure
 
-### Unit Tests
+All tests extend `BaseTestCase` which provides:
 
-Unit tests focus on individual components in isolation:
+- **Database Setup**: Fresh SQLite database per test session
+- **Fixtures**: Reusable test data (users, courses, files)
+- **Clients**: Unauthenticated and authenticated HTTP clients
+- **Helper Methods**: 
+  - `create_registered_user()`: Creates a test user via repository
+  - `get_auth_token()`: Gets JWT token for authentication
+  - `get_authenticated_client()`: Returns client with auth headers
+  - `db_session`: Direct database session for setup
 
-**test_user.py**
-- User model creation and validation
-- Password hashing and verification
-- User authentication logic
-- Repository operations (CRUD)
-- Service layer operations
-- Error handling for duplicates and not found
+### Test Isolation
 
-**test_class.py**
-- Course model creation
-- Course schema validation
-- Multiple courses per user
-- Course attributes
+Each test runs with:
+- Fresh database session
+- Isolated test data
+- No side effects on other tests
+- Automatic cleanup after test completion
 
-**test_file.py**
-- File model creation
-- File schema validation
-- Multiple files per user
-- Different file types
+## Unit Tests (Repository Layer)
 
-### Integration Tests
+Unit tests verify data access layer operations. Each test class has a `setUp()` method that initializes dependencies via repositories before running tests.
 
-Integration tests test complete workflows through API endpoints:
+### test_user.py (3 test classes, 14 tests)
 
-**test_user.py**
-- User login endpoint
-- Getting current user profile
-- Updating user profile
-- Authentication verification
-- Error scenarios (invalid credentials, unauthorized access)
+**TestUserRepository**: UserRepository CRUD operations
+- `create()`: Create user with hashed password
+- `get_by_email()`: Retrieve user by email
+- `get_by_id()`: Retrieve user by ID
+- Error cases (not found)
 
-**test_class.py**
-- Creating courses via API
-- Getting course list
-- Retrieving specific course
-- Updating course details
-- Deleting courses
-- Complete course workflow
+**TestUserSchema**: User schema validation
+- UserCreate schema validation
+- Data type validation
 
-**test_file.py**
-- Uploading files
-- Getting file list
-- Retrieving specific file
-- Deleting files
-- Complete file workflow
+**TestPasswordHandling**: Password utilities
+- Password hashing via `get_password_hash()`
+- Password verification via `verify_password()`
+- Incorrect password rejection
 
-## Fixtures
+### test_course.py (1 test class, 8 tests)
 
-Common fixtures defined in `conftest.py`:
+**TestCourseRepository**: CourseRepository CRUD operations (with UserRepository dependency)
+- `create()`: Create course with user
+- `get_course_by_name()`: Retrieve by name and user
+- `get_course_by_id()`: Retrieve by ID
+- `get_all()`: Get all courses for user
+- `delete()`: Remove course
+- Error cases (not found)
 
-- `test_db_url`: Temporary SQLite database URL
-- `db_engine`: Database engine instance
-- `db_session`: Database session for tests
-- `client`: FastAPI TestClient
-- `test_user_data`: Sample user data
-- `registered_user`: Pre-registered user for testing
-- `auth_token`: JWT token for authenticated requests
-- `authenticated_client`: Client with auth headers
-- `test_class_data`: Sample course data
-- `test_file_data`: Sample file data
+### test_file.py (1 test class, 8 tests)
+
+**TestFileRepository**: FileRepository CRUD operations (with UserRepository dependency)
+- `create()`: Create file for user
+- `get_file_by_id()`: Retrieve by ID and user
+- `get_all()`: Get all files for user
+- `delete()`: Remove file
+- User isolation verification
+- Error cases (not found)
+
+### test_tutor_session.py (1 test class, 8 tests)
+
+**TestTutorSessionRepository**: TutorSessionRepository CRUD operations (with UserRepository and CourseRepository dependencies)
+- `create()`: Create session with user and course
+- `get_by_id()`: Retrieve by session ID
+- `get_by_course()`: Retrieve by course
+- `get_by_user()`: Retrieve by user
+- `delete()`: Remove session
+- Error cases (not found)
+
+### test_chat_message.py (1 test class, 8 tests)
+
+**TestChatMessageRepository**: ChatMessageRepository CRUD operations (with UserRepository, CourseRepository, and TutorSessionRepository dependencies)
+- `create()`: Create message with user and session
+- `get_message_by_id()`: Retrieve by message ID
+- `get_all_messages_by_tutor_session_id()`: Retrieve all for session
+- `delete()`: Remove message
+- Error cases (not found)
+
+## Integration Tests (API Route Layer)
+
+Integration tests verify complete API workflows through HTTP endpoints. Each test class has a `setUp()` method that initializes dependencies via repositories, then tests HTTP endpoints using `authenticated_client`.
+
+### test_user.py (2 test classes, 11 tests)
+
+**TestUserLogin**: User authentication endpoints
+- `POST /api/v1/user/login`: Login with valid credentials
+- Error: Invalid credentials (401)
+- Error: Non-existent email (401)
+
+**TestUserProfile**: User profile endpoints
+- `GET /api/v1/user/me`: Get current user (authenticated)
+- Error: Get without auth (403)
+- `PUT /api/v1/user/me`: Update profile (full and partial)
+- Error: Update without auth (403)
+- `GET /api/v1/user/token`: Get user OAuth token
+
+### test_course.py (1 test class, 7 tests)
+
+**TestCourseEndpoints**: Course endpoints (requires authenticated user and course)
+- `GET /api/v1/courses`: List courses (authenticated)
+- Error: List without auth (403)
+- `POST /api/v1/courses`: Create course
+- Error: Missing fields (422)
+- `GET /api/v1/courses/{id}`: Get specific course
+- `PUT /api/v1/courses/{id}`: Update course
+- `DELETE /api/v1/courses/{id}`: Delete course
+
+### test_file.py (1 test class, 7 tests)
+
+**TestFileEndpoints**: File endpoints (requires authenticated user)
+- `GET /api/v1/files`: List files (authenticated)
+- Error: List without auth (403)
+- `POST /api/v1/files`: Upload file
+- Error: Missing fields (422)
+- `GET /api/v1/files/{id}`: Get specific file
+- `DELETE /api/v1/files/{id}`: Delete file
+- Complete workflow: Upload → List → Get → Delete
+
+### test_tutor_session.py (1 test class, 6 tests)
+
+**TestTutorSessionEndpoints**: Tutor session endpoints (requires authenticated user, course, and session)
+- `POST /api/v1/tutor-sessions`: Create session
+- `GET /api/v1/tutor-sessions`: List sessions
+- `GET /api/v1/tutor-sessions/{id}`: Get specific session
+- `DELETE /api/v1/tutor-sessions/{id}`: Delete session
+- Error: Unauthorized access (403)
+
+### test_chat_message.py (1 test class, 6 tests)
+
+**TestChatMessageEndpoints**: Chat message endpoints (requires authenticated user, course, session, and message)
+- `POST /api/v1/chat-messages`: Send message
+- `GET /api/v1/tutor-sessions/{id}/chat-messages`: Get session messages
+- `GET /api/v1/chat-messages/{id}`: Get specific message
+- Complete conversation workflow
+- Error: Unauthorized access (403)
+
+## Test Database
+
+Tests use an in-memory SQLite database that:
+- Creates fresh database per test session
+- Automatically creates all tables from SQLAlchemy models
+- Cleans up after all tests complete
+- Provides complete isolation between tests
+
+## Assertions
+
+Tests use Python's standard `assert` statements:
+
+```python
+# Equality
+assert user.email == "test@example.com"
+
+# Membership
+assert "access_token" in response.json()
+
+# Type checking
+assert isinstance(data, list)
+
+# Negation
+assert user_id is not None
+```
+
+## Common Patterns
+
+### Unit Test Pattern (Repository Layer)
+
+```python
+def setUp(self) -> None:
+    """Set up test fixtures with dependencies."""
+    super().setUp()
+    # Create user via repository
+    hashed_password = get_password_hash(self.test_user_data["password"])
+    user_create = UserCreate(**self.test_user_data)
+    self.user = UserRepository.create(
+        self.db_session,
+        user_create,
+        hashed_password,
+    )
+
+def test_create_course(self) -> None:
+    """Test CourseRepository.create()."""
+    course_data = CourseCreate(**self.test_class_data)
+    course = CourseRepository.create(
+        self.db_session,
+        course_data,
+        self.user.id,
+    )
+    
+    assert course.id is not None
+    assert course.name == self.test_class_data["name"]
+    assert course.user_id == self.user.id
+```
+
+### Integration Test Pattern (API Route Layer)
+
+```python
+def setUp(self) -> None:
+    """Set up test fixtures via repositories."""
+    super().setUp()
+    # Initialize dependencies
+    hashed_password = get_password_hash(self.test_user_data["password"])
+    user_create = UserCreate(**self.test_user_data)
+    self.user = UserRepository.create(
+        self.db_session,
+        user_create,
+        hashed_password,
+    )
+
+def test_create_course_endpoint(self) -> None:
+    """Test POST /api/v1/courses endpoint."""
+    authenticated_client = self.get_authenticated_client()
+    response = authenticated_client.post(
+        "/api/v1/courses",
+        json=self.test_class_data,
+    )
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["name"] == self.test_class_data["name"]
+```
 
 ## Best Practices
 
-1. **Isolation**: Each test should be independent
-2. **Fixtures**: Reuse fixtures from conftest.py for common setup
-3. **Clear Names**: Test function names should describe what they test
-4. **Arrange-Act-Assert**: Follow the AAA pattern
-5. **Error Cases**: Test both success and failure scenarios
-6. **Cleanup**: Fixtures handle automatic cleanup
+1. **Unit Tests**: Test one repository function per test method
+2. **Integration Tests**: Test one endpoint per test method
+3. **Clear names**: Test method names should describe what is being tested
+4. **setUp() for dependencies**: Initialize shared fixtures in setUp()
+5. **Isolation**: Tests should not depend on other tests
+6. **Error cases**: Always test both success and error scenarios
+7. **Assertions**: Use clear, specific assertions with meaningful messages
 
-## Example Test Pattern
+## Architecture Summary
 
-```python
-def test_example(authenticated_client, db_session):
-    # Arrange
-    test_data = {"key": "value"}
-    
-    # Act
-    response = authenticated_client.post("/api/endpoint", json=test_data)
-    
-    # Assert
-    assert response.status_code == 200
-    assert response.json()["key"] == "value"
+### Data Flow Through Layers
+
+```
+API Route (Integration Test) 
+    ↓
+Route Handler (receives HTTP request)
+    ↓
+Service Layer (business logic)
+    ↓
+Repository Layer (Unit Test) ← Data access
+    ↓
+Database
 ```
 
-## CI/CD Integration
+**Unit Tests verify the Repository Layer** - isolated data access operations
+**Integration Tests verify the API Route Layer** - complete HTTP workflows
 
-To run tests in CI/CD pipeline:
+This separation ensures:
+- Fast unit test execution (no HTTP overhead)
+- Comprehensive route testing (full request/response cycle)
+- Clear test responsibility (each layer has its own tests)
+- Easy debugging (failures map to specific layers)
+2. **Clear names**: Use descriptive test names that explain what is being tested
+3. **Setup/Teardown**: Use `setUp()` for shared test fixtures
+4. **Isolation**: Tests should not depend on other tests
+5. **Cleanup**: Database and fixtures are automatically cleaned up
+6. **Assertions**: Use clear, specific assertions with meaningful messages
+
+## Debugging Tests
+
+### Verbose Output
 
 ```bash
-pytest --verbose --tb=short --junit-xml=test-results.xml
+python -m unittest src.tests.unit -v
 ```
 
-## Troubleshooting
+### Run with Debug Output
 
-### Import errors
-Ensure the `src` directory is in the Python path. The conftest.py handles this automatically.
+```bash
+python -m unittest src.tests.unit.test_user.TestUserAuthentication.test_user_authentication_success -v
+```
 
-### Database errors
-Tests use a temporary SQLite database. Ensure write permissions in the temp directory.
+### Check Test Discovery
 
-### Fixture scope issues
-- `session` scope: Creates one instance for entire test session
-- `function` scope: Creates new instance for each test function (default)
+```bash
+python -m unittest discover -s src/tests -p "test_*.py" --help
+```
 
-## Adding New Tests
+## Integration with CI/CD
 
-When adding new features:
-1. Add unit tests in `tests/unit/test_[module].py`
-2. Add integration tests in `tests/integration/test_[module].py`
-3. Use existing fixtures or create new ones in conftest.py
-4. Ensure tests pass locally before committing
-5. Aim for >80% code coverage
-"""
+Tests are designed to run in CI/CD pipelines:
+
+```bash
+# Exit with status code reflecting test results
+python -m unittest discover -s src/tests -p "test_*.py"
+
+# Generate coverage report
+python -m coverage run -m unittest discover -s src/tests
+python -m coverage report
+```

@@ -13,6 +13,7 @@ dependencies = [
     "google-auth>=2.41.1",
     "google-auth-oauthlib>=1.2.2",
     "google-genai>=1.47.0",
+    "httpx>=0.28.1",
     "moviepy>=2.2.1",
     "openai>=2.6.1",
     "pre-commit>=4.3.0",

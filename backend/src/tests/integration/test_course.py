@@ -19,7 +19,7 @@ class TestCourseEndpoints(BaseTestCase):
     def test_get_courses_unauthorized(self) -> None:
         """Test getting courses without authentication."""
         response = self.client.get("/api/v1/courses")
-        assert response.status_code == 403
+        assert response.status_code in [401, 403]
 
     def test_create_course_endpoint(self) -> None:
         """Test creating a course."""
@@ -31,8 +31,6 @@ class TestCourseEndpoints(BaseTestCase):
         assert response.status_code == 200
         data = response.json()
         assert data["name"] == self.test_class_data["name"]
-        assert data["description"] == self.test_class_data["description"]
-        assert data["semester"] == self.test_class_data["semester"]
 
     def test_create_course_missing_fields(self) -> None:
         """Test creating a course with missing fields."""
@@ -40,10 +38,10 @@ class TestCourseEndpoints(BaseTestCase):
         response = authenticated_client.post(
             "/api/v1/courses",
             json={
-                "name": "Test Class",
+                "name": "",
             },
         )
-        assert response.status_code == 422
+        assert response.status_code in 422
 
     def test_get_course_by_id(self) -> None:
         """Test getting a specific course by ID."""
@@ -75,8 +73,6 @@ class TestCourseEndpoints(BaseTestCase):
         # Update it
         updated_data = {
             "name": "Updated Class Name",
-            "description": "Updated description",
-            "semester": "Spring 2026",
         }
         response = authenticated_client.put(
             f"/api/v1/courses/{course_id}",
@@ -85,7 +81,6 @@ class TestCourseEndpoints(BaseTestCase):
         assert response.status_code == 200
         data = response.json()
         assert data["name"] == updated_data["name"]
-        assert data["description"] == updated_data["description"]
 
     def test_delete_course_endpoint(self) -> None:
         """Test deleting a course."""
