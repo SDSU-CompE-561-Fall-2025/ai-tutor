@@ -115,7 +115,7 @@ export default function DashboardPage() {
             return {
               id: course.id.toString(),
               name: course.name,
-              description: "",
+              description: course.description || "",
               docCount,
               color: COLOR_OPTIONS[index % COLOR_OPTIONS.length],
             } satisfies Class;
@@ -154,11 +154,11 @@ export default function DashboardPage() {
   }) => {
     try {
       setError(null);
-      const response = await createCourse({ name: data.name });
+      const response = await createCourse({ name: data.name, description: data.description });
       const newClass: Class = {
         id: response.id.toString(),
         name: response.name,
-        description: data.description || "",
+        description: response.description || "",
         docCount: 0,
         color: COLOR_OPTIONS[classes.length % COLOR_OPTIONS.length],
       };

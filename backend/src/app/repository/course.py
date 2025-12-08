@@ -61,6 +61,7 @@ class CourseRepository:
 
         db_course = Course(
             name=course.name,
+            description=course.description,
             user_id=user_id,
         )
 

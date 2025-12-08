@@ -3,6 +3,7 @@ from pydantic import BaseModel, ConfigDict
 
 class CourseBase(BaseModel):
     name: str
+    description: str = ""
 
 
 class CourseCreate(CourseBase):

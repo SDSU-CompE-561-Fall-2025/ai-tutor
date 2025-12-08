@@ -32,6 +32,7 @@ class TestCourseRepository(BaseTestCase):
 
         assert course.id is not None
         assert course.name == self.test_class_data["name"]
+        assert course.description == self.test_class_data["description"]
         assert course.user_id == self.user.id
 
     def test_course_get_by_name(self) -> None:
