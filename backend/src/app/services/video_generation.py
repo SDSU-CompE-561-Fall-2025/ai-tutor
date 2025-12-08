@@ -58,7 +58,6 @@ class VideoGenerationService:
         fileid: str,
         userid: int,
         template_name: str = "mc-template.mp4",
-        title: str = "AI Tutor Video",
         output_filename: str | None = None,
     ) -> Path:
         """Create a video with audio and captions."""
