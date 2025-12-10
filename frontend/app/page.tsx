@@ -4,10 +4,16 @@ import Link from "next/link";
 import { ButtonColorful } from "@/components/ui/button-colorful";
 import { useRouter } from "next/navigation";
 import { SplineScene } from "@/components/ui/splite";
+import { useDarkMode } from "@/hooks/useDarkMode";
 export default function Home() {
   const router = useRouter();
+  const { isDark, toggleDarkMode } = useDarkMode();
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div
+      className={`flex min-h-screen flex-col ${
+        isDark ? "bg-gray-800 text-white" : "bg-background"
+      }`}
+    >
       {/* Header / Navbar Section */}
       <header className="sticky top-0 z-10 w-full border-b bg-background/95 backdrop-blur">
         <div className="w-full flex h-16 items-center justify-between py-4">
@@ -18,7 +24,17 @@ export default function Home() {
             <span> Tutor</span>
             <Image src="/logo.png" alt="AI Tutor Logo" width={68} height={68} />
           </div>
-          <nav className="flex flex-end gap-6 text-sm font-medium text-muted-foreground px-4 mr-1">
+          <nav
+            className={`flex flex-end gap-6 text-sm font-medium px-4 mr-1 items-center ${
+              isDark ? "text-white" : "text-muted-foreground"
+            }`}
+          >
+            <button
+              onClick={toggleDarkMode}
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg font-semibold transition-colors"
+            >
+              {isDark ? "Light Mode" : "Dark Mode"}
+            </button>
             <Link href="/login" className="hover:font-bold">
               Log In
             </Link>
@@ -39,10 +55,18 @@ export default function Home() {
           </div>
           {/* Main Hero Section */}
           <div className="container flex mx-auto flex-col items-center text-center gap-6 px-10 mt-20">
-            <h1 className="font-heading text-7xl lg:text-12xl font-bold text-balance tracking-tight px-12">
+            <h1
+              className={`font-heading text-7xl lg:text-12xl font-bold text-balance tracking-tight px-12 ${
+                isDark ? "text-white" : ""
+              }`}
+            >
               Master anything with your personal AI Tutor
             </h1>
-            <p className="text-muted text-balance leading-normal">
+            <p
+              className={`text-balance leading-normal ${
+                isDark ? "text-white" : "text-muted"
+              }`}
+            >
               Gain personalized insights, resources, and support to excel in
               your classes, now supporting{" "}
               <span className="font-bold">Google Drive</span> connection for the
@@ -71,29 +95,53 @@ export default function Home() {
         {/* features section */}
         <section className="container mx-auto py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 border rounded-lg hover:shadow-lg transition-shadow">
-              <h3 className="text-xl font-semibold mb-2">
+            <div
+              className={`p-6 border rounded-lg hover:shadow-lg transition-shadow ${
+                isDark ? "border-gray-600" : ""
+              }`}
+            >
+              <h3
+                className={`text-xl font-semibold mb-2 ${
+                  isDark ? "text-white" : ""
+                }`}
+              >
                 Personalized Learning
               </h3>
-              <p>
+              <p className={isDark ? "text-white" : ""}>
                 Tailored study plans and resources to fit your unique learning
                 style and pace.
               </p>
             </div>
-            <div className="p-6 border rounded-lg hover:shadow-lg transition-shadow">
-              <h3 className="text-xl font-semibold mb-2">
+            <div
+              className={`p-6 border rounded-lg hover:shadow-lg transition-shadow ${
+                isDark ? "border-gray-600" : ""
+              }`}
+            >
+              <h3
+                className={`text-xl font-semibold mb-2 ${
+                  isDark ? "text-white" : ""
+                }`}
+              >
                 AI-Powered Assistance
               </h3>
-              <p>
+              <p className={isDark ? "text-white" : ""}>
                 Get instant help with difficult concepts and assignments using
                 advanced AI technology.
               </p>
             </div>
-            <div className="p-6 border rounded-lg hover:shadow-lg transition-shadow">
-              <h3 className="text-xl font-semibold mb-2">
+            <div
+              className={`p-6 border rounded-lg hover:shadow-lg transition-shadow ${
+                isDark ? "border-gray-600" : ""
+              }`}
+            >
+              <h3
+                className={`text-xl font-semibold mb-2 ${
+                  isDark ? "text-white" : ""
+                }`}
+              >
                 Google Drive Integration
               </h3>
-              <p>
+              <p className={isDark ? "text-white" : ""}>
                 Seamlessly connect your Google Drive to access and manage your
                 study materials in one place.
               </p>
@@ -103,7 +151,11 @@ export default function Home() {
 
         <section className="container mx-auto py-8">
           <div className="bg-white/5 p-6 rounded-lg border border-white/10 transition-shadow">
-            <h2 className="text-2xl text-black  mb-4 text-center">
+            <h2
+              className={`text-2xl mb-4 text-center ${
+                isDark ? "text-white" : "text-black"
+              }`}
+            >
               Experience the Future of Learning
             </h2>
             <SplineScene

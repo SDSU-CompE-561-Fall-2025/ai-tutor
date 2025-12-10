@@ -13,6 +13,7 @@ import {
   clearAuthTokens,
   ApiError,
 } from "@/lib/api";
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 interface Class {
   id: string;
@@ -46,21 +47,39 @@ const getColorClasses = (color: string) => {
   return colors[color] || colors.blue;
 };
 
-const ClassCard = ({ cls }: { cls: Class }) => {
+const ClassCard = ({ cls, isDark }: { cls: Class; isDark: boolean }) => {
   const { icon, bg } = getColorClasses(cls.color);
   return (
     <Link href={`/class/${cls.id}`}>
-      <div className="h-56 border border-gray-300 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer bg-white flex flex-col">
+      <div
+        className={`h-56 border ${
+          isDark ? "border-gray-600 bg-gray-700" : "border-gray-300 bg-white"
+        } rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer flex flex-col`}
+      >
         <div
           className={`w-12 h-12 ${bg} rounded-lg flex items-center justify-center mb-4`}
         >
           <BookOpen className={`w-6 h-6 ${icon}`} />
         </div>
-        <h3 className="text-lg font-bold text-gray-900 mb-2">{cls.name}</h3>
-        <p className="text-sm text-gray-600 mb-4 line-clamp-2 flex-grow">
+        <h3
+          className={`text-lg font-bold mb-2 ${
+            isDark ? "text-white" : "text-gray-900"
+          }`}
+        >
+          {cls.name}
+        </h3>
+        <p
+          className={`text-sm mb-4 line-clamp-2 grow ${
+            isDark ? "text-white" : "text-gray-600"
+          }`}
+        >
           {cls.description}
         </p>
-        <div className="flex items-center gap-2 text-sm text-gray-600 mt-auto">
+        <div
+          className={`flex items-center gap-2 text-sm mt-auto ${
+            isDark ? "text-white" : "text-gray-600"
+          }`}
+        >
           <FileText className="w-4 h-4" />
           <span>{cls.docCount} Docs</span>
         </div>
@@ -77,6 +96,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
 
   // Ensure component is mounted on client before checking auth
   useEffect(() => {
@@ -154,7 +174,10 @@ export default function DashboardPage() {
   }) => {
     try {
       setError(null);
-      const response = await createCourse({ name: data.name, description: data.description });
+      const response = await createCourse({
+        name: data.name,
+        description: data.description,
+      });
       const newClass: Class = {
         id: response.id.toString(),
         name: response.name,
@@ -176,16 +199,38 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div
+      className={`flex h-screen ${
+        isDark ? "bg-gray-800 text-white" : "bg-gray-50"
+      }`}
+    >
       {/* Main content area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header section */}
-        <div className="bg-white border-b border-gray-200 px-8 py-6">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">Classes</h1>
-            <p className="text-gray-600 mt-1">
-              Manage your learning spaces and resources.
-            </p>
+        <div
+          className={`${
+            isDark ? "bg-gray-700 border-gray-600" : "bg-white border-gray-200"
+          } border-b px-8 py-6`}
+        >
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h1
+                className={`text-3xl font-bold ${
+                  isDark ? "text-white" : "text-gray-900"
+                }`}
+              >
+                Classes
+              </h1>
+              <p className={`mt-1 ${isDark ? "text-white" : "text-gray-600"}`}>
+                Manage your learning spaces and resources.
+              </p>
+            </div>
+            <button
+              onClick={toggleDarkMode}
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 rounded-lg font-semibold transition-colors"
+            >
+              {isDark ? "Light Mode" : "Dark Mode"}
+            </button>
           </div>
 
           {/* Search and Add Class section */}
@@ -193,21 +238,33 @@ export default function DashboardPage() {
             {/* Search bar */}
             <div className="flex-1 relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="w-5 h-5 text-gray-400" />
+                <Search
+                  className={`w-5 h-5 ${
+                    isDark ? "text-gray-400" : "text-gray-400"
+                  }`}
+                />
               </div>
               <input
                 type="text"
                 placeholder="Search classes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className={`w-full pl-10 pr-4 py-2 border ${
+                  isDark
+                    ? "border-gray-600 bg-gray-600 text-white placeholder-gray-400"
+                    : "border-gray-300"
+                } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
               />
             </div>
 
             {/* Add Class button */}
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 bg-white border border-gray-300 text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              className={`flex items-center gap-2 border px-4 py-2 rounded-lg transition-colors font-medium ${
+                isDark
+                  ? "bg-gray-600 border-gray-500 text-white hover:bg-gray-500"
+                  : "bg-white border-gray-300 text-gray-900 hover:bg-gray-50"
+              }`}
             >
               <Plus className="w-5 h-5" />
               Add Class
@@ -218,27 +275,45 @@ export default function DashboardPage() {
         {/* Classes grid */}
         <div className="flex-1 overflow-auto px-8 py-6">
           {error && (
-            <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div
+              className={`mb-4 rounded-md border px-4 py-3 text-sm ${
+                isDark
+                  ? "border-red-600 bg-red-900/30 text-red-300"
+                  : "border-red-200 bg-red-50 text-red-700"
+              }`}
+            >
               {error}
             </div>
           )}
           {isLoading ? (
-            <div className="flex items-center justify-center h-full text-gray-500">
+            <div
+              className={`flex items-center justify-center h-full ${
+                isDark ? "text-white" : "text-gray-500"
+              }`}
+            >
               Loading classes...
             </div>
           ) : filteredClasses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredClasses.map((cls) => (
-                <ClassCard key={cls.id} cls={cls} />
+                <ClassCard key={cls.id} cls={cls} isDark={isDark} />
               ))}
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center">
-              <BookOpen className="w-16 h-16 text-gray-300 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <BookOpen
+                className={`w-16 h-16 mb-4 ${
+                  isDark ? "text-gray-500" : "text-gray-300"
+                }`}
+              />
+              <h3
+                className={`text-lg font-medium mb-2 ${
+                  isDark ? "text-white" : "text-gray-900"
+                }`}
+              >
                 No classes found
               </h3>
-              <p className="text-gray-600">
+              <p className={isDark ? "text-white" : "text-gray-600"}>
                 Try adjusting your search or add a new class to get started.
               </p>
             </div>

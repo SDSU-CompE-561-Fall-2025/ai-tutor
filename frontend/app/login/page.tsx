@@ -5,12 +5,14 @@ import { useState } from "react";
 import { Loader } from "@/components/ui/loader";
 import { login } from "@/lib/api";
 import Image from "next/image";
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 const Page = () => {
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,7 +25,7 @@ const Page = () => {
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("token_type", data.token_type);
       localStorage.setItem("email", email);
-      
+
       // Redirect to dashboard
       router.push("/dashboard");
     } catch (err: unknown) {
@@ -32,7 +34,11 @@ const Page = () => {
     }
   };
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div
+      className={`flex min-h-screen flex-col ${
+        isDark ? "bg-gray-800 text-white" : "bg-background"
+      }`}
+    >
       <header className="sticky top-0 z-10 w-full border-b bg-background/95 backdrop-blur">
         <div className="w-full flex h-16 items-center justify-between py-4">
           <div
@@ -45,7 +51,17 @@ const Page = () => {
             <span> Tutor</span>
             <Image src="/logo.png" alt="AI Tutor Logo" width={68} height={68} />
           </div>
-          <nav className="flex flex-end gap-6 text-sm font-medium text-muted-foreground px-4 mr-1">
+          <nav
+            className={`flex flex-end gap-6 text-sm font-medium px-4 mr-1 items-center ${
+              isDark ? "text-white" : "text-muted-foreground"
+            }`}
+          >
+            <button
+              onClick={toggleDarkMode}
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg font-semibold transition-colors"
+            >
+              {isDark ? "Light Mode" : "Dark Mode"}
+            </button>
             <a href="/login" className="hover:font-bold">
               Log In
             </a>
@@ -58,9 +74,25 @@ const Page = () => {
       {/* Sign Up FORM */}
       <main className="flex-1 mt-10 px-4 py-8">
         <div className="container mx-auto flex flex-col items-center justify-center min-h-[500px]">
-          <div className="w-full max-w-md border-2 border-gray-900 rounded-2xl p-8 bg-white">
-            <h1 className="text-2xl font-bold mb-2">Log in to your account</h1>
-            <p className="text-sm text-gray-600 mb-6">
+          <div
+            className={`w-full max-w-md border-2 ${
+              isDark
+                ? "border-gray-600 bg-gray-700"
+                : "border-gray-900 bg-white"
+            } rounded-2xl p-8`}
+          >
+            <h1
+              className={`text-2xl font-bold mb-2 ${
+                isDark ? "text-white" : ""
+              }`}
+            >
+              Log in to your account
+            </h1>
+            <p
+              className={`text-sm mb-6 ${
+                isDark ? "text-white" : "text-gray-600"
+              }`}
+            >
               Enter your email below to log in to your account
             </p>
 
@@ -68,14 +100,20 @@ const Page = () => {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-900 mb-2"
+                  className={`block text-sm font-medium mb-2 ${
+                    isDark ? "text-white" : "text-gray-900"
+                  }`}
                 >
                   Email
                 </label>
                 <input
                   type="email"
                   id="email"
-                  className="w-full px-4 py-2 border-2 border-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className={`w-full px-4 py-2 border-2 ${
+                    isDark
+                      ? "border-gray-500 bg-gray-600 text-white"
+                      : "border-gray-900"
+                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
                   placeholder="m@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -85,14 +123,20 @@ const Page = () => {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-900 mb-2"
+                  className={`block text-sm font-medium mb-2 ${
+                    isDark ? "text-white" : "text-gray-900"
+                  }`}
                 >
                   Password
                 </label>
                 <input
                   type="password"
                   id="password"
-                  className="w-full px-4 py-2 border-2 border-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className={`w-full px-4 py-2 border-2 ${
+                    isDark
+                      ? "border-gray-500 bg-gray-600 text-white"
+                      : "border-gray-900"
+                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -118,7 +162,11 @@ const Page = () => {
             </form>
             {loading && <Loader className="mt-2" />}
 
-            <div className="mt-4 text-center text-sm text-gray-600">
+            <div
+              className={`mt-4 text-center text-sm ${
+                isDark ? "text-white" : "text-gray-600"
+              }`}
+            >
               Don&apos;t have an account?{" "}
               <a
                 href="/signup"

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Loader } from "@/components/ui/loader";
 import { register, storeAuthTokens } from "@/lib/api";
 import Image from "next/image";
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 const SignupContent = () => {
   const [error, setError] = useState("");
@@ -13,6 +14,7 @@ const SignupContent = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -62,7 +64,11 @@ const SignupContent = () => {
     }
   };
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div
+      className={`flex min-h-screen flex-col ${
+        isDark ? "bg-gray-800 text-white" : "bg-background"
+      }`}
+    >
       <header className="sticky top-0 z-10 w-full border-b bg-background/95 backdrop-blur">
         <div className="w-full flex h-16 items-center justify-between py-4">
           <div
@@ -75,7 +81,17 @@ const SignupContent = () => {
             <span> Tutor</span>
             <Image src="/logo.png" alt="AI Tutor Logo" width={68} height={68} />
           </div>
-          <nav className="flex flex-end gap-6 text-sm font-medium text-muted-foreground px-4 mr-1">
+          <nav
+            className={`flex flex-end gap-6 text-sm font-medium px-4 mr-1 items-center ${
+              isDark ? "text-white" : "text-muted-foreground"
+            }`}
+          >
+            <button
+              onClick={toggleDarkMode}
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg font-semibold transition-colors"
+            >
+              {isDark ? "Light Mode" : "Dark Mode"}
+            </button>
             <a href="/login" className="hover:font-bold">
               Log In
             </a>
@@ -88,9 +104,25 @@ const SignupContent = () => {
       {/* Sign Up FORM */}
       <main className="flex-1 mt-10 px-4 py-8">
         <div className="container mx-auto flex flex-col items-center justify-center min-h-[500px]">
-          <div className="w-full max-w-md border-2 border-gray-900 rounded-2xl p-8 bg-white">
-            <h1 className="text-2xl font-bold mb-2">Create an account</h1>
-            <p className="text-sm text-gray-600 mb-6">
+          <div
+            className={`w-full max-w-md border-2 ${
+              isDark
+                ? "border-gray-600 bg-gray-700"
+                : "border-gray-900 bg-white"
+            } rounded-2xl p-8`}
+          >
+            <h1
+              className={`text-2xl font-bold mb-2 ${
+                isDark ? "text-white" : ""
+              }`}
+            >
+              Create an account
+            </h1>
+            <p
+              className={`text-sm mb-6 ${
+                isDark ? "text-white" : "text-gray-600"
+              }`}
+            >
               Enter your email below to create your account
             </p>
 
@@ -98,14 +130,20 @@ const SignupContent = () => {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-900 mb-2"
+                  className={`block text-sm font-medium mb-2 ${
+                    isDark ? "text-white" : "text-gray-900"
+                  }`}
                 >
                   Email
                 </label>
                 <input
                   type="email"
                   id="email"
-                  className="w-full px-4 py-2 border-2 border-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className={`w-full px-4 py-2 border-2 ${
+                    isDark
+                      ? "border-gray-500 bg-gray-600 text-white"
+                      : "border-gray-900"
+                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
                   placeholder="m@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -116,14 +154,20 @@ const SignupContent = () => {
                 <div>
                   <label
                     htmlFor="firstName"
-                    className="block text-sm font-medium text-gray-900 mb-2"
+                    className={`block text-sm font-medium mb-2 ${
+                      isDark ? "text-white" : "text-gray-900"
+                    }`}
                   >
                     First Name
                   </label>
                   <input
                     type="text"
                     id="firstName"
-                    className="w-full px-4 py-2 border-2 border-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className={`w-full px-4 py-2 border-2 ${
+                      isDark
+                        ? "border-gray-500 bg-gray-600 text-white"
+                        : "border-gray-900"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
                     placeholder="John"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
@@ -133,14 +177,20 @@ const SignupContent = () => {
                 <div>
                   <label
                     htmlFor="lastName"
-                    className="block text-sm font-medium text-gray-900 mb-2"
+                    className={`block text-sm font-medium mb-2 ${
+                      isDark ? "text-white" : "text-gray-900"
+                    }`}
                   >
                     Last Name
                   </label>
                   <input
                     type="text"
                     id="lastName"
-                    className="w-full px-4 py-2 border-2 border-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className={`w-full px-4 py-2 border-2 ${
+                      isDark
+                        ? "border-gray-500 bg-gray-600 text-white"
+                        : "border-gray-900"
+                    } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
                     placeholder="Doe"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
@@ -152,14 +202,20 @@ const SignupContent = () => {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-900 mb-2"
+                  className={`block text-sm font-medium mb-2 ${
+                    isDark ? "text-white" : "text-gray-900"
+                  }`}
                 >
                   Password
                 </label>
                 <input
                   type="password"
                   id="password"
-                  className="w-full px-4 py-2 border-2 border-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className={`w-full px-4 py-2 border-2 ${
+                    isDark
+                      ? "border-gray-500 bg-gray-600 text-white"
+                      : "border-gray-900"
+                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -168,7 +224,9 @@ const SignupContent = () => {
 
               <button
                 type="submit"
-                disabled={!email || !password || !firstName || !lastName || loading}
+                disabled={
+                  !email || !password || !firstName || !lastName || loading
+                }
                 className={`w-full bg-gray-900 text-white py-2 px-4 rounded-lg font-semibold transition mt-6 ${
                   !email || !password || !firstName || !lastName || loading
                     ? "opacity-50 cursor-not-allowed"
@@ -181,7 +239,11 @@ const SignupContent = () => {
             </form>
             {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
 
-            <div className="mt-4 text-center text-sm text-gray-600">
+            <div
+              className={`mt-4 text-center text-sm ${
+                isDark ? "text-white" : "text-gray-600"
+              }`}
+            >
               Already have an account?{" "}
               <a
                 href="/login"
