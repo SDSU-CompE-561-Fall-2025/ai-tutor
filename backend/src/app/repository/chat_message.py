@@ -5,6 +5,7 @@ This module provides data access layer for tutor message operations.
 
 from sqlalchemy.orm import Session
 
+from app.core.encrypt import decrypt_message, encrypt_message
 from app.models.chat_message import ChatMessage
 from app.schemas.chat_message import (
     ChatMessageCreate,
@@ -24,9 +25,18 @@ class ChatMessageRepository:
             chat_message_id: ChatMessage ID
 
         Returns:
-            ChatMessage | None: ChatMessage if found, None otherwise
+            ChatMessage | None: ChatMessage with decrypted message if found, None otherwise
         """
-        return db.query(ChatMessage).filter(ChatMessage.id == chat_message_id).first()
+        message = (
+            db.query(ChatMessage).filter(ChatMessage.id == chat_message_id).first()
+        )
+        if message:
+            try:
+                message.message = decrypt_message(message.message)  # type: ignore[assignment]
+            except Exception:
+                # If decryption fails, keep the original (for backward compatibility)
+                pass
+        return message
 
     @staticmethod
     def get_all_messages_by_tutor_session_id(
@@ -41,13 +51,21 @@ class ChatMessageRepository:
             tutor_session_id: TutorSession ID
 
         Returns:
-            list[ChatMessage]: List of ChatMessages
+            list[ChatMessage]: List of ChatMessages with decrypted messages
         """
-        return (
+        messages = (
             db.query(ChatMessage)
             .filter(ChatMessage.tutor_session_id == tutor_session_id)
             .all()
         )
+        # Decrypt messages before returning
+        for message in messages:
+            try:
+                message.message = decrypt_message(message.message)  # type: ignore[assignment]
+            except Exception:
+                # If decryption fails, keep the original (for backward compatibility)
+                pass
+        return messages
 
     @staticmethod
     def create(
@@ -65,9 +83,12 @@ class ChatMessageRepository:
         Returns:
             ChatMessage: Created chat message
         """
+        # Encrypt the message before storing
+        encrypted_message = encrypt_message(chat_message.message)
+
         db_message = ChatMessage(
             role=chat_message.role,
-            message=chat_message.message,
+            message=encrypted_message,
             tutor_session_id=chat_message.tutor_session_id,
             user_id=user_id,
         )
@@ -75,6 +96,12 @@ class ChatMessageRepository:
         db.add(db_message)
         db.commit()
         db.refresh(db_message)
+        # Decrypt before returning so the service layer gets plain text
+        try:
+            db_message.message = decrypt_message(db_message.message)  # type: ignore[assignment]
+        except Exception:
+            # If decryption fails, keep as is (for backward compatibility)
+            pass
         return db_message
 
     @staticmethod
@@ -87,10 +114,19 @@ class ChatMessageRepository:
             db_message: ChatMessage instance to update
 
         Returns:
-            ChatMessage: Updated chat message
+            ChatMessage: Updated chat message with decrypted message
         """
+        # Encrypt the message before storing (message from service layer is plain text)
+        db_message.message = encrypt_message(db_message.message)  # type: ignore[assignment]
+
         db.commit()
         db.refresh(db_message)
+        # Decrypt before returning so the service layer gets plain text
+        try:
+            db_message.message = decrypt_message(db_message.message)  # type: ignore[assignment]
+        except Exception:
+            # If decryption fails, keep as is (for backward compatibility)
+            pass
         return db_message
 
     @staticmethod
@@ -114,6 +150,14 @@ class ChatMessageRepository:
             db: Database session
             user_id: ID of the user
         Returns:
-            list[ChatMessage]: List of chat messages
+            list[ChatMessage]: List of chat messages with decrypted messages
         """
-        return db.query(ChatMessage).filter(ChatMessage.user_id == user_id).all()
+        messages = db.query(ChatMessage).filter(ChatMessage.user_id == user_id).all()
+        # Decrypt messages before returning
+        for message in messages:
+            try:
+                message.message = decrypt_message(message.message)  # type: ignore[assignment]
+            except Exception:
+                # If decryption fails, keep the original (for backward compatibility)
+                pass
+        return messages

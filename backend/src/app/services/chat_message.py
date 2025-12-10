@@ -130,8 +130,11 @@ def update_chat_message(
         msg = "ChatMessage not found or access denied."
         raise HTTPException(status_code=401, detail=msg)
 
+    # Update fields - message will be encrypted in the repository update method
     chat_message.role = message_data.role
-    chat_message.message = message_data.message
+    chat_message.message = (
+        message_data.message
+    )  # This is plain text, will be encrypted in update()
     chat_message.tutor_session_id = message_data.tutor_session_id
 
     return ChatMessageRepository.update(db, chat_message)

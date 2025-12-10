@@ -50,6 +50,13 @@ const SignupContent = () => {
     // Clear previous error
     setError("");
 
+    // Validate password length
+    if (password.length <= 8) {
+      setError("Password must be more than 8 characters");
+      setLoading(false);
+      return;
+    }
+
     try {
       const data = await register(email, password, firstName, lastName);
       // Register returns a redirect_url for Google OAuth

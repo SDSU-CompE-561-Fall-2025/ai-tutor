@@ -49,15 +49,29 @@ const getColorClasses = (color: string) => {
 
 const ClassCard = ({ cls, isDark }: { cls: Class; isDark: boolean }) => {
   const { icon, bg } = getColorClasses(cls.color);
+  const borderColors: Record<string, string> = {
+    blue: isDark
+      ? "border-blue-500/50 hover:border-blue-400"
+      : "border-blue-300 hover:border-blue-400",
+    green: isDark
+      ? "border-green-500/50 hover:border-green-400"
+      : "border-green-300 hover:border-green-400",
+    purple: isDark
+      ? "border-purple-500/50 hover:border-purple-400"
+      : "border-purple-300 hover:border-purple-400",
+    orange: isDark
+      ? "border-orange-500/50 hover:border-orange-400"
+      : "border-orange-300 hover:border-orange-400",
+  };
   return (
     <Link href={`/class/${cls.id}`}>
       <div
-        className={`h-56 border ${
-          isDark ? "border-gray-600 bg-gray-700" : "border-gray-300 bg-white"
-        } rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer flex flex-col`}
+        className={`h-56 border-2 ${borderColors[cls.color]} ${
+          isDark ? "bg-gray-700/80" : "bg-white"
+        } rounded-lg p-6 hover:shadow-xl transition-all cursor-pointer flex flex-col transform hover:scale-[1.02]`}
       >
         <div
-          className={`w-12 h-12 ${bg} rounded-lg flex items-center justify-center mb-4`}
+          className={`w-12 h-12 ${bg} rounded-lg flex items-center justify-center mb-4 shadow-md`}
         >
           <BookOpen className={`w-6 h-6 ${icon}`} />
         </div>
@@ -70,17 +84,17 @@ const ClassCard = ({ cls, isDark }: { cls: Class; isDark: boolean }) => {
         </h3>
         <p
           className={`text-sm mb-4 line-clamp-2 grow ${
-            isDark ? "text-white" : "text-gray-600"
+            isDark ? "text-gray-300" : "text-gray-600"
           }`}
         >
           {cls.description}
         </p>
         <div
           className={`flex items-center gap-2 text-sm mt-auto ${
-            isDark ? "text-white" : "text-gray-600"
+            isDark ? "text-gray-300" : "text-gray-600"
           }`}
         >
-          <FileText className="w-4 h-4" />
+          <FileText className={`w-4 h-4 ${icon}`} />
           <span>{cls.docCount} Docs</span>
         </div>
       </div>
@@ -249,21 +263,22 @@ export default function DashboardPage() {
                 placeholder="Search classes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                maxLength={25}
                 className={`w-full pl-10 pr-4 py-2 border ${
                   isDark
                     ? "border-gray-600 bg-gray-600 text-white placeholder-gray-400"
-                    : "border-gray-300"
-                } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                    : "border-gray-300 bg-white text-gray-900"
+                } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all`}
               />
             </div>
 
             {/* Add Class button */}
             <button
               onClick={() => setIsModalOpen(true)}
-              className={`flex items-center gap-2 border px-4 py-2 rounded-lg transition-colors font-medium ${
+              className={`flex items-center gap-2 border px-4 py-2 rounded-lg transition-all font-medium shadow-md hover:shadow-lg ${
                 isDark
-                  ? "bg-gray-600 border-gray-500 text-white hover:bg-gray-500"
-                  : "bg-white border-gray-300 text-gray-900 hover:bg-gray-50"
+                  ? "bg-gradient-to-r from-blue-600 to-purple-600 border-blue-500 text-white hover:from-blue-700 hover:to-purple-700"
+                  : "bg-gradient-to-r from-blue-500 to-purple-500 border-blue-400 text-white hover:from-blue-600 hover:to-purple-600"
               }`}
             >
               <Plus className="w-5 h-5" />

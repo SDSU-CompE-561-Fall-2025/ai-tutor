@@ -3,7 +3,7 @@
 This module defines Pydantic schemas for user data validation and serialization.
 """
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 
 
 class UserBase(BaseModel):
@@ -18,6 +18,14 @@ class UserCreate(UserBase):
     password: str
     first_name: str
     last_name: str
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, v: str) -> str:
+        """Validate password is more than 8 characters."""
+        if len(v) <= 8:
+            raise ValueError("Password must be more than 8 characters")
+        return v
 
 
 class User(UserBase):
