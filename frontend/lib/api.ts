@@ -120,7 +120,7 @@ const handleResponse = async <T>(response: Response) => {
       const data = await response.json();
       // Handle Pydantic validation errors
       if (data.detail && Array.isArray(data.detail)) {
-        errorMessage = data.detail.map((err: any) => err.msg).join(", ");
+        errorMessage = data.detail.map((err: { msg: string }) => err.msg).join(", ");
       } else if (typeof data.detail === "string") {
         errorMessage = data.detail;
       } else if (data.message) {

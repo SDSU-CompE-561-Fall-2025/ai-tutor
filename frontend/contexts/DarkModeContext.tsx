@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useLayoutEffect } from "react";
 
 const DARK_MODE_KEY = "darkMode";
 
@@ -21,7 +21,7 @@ export function DarkModeProvider({ children }: { children: React.ReactNode }) {
   });
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setMounted(true);
   }, []);
 

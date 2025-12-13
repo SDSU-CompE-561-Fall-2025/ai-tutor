@@ -67,22 +67,27 @@ class VideoGenerationService:
 
         # Generate audio
         audio_path = await self.generate_audio(text)
-
-        # Load template video
-        template_path = self.templates_dir / template_name
-        if not template_path.exists():
-            msg = f"Template video not found: {template_path}"
-            raise FileNotFoundError(msg)
-
-        # Load video and audio
-        video = VideoFileClip(str(template_path)).without_audio()
         audio = AudioFileClip(str(audio_path))
 
-        # Calculate duration
-        duration = min(video.duration, audio.duration)
-
-        # Prepare video clip
-        video = video.subclipped(0, duration).with_audio(audio)
+        # Load template video or create a default background
+        template_path = self.templates_dir / template_name
+        if template_path.exists():
+            # Use existing template
+            video = VideoFileClip(str(template_path)).without_audio()
+            duration = min(video.duration, audio.duration)
+            video = video.subclipped(0, duration).with_audio(audio)
+        else:
+            # Create a simple colored background if no template exists
+            duration = audio.duration
+            # Creates a blue gradient background (1920x1080, standard HD)
+            video = TextClip(
+                text="",
+                font="Arial",
+                font_size=1,
+                color="white",
+                bg_color="#1e3a8a",  # Dark blue background
+                size=(1920, 1080),
+            ).with_duration(duration).with_audio(audio)
 
         caption = (
             TextClip(
