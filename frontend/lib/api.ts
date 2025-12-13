@@ -1,4 +1,10 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import axios from "axios";
+
+const API_URL = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+});
+
+export default API_URL;
 
 type Course = {
   id: number;
