@@ -273,7 +273,7 @@ const SignupContent = () => {
               <p className={`text-xs mt-4 ${
                 isDark ? "text-gray-400" : "text-gray-600"
               }`}>
-                📌 After signup, you'll be redirected to Google Sign-In to connect your Google Drive account.
+                📌 After signup, you&apos;ll be redirected to Google Sign-In to connect your Google Drive account.
               </p>
 
               <button
