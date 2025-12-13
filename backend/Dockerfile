@@ -25,8 +25,12 @@ COPY . .
 # Create assets directory if it doesn't exist
 RUN mkdir -p assets
 
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app/src
+
 # Expose port 3000
 EXPOSE 3000
 
-# Run the application with uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3000", "--reload"]
+# Run the application with uvicorn using uv
+CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "3000", "--app-dir", "src"]

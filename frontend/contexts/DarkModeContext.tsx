@@ -21,6 +21,7 @@ export function DarkModeProvider({ children }: { children: React.ReactNode }) {
   });
   const [mounted, setMounted] = useState(false);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useLayoutEffect(() => {
     setMounted(true);
   }, []);
