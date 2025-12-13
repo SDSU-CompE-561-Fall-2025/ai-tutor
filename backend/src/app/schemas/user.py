@@ -3,30 +3,52 @@
 This module defines Pydantic schemas for user data validation and serialization.
 """
 
-from pydantic import BaseModel, EmailStr, field_validator
+import re
+
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 class UserBase(BaseModel):
     """Base user schema."""
 
-    email: EmailStr
+    email: EmailStr = Field(..., max_length=30)
 
 
 class UserCreate(UserBase):
     """Schema for creating a new user."""
 
-    password: str
-    first_name: str
-    last_name: str
+    password: str = Field(..., min_length=8, max_length=20)
+    first_name: str = Field(..., min_length=1, max_length=15)
+    last_name: str = Field(..., min_length=1, max_length=15)
 
     @field_validator("password")
     @classmethod
-    def validate_password(cls, v: str) -> str:
-        """Validate password is more than 8 characters."""
-        if len(v) <= 8:
-            raise ValueError("Password must be more than 8 characters")
-        return v
+    def password_must_be_valid(cls, password: str) -> str:
+        """Validate password meets security requirements."""
+        if len(password) < 8:
+            msg = "Password must be at least 8 characters"
+            raise ValueError(msg)
+        if len(password) > 20:
+            msg = "Password must be no more than 20 characters"
+            raise ValueError(msg)
+        if not re.search(r"[0-9]", password):
+            msg = "Password must include at least 1 number"
+            raise ValueError(msg)
+        if not re.search(r"[a-zA-Z]", password):
+            msg = "Password must include at least 1 letter"
+            raise ValueError(msg)
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            msg = "Password must include at least 1 special character"
+            raise ValueError(msg)
+        return password
 
+    @field_validator("first_name", "last_name")
+    @classmethod
+    def name_must_not_be_blank(cls, name: str) -> str:
+        if not name.strip():
+            msg = "Name cannot be blank"
+            raise ValueError(msg)
+        return name.strip()
 
 class User(UserBase):
     """Schema for user response."""
@@ -40,9 +62,16 @@ class User(UserBase):
 class UserUpdate(BaseModel):
     """Schema for updating user profile."""
 
-    first_name: str | None = None
-    last_name: str | None = None
+    first_name: str | None = Field(None, min_length=1, max_length=15)
+    last_name: str | None = Field(None, min_length=1, max_length=15)
 
+    @field_validator("first_name", "last_name")
+    @classmethod
+    def name_must_not_be_blank(cls, name: str | None) -> str | None:
+        if name is not None and not name.strip():
+            msg = "Name cannot be blank"
+            raise ValueError(msg)
+        return name.strip() if name else None
 
 class Token(BaseModel):
     """Schema for authentication token response."""

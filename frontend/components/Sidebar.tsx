@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { BookOpen, Video, User, LogOut } from "lucide-react";
+import { BookOpen, Video, User, LogOut, Moon, Sun } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { getCurrentUser, clearAuthTokens, ApiError } from "@/lib/api";
-import { useDarkMode } from "@/hooks/useDarkMode";
+import { useDarkMode } from "@/contexts/DarkModeContext";
 
 interface NavItem {
   label: string;
@@ -42,7 +42,7 @@ export default function Sidebar() {
   const router = useRouter();
   const [user, setUser] = useState<UserData | null>(null);
   const [displayName, setDisplayName] = useState<string | null>(null);
-  const { isDark } = useDarkMode();
+  const { isDark, toggleDarkMode } = useDarkMode();
 
   useEffect(() => {
     const loadUser = async () => {
@@ -71,6 +71,7 @@ export default function Sidebar() {
     loadUser();
   }, []);
 
+  // Clear auth tokens and redirect to landing page
   const handleLogout = async () => {
     clearAuthTokens();
     router.push("/");
@@ -136,8 +137,28 @@ export default function Sidebar() {
         })}
       </nav>
 
+      {/* Dark mode toggle */}
+      <div className="px-4 py-2">
+        <button
+          onClick={toggleDarkMode}
+          className={`w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors border ${
+            isDark
+              ? "text-gray-200 bg-gray-700 hover:bg-gray-600 border-gray-600"
+              : "text-gray-700 bg-gray-50 hover:bg-gray-100 border-gray-200"
+          }`}
+          title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+        >
+          {isDark ? (
+            <Sun className="w-4 h-4" />
+          ) : (
+            <Moon className="w-4 h-4" />
+          )}
+          <span>{isDark ? "Light Mode" : "Dark Mode"}</span>
+        </button>
+      </div>
+
       {/* User profile section */}
-      <div className="flex items-center gap-3 px-2">
+      <div className="flex items-center gap-3 px-2 py-2">
         <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shrink-0">
           <span className="text-sm font-semibold text-white">
             {displayName ? getInitials(displayName) : "U"}
@@ -165,7 +186,7 @@ export default function Sidebar() {
       {/* Logout button */}
       <button
         onClick={handleLogout}
-        className={`w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors border ${
+        className={`w-full flex items-center justify-center gap-2 px-4 py-2 mb-4 text-sm font-medium rounded-lg transition-colors border ${
           isDark
             ? "text-gray-200 bg-gray-700 hover:bg-gray-600 border-gray-600"
             : "text-gray-700 bg-gray-50 hover:bg-gray-100 border-gray-200"

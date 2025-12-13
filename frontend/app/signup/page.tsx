@@ -1,11 +1,10 @@
 "use client";
-import React, { Suspense } from "react";
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader } from "@/components/ui/loader";
 import { register, storeAuthTokens } from "@/lib/api";
 import Image from "next/image";
-import { useDarkMode } from "@/hooks/useDarkMode";
+import { useDarkMode } from "@/contexts/DarkModeContext";
 
 const SignupContent = () => {
   const [error, setError] = useState("");
@@ -14,9 +13,19 @@ const SignupContent = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
   const { isDark, toggleDarkMode } = useDarkMode();
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const validatePassword = (pwd: string) => {
+    if (pwd.length < 8) return "Password must be at least 8 characters";
+    if (pwd.length > 20) return "Password must be no more than 20 characters";
+    if (!/[0-9]/.test(pwd)) return "Password must include at least 1 number";
+    if (!/[a-zA-Z]/.test(pwd)) return "Password must include at least 1 letter";
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) return "Password must include at least 1 special character";
+    return "";
+  };
 
   // Handle OAuth callback from Google
   useEffect(() => {
@@ -47,12 +56,12 @@ const SignupContent = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Clear previous error
     setError("");
 
-    // Validate password length
-    if (password.length <= 8) {
-      setError("Password must be more than 8 characters");
+    // Validate password
+    const pwdError = validatePassword(password);
+    if (pwdError) {
+      setError(pwdError);
       setLoading(false);
       return;
     }
@@ -142,10 +151,12 @@ const SignupContent = () => {
                   }`}
                 >
                   Email
+                  <span className="text-xs text-gray-500 ml-2">(max 30 characters)</span>
                 </label>
                 <input
                   type="email"
                   id="email"
+                  maxLength={30}
                   className={`w-full px-4 py-2 border-2 ${
                     isDark
                       ? "border-gray-500 bg-gray-600 text-white"
@@ -166,10 +177,12 @@ const SignupContent = () => {
                     }`}
                   >
                     First Name
+                    <span className="text-xs text-gray-500 ml-2">(max 15 chars)</span>
                   </label>
                   <input
                     type="text"
                     id="firstName"
+                    maxLength={15}
                     className={`w-full px-4 py-2 border-2 ${
                       isDark
                         ? "border-gray-500 bg-gray-600 text-white"
@@ -189,10 +202,12 @@ const SignupContent = () => {
                     }`}
                   >
                     Last Name
+                    <span className="text-xs text-gray-500 ml-2">(max 15 chars)</span>
                   </label>
                   <input
                     type="text"
                     id="lastName"
+                    maxLength={15}
                     className={`w-full px-4 py-2 border-2 ${
                       isDark
                         ? "border-gray-500 bg-gray-600 text-white"
@@ -215,6 +230,26 @@ const SignupContent = () => {
                 >
                   Password
                 </label>
+                <div className="mb-2 text-xs text-gray-500 space-y-1">
+                  <p>Password must:</p>
+                  <ul className="list-disc list-inside space-y-0.5">
+                    <li className={password.length >= 8 && password.length <= 20 ? "text-green-600" : ""}>
+                      Be 8-20 characters long
+                    </li>
+                    <li className={/[0-9]/.test(password) ? "text-green-600" : ""}>
+                      Include at least 1 number
+                    </li>
+                    <li className={/[a-zA-Z]/.test(password) ? "text-green-600" : ""}>
+                      Include at least 1 letter
+                    </li>
+                    <li className={/[!@#$%^&*(),.?":{}|<>]/.test(password) ? "text-green-600" : ""}>
+                      Include at least 1 special character (!@#$%^&*...)
+                    </li>
+                  </ul>
+                </div>
+                {passwordError && (
+                  <p className="text-xs text-red-600 mb-2">{passwordError}</p>
+                )}
                 <input
                   type="password"
                   id="password"
@@ -225,16 +260,28 @@ const SignupContent = () => {
                   } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setPasswordError(validatePassword(e.target.value));
+                  }}
+                  required
+                  minLength={8}
+                  maxLength={20}
                 />
               </div>
+
+              <p className={`text-xs mt-4 ${
+                isDark ? "text-gray-400" : "text-gray-600"
+              }`}>
+                📌 After signup, you&apos;ll be redirected to Google Sign-In to connect your Google Drive account.
+              </p>
 
               <button
                 type="submit"
                 disabled={
                   !email || !password || !firstName || !lastName || loading
                 }
-                className={`w-full bg-gray-900 text-white py-2 px-4 rounded-lg font-semibold transition mt-6 ${
+                className={`w-full bg-gray-900 text-white py-2 px-4 rounded-lg font-semibold transition mt-4 ${
                   !email || !password || !firstName || !lastName || loading
                     ? "opacity-50 cursor-not-allowed"
                     : "hover:bg-gray-800"

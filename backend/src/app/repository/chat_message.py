@@ -3,6 +3,7 @@
 This module provides data access layer for tutor message operations.
 """
 
+from cryptography.fernet import InvalidToken
 from sqlalchemy.orm import Session
 
 from app.core.encrypt import decrypt_message, encrypt_message
@@ -33,7 +34,7 @@ class ChatMessageRepository:
         if message:
             try:
                 message.message = decrypt_message(message.message)  # type: ignore[assignment]
-            except Exception:
+            except InvalidToken:
                 # If decryption fails, keep the original (for backward compatibility)
                 pass
         return message
@@ -62,7 +63,7 @@ class ChatMessageRepository:
         for message in messages:
             try:
                 message.message = decrypt_message(message.message)  # type: ignore[assignment]
-            except Exception:
+            except InvalidToken:
                 # If decryption fails, keep the original (for backward compatibility)
                 pass
         return messages
@@ -99,7 +100,7 @@ class ChatMessageRepository:
         # Decrypt before returning so the service layer gets plain text
         try:
             db_message.message = decrypt_message(db_message.message)  # type: ignore[assignment]
-        except Exception:
+        except InvalidToken:
             # If decryption fails, keep as is (for backward compatibility)
             pass
         return db_message
@@ -124,7 +125,7 @@ class ChatMessageRepository:
         # Decrypt before returning so the service layer gets plain text
         try:
             db_message.message = decrypt_message(db_message.message)  # type: ignore[assignment]
-        except Exception:
+        except InvalidToken:
             # If decryption fails, keep as is (for backward compatibility)
             pass
         return db_message
@@ -157,7 +158,7 @@ class ChatMessageRepository:
         for message in messages:
             try:
                 message.message = decrypt_message(message.message)  # type: ignore[assignment]
-            except Exception:
+            except InvalidToken:
                 # If decryption fails, keep the original (for backward compatibility)
                 pass
         return messages

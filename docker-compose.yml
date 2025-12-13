@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # Backend service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ai-tutor-backend
+    ports:
+      - "3000:3000"
+    # loads environment variables from .env file
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///app/ai_tutor.db}
+      - CLIENT_ID=${CLIENT_ID}
+      - CLIENT_SECRET=${CLIENT_SECRET}
+      - REDIRECT_URI=${REDIRECT_URI}
+      - TOKEN_URI=${TOKEN_URI}
+      - SESSION_SECRET=${SESSION_SECRET:-your-super-secret-session-key-change-in-production}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - BACKEND_URL=${BACKEND_URL}
+      - PROJECT_ID=${PROJECT_ID:-gdrive-multiple}
+      - MCP_SERVER=${MCP_SERVER}
+      - FERNET_KEY=${FERNET_KEY}
+      - OPENAI_KEY=${OPENAI_KEY}
+      - ELEVEN_KEY=${ELEVEN_KEY}
+      - GEMINI_KEY=${GEMINI_KEY}
+    volumes:
+      - ./backend/ai_tutor.db:/app/ai_tutor.db
+      - ./backend/assets:/app/assets
+    networks:
+      - ai-tutor-network
+    restart: unless-stopped
+
+  # Frontend service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+    container_name: ai-tutor-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - ai-tutor-network
+    restart: unless-stopped
+
+networks:
+  ai-tutor-network:
+    driver: bridge

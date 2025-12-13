@@ -42,7 +42,6 @@ async def generate_video(  # noqa: ANN201
             fileid=request.file_id,
             userid=current_user.id,  # pyright: ignore[reportArgumentType]
             template_name=request.template_name,  # pyright: ignore[reportArgumentType]
-            title=request.title,  # pyright: ignore[reportArgumentType]
             output_filename=video_filename,
         )
 

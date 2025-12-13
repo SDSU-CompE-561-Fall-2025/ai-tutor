@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Plus, Search, BookOpen, FileText } from "lucide-react";
 import Link from "next/link";
 import CreateClassModal from "@/components/CreateClassModal";
@@ -13,7 +13,7 @@ import {
   clearAuthTokens,
   ApiError,
 } from "@/lib/api";
-import { useDarkMode } from "@/hooks/useDarkMode";
+import { useDarkMode } from "@/contexts/DarkModeContext";
 
 interface Class {
   id: string;
@@ -110,7 +110,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
-  const { isDark, toggleDarkMode } = useDarkMode();
+  const { isDark } = useDarkMode();
 
   // Ensure component is mounted on client before checking auth
   useEffect(() => {
@@ -132,6 +132,7 @@ export default function DashboardPage() {
       try {
         setIsLoading(true);
         setError(null);
+        // fetch courses from backend and file count for each course
         const courses = await getCourses();
         const enrichedCourses = await Promise.all(
           courses.map(async (course, index) => {
@@ -239,12 +240,6 @@ export default function DashboardPage() {
                 Manage your learning spaces and resources.
               </p>
             </div>
-            <button
-              onClick={toggleDarkMode}
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 rounded-lg font-semibold transition-colors"
-            >
-              {isDark ? "Light Mode" : "Dark Mode"}
-            </button>
           </div>
 
           {/* Search and Add Class section */}
@@ -336,7 +331,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Class Modal (popup window over dashboard) */}
       <CreateClassModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

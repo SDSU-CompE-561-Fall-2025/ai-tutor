@@ -1,0 +1,16 @@
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv
+venv/
+ENV/
+env/
+.pytest_cache
+*.log
+.DS_Store
+*.md
+.git
+.gitignore
+swagger.yaml
