@@ -89,6 +89,117 @@ class TestUserSchema(BaseTestCase):
         assert user_create.first_name == self.test_user_data["first_name"]
         assert user_create.last_name == self.test_user_data["last_name"]
 
+    def test_user_create_name_length_validation(self) -> None:
+        """Test that name fields enforce length limits (1-15 chars)."""
+        from pydantic import ValidationError
+
+        # Test first_name too long (>15 chars)
+        with self.assertRaises(ValidationError):
+            UserCreate(
+                email="test@example.com",
+                password="Valid@123",
+                first_name="A" * 16,
+                last_name="User",
+            )
+
+        # Test last_name too long (>15 chars)
+        with self.assertRaises(ValidationError):
+            UserCreate(
+                email="test@example.com",
+                password="Valid@123",
+                first_name="Test",
+                last_name="B" * 16,
+            )
+
+        # Test empty first_name
+        with self.assertRaises(ValidationError):
+            UserCreate(
+                email="test@example.com",
+                password="Valid@123",
+                first_name="",
+                last_name="User",
+            )
+
+        # Test whitespace-only name
+        with self.assertRaises(ValidationError):
+            UserCreate(
+                email="test@example.com",
+                password="Valid@123",
+                first_name="   ",
+                last_name="User",
+            )
+
+    def test_user_create_email_length_validation(self) -> None:
+        """Test that email field enforces max length (30 chars)."""
+        from pydantic import ValidationError
+
+        # Test email too long (>30 chars)
+        with self.assertRaises(ValidationError):
+            UserCreate(
+                email="a" * 25 + "@example.com",  # >30 chars total
+                password="Valid@123",
+                first_name="Test",
+                last_name="User",
+            )
+
+    def test_user_create_password_validation(self) -> None:
+        """Test password validation rules (8-20 chars, 1 number, 1 letter, 1 special)."""
+        from pydantic import ValidationError
+
+        # Test password too short (<8 chars)
+        with self.assertRaises(ValidationError):
+            UserCreate(
+                email="test@example.com",
+                password="Pass@1",
+                first_name="Test",
+                last_name="User",
+            )
+
+        # Test password too long (>20 chars)
+        with self.assertRaises(ValidationError):
+            UserCreate(
+                email="test@example.com",
+                password="VeryLongPassword@123456",
+                first_name="Test",
+                last_name="User",
+            )
+
+        # Test password without number
+        with self.assertRaises(ValidationError):
+            UserCreate(
+                email="test@example.com",
+                password="Password@",
+                first_name="Test",
+                last_name="User",
+            )
+
+        # Test password without letter
+        with self.assertRaises(ValidationError):
+            UserCreate(
+                email="test@example.com",
+                password="12345@678",
+                first_name="Test",
+                last_name="User",
+            )
+
+        # Test password without special character
+        with self.assertRaises(ValidationError):
+            UserCreate(
+                email="test@example.com",
+                password="Password123",
+                first_name="Test",
+                last_name="User",
+            )
+
+        # Test valid password
+        user = UserCreate(
+            email="test@example.com",
+            password="Valid@123",
+            first_name="Test",
+            last_name="User",
+        )
+        assert user.password == "Valid@123"
+
 
 class TestPasswordHandling(BaseTestCase):
     """Tests for password hashing and verification."""

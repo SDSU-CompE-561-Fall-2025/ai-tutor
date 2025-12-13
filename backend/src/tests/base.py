@@ -63,7 +63,7 @@ class BaseTestCase(unittest.TestCase):
         # Create test data
         self.test_user_data = {
             "email": "testuser@example.com",
-            "password": "testpassword123",
+            "password": "Test@123",  # Meets validation: 8-20 chars, number, letter, special
             "first_name": "Test",
             "last_name": "User",
         }

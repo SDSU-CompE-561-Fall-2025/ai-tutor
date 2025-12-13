@@ -47,6 +47,47 @@ class TestUserLogin(BaseTestCase):
         )
         assert response.status_code == 401
 
+    def test_user_registration_invalid_password(self) -> None:
+        """Test user registration with invalid password."""
+        # Password too short
+        response = self.client.post(
+            "/api/v1/user/register",
+            json={
+                "email": "newuser@example.com",
+                "password": "Pass@1",  # Too short
+                "first_name": "New",
+                "last_name": "User",
+            },
+        )
+        assert response.status_code == 422
+        assert "at least 8 characters" in response.text.lower()
+
+    def test_user_registration_invalid_name_length(self) -> None:
+        """Test user registration with name exceeding max length."""
+        response = self.client.post(
+            "/api/v1/user/register",
+            json={
+                "email": "newuser@example.com",
+                "password": "Valid@123",
+                "first_name": "A" * 16,  # Too long
+                "last_name": "User",
+            },
+        )
+        assert response.status_code == 422
+
+    def test_user_registration_invalid_email_length(self) -> None:
+        """Test user registration with email exceeding max length."""
+        response = self.client.post(
+            "/api/v1/user/register",
+            json={
+                "email": "a" * 25 + "@example.com",  # >30 chars
+                "password": "Valid@123",
+                "first_name": "Test",
+                "last_name": "User",
+            },
+        )
+        assert response.status_code == 422
+
 
 class TestUserProfile(BaseTestCase):
     """Tests for user profile endpoints."""
