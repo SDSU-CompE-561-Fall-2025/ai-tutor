@@ -1,44 +1,37 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useLayoutEffect } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 const DARK_MODE_KEY = "darkMode";
 
 interface DarkModeContextType {
   isDark: boolean;
   toggleDarkMode: () => void;
-  mounted: boolean;
 }
 
 const DarkModeContext = createContext<DarkModeContextType | undefined>(undefined);
 
-export function DarkModeProvider({ children }: { children: React.ReactNode }) {
+export function DarkModeProvider({ children }: { children: ReactNode }) {
   // Initialize state from localStorage lazily
   const [isDark, setIsDark] = useState(() => {
     if (typeof window === "undefined") return false;
     const stored = localStorage.getItem(DARK_MODE_KEY);
     return stored === "true";
   });
-  const [mounted, setMounted] = useState(false);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useLayoutEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Sync changes to localStorage
+  // Sync changes to localStorage (only on client side)
   useEffect(() => {
-    if (mounted) {
+    if (typeof window !== "undefined") {
       localStorage.setItem(DARK_MODE_KEY, String(isDark));
     }
-  }, [isDark, mounted]);
+  }, [isDark]);
 
   const toggleDarkMode = () => {
     setIsDark(!isDark);
   };
 
   return (
-    <DarkModeContext.Provider value={{ isDark, toggleDarkMode, mounted }}>
+    <DarkModeContext.Provider value={{ isDark, toggleDarkMode }}>
       {children}
     </DarkModeContext.Provider>
   );

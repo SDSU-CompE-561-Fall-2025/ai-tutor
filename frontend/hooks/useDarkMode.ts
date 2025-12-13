@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useLayoutEffect } from "react";
+import { useState, useEffect } from "react";
 
 const DARK_MODE_KEY = "darkMode";
 
@@ -11,23 +11,17 @@ export function useDarkMode() {
     const stored = localStorage.getItem(DARK_MODE_KEY);
     return stored === "true";
   });
-  const [mounted, setMounted] = useState(false);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useLayoutEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Sync changes to localStorage
+  // Sync changes to localStorage (only on client side)
   useEffect(() => {
-    if (mounted) {
+    if (typeof window !== "undefined") {
       localStorage.setItem(DARK_MODE_KEY, String(isDark));
     }
-  }, [isDark, mounted]);
+  }, [isDark]);
 
   const toggleDarkMode = () => {
     setIsDark(!isDark);
   };
 
-  return { isDark, toggleDarkMode, mounted };
+  return { isDark, toggleDarkMode };
 }
