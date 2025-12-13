@@ -99,6 +99,42 @@ class TestCourseEndpoints(BaseTestCase):
         assert data["name"] == course_data["name"]
         assert data["description"] == ""
 
+    def test_create_course_invalid_name_length(self) -> None:
+        """Test creating a course with name exceeding max length."""
+        authenticated_client = self.get_authenticated_client()
+        response = authenticated_client.post(
+            "/api/v1/courses",
+            json={
+                "name": "A" * 31,  # Too long (>30 chars)
+                "description": "Valid description",
+            },
+        )
+        assert response.status_code == 422
+
+    def test_create_course_invalid_description_length(self) -> None:
+        """Test creating a course with description exceeding max length."""
+        authenticated_client = self.get_authenticated_client()
+        response = authenticated_client.post(
+            "/api/v1/courses",
+            json={
+                "name": "Valid Course",
+                "description": "A" * 101,  # Too long (>100 chars)
+            },
+        )
+        assert response.status_code == 422
+
+    def test_create_course_empty_name(self) -> None:
+        """Test creating a course with empty name."""
+        authenticated_client = self.get_authenticated_client()
+        response = authenticated_client.post(
+            "/api/v1/courses",
+            json={
+                "name": "",
+                "description": "Valid description",
+            },
+        )
+        assert response.status_code == 422
+
 
 if __name__ == "__main__":
     unittest.main()

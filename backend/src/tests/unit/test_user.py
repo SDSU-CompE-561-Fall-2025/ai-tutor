@@ -89,7 +89,6 @@ class TestUserSchema(BaseTestCase):
         assert user_create.first_name == self.test_user_data["first_name"]
         assert user_create.last_name == self.test_user_data["last_name"]
 
-
 class TestPasswordHandling(BaseTestCase):
     """Tests for password hashing and verification."""
 
