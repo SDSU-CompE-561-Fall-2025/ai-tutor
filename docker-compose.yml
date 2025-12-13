@@ -20,7 +20,11 @@ services:
       - FRONTEND_URL=${FRONTEND_URL}
       - BACKEND_URL=${BACKEND_URL}
       - PROJECT_ID=${PROJECT_ID:-gdrive-multiple}
+      - MCP_SERVER=${MCP_SERVER}
       - FERNET_KEY=${FERNET_KEY}
+      - OPENAI_KEY=${OPENAI_KEY}
+      - ELEVEN_KEY=${ELEVEN_KEY}
+      - GEMINI_KEY=${GEMINI_KEY}
     volumes:
       - ./backend/ai_tutor.db:/app/ai_tutor.db
       - ./backend/assets:/app/assets

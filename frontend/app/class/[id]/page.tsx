@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ArrowLeft, Search, Send, FileText, Trash2, Plus } from "lucide-react";
 import { useDarkMode } from "@/contexts/DarkModeContext";
 import Link from "next/link";
@@ -21,7 +21,6 @@ import {
   deleteCourse,
   deleteFile,
 } from "@/lib/api";
-import { useDarkMode } from "@/hooks/useDarkMode";
 
 interface Document {
   id: string;
@@ -123,7 +122,6 @@ const markdownToHtml = (raw: string) => {
 export default function ClassDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const { isDark } = useDarkMode();
   const { isDark } = useDarkMode();
   const courseId = Number(params.id);
   const [activeTab, setActiveTab] = useState<"docs" | "chat" | "settings">(
@@ -565,11 +563,6 @@ export default function ClassDetailPage() {
                             ? "bg-gray-700 border-gray-600"
                             : "bg-white border-gray-300"
                         }`}
-                        className={`flex items-center justify-between p-4 border rounded-lg hover:shadow transition-shadow ${
-                          isDark
-                            ? "bg-gray-700 border-gray-600"
-                            : "bg-white border-gray-300"
-                        }`}
                       >
                         <div className="flex items-center gap-3">
                           <FileText
@@ -594,9 +587,6 @@ export default function ClassDetailPage() {
                         </div>
                         <button
                           onClick={() => handleDeleteDocument(doc.id)}
-                          className={`p-2 rounded-lg transition-colors ${
-                            isDark ? "hover:bg-red-900/30" : "hover:bg-red-100"
-                          }`}
                           className={`p-2 rounded-lg transition-colors ${
                             isDark ? "hover:bg-red-900/30" : "hover:bg-red-100"
                           }`}
@@ -675,11 +665,6 @@ export default function ClassDetailPage() {
                       {driveResults.map((file) => (
                         <div
                           key={file.id}
-                          className={`flex items-center justify-between p-4 border rounded-lg hover:shadow transition-shadow ${
-                            isDark
-                              ? "bg-gray-700 border-gray-600"
-                              : "bg-white border-gray-300"
-                          }`}
                           className={`flex items-center justify-between p-4 border rounded-lg hover:shadow transition-shadow ${
                             isDark
                               ? "bg-gray-700 border-gray-600"

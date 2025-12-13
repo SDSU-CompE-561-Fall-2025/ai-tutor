@@ -1,6 +1,6 @@
 "use client";
-// import necessary modules and components
-import React, { useState, useEffect } from "react";
+
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,7 +36,6 @@ type FileResponse = {
 // VideosPage is the main component for displaying and generating videos
 const VideosPage = () => {
   const router = useRouter();
-  const { isDark } = useDarkMode();
   const { isDark } = useDarkMode();
 
   // State management

@@ -19,8 +19,7 @@ export default function CreateClassModal({
   const [className, setClassName] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
-  const { isDark } = useDarkMode();
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Class name input validation

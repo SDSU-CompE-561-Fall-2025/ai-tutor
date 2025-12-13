@@ -3,6 +3,8 @@
 This module defines Pydantic schemas for user data validation and serialization.
 """
 
+import re
+
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
@@ -15,9 +17,30 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     """Schema for creating a new user."""
 
-    password: str
+    password: str = Field(..., min_length=8, max_length=20)
     first_name: str = Field(..., min_length=1, max_length=15)
     last_name: str = Field(..., min_length=1, max_length=15)
+
+    @field_validator("password")
+    @classmethod
+    def password_must_be_valid(cls, password: str) -> str:
+        """Validate password meets security requirements."""
+        if len(password) < 8:
+            msg = "Password must be at least 8 characters"
+            raise ValueError(msg)
+        if len(password) > 20:
+            msg = "Password must be no more than 20 characters"
+            raise ValueError(msg)
+        if not re.search(r"[0-9]", password):
+            msg = "Password must include at least 1 number"
+            raise ValueError(msg)
+        if not re.search(r"[a-zA-Z]", password):
+            msg = "Password must include at least 1 letter"
+            raise ValueError(msg)
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            msg = "Password must include at least 1 special character"
+            raise ValueError(msg)
+        return password
 
     @field_validator("first_name", "last_name")
     @classmethod

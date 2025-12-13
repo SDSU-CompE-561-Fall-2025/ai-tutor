@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Plus, Search, BookOpen, FileText } from "lucide-react";
 import Link from "next/link";
 import CreateClassModal from "@/components/CreateClassModal";
@@ -110,7 +110,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
-  const { isDark, toggleDarkMode } = useDarkMode();
+  const { isDark } = useDarkMode();
 
   // Ensure component is mounted on client before checking auth
   useEffect(() => {

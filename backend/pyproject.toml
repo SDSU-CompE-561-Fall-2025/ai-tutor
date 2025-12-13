@@ -69,6 +69,7 @@ ignore = [
     "D104",  # missing docstring in package
     "D", # missing docstring in public modules, classes, functions, and methods
     "S101", # allow asserts in tests
+    "SIM105",
     "PLR2004" # allow magic numbers in tests
 ]
 

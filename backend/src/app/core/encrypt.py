@@ -20,8 +20,11 @@ def encrypt_message(message: str) -> str:
 
 def decrypt_message(encrypted_message: str) -> str:
     """Decrypt a chat message."""
+    if not encrypted_message:
+        return encrypted_message
+
     try:
         return fernet.decrypt(encrypted_message.encode()).decode()
-    except InvalidToken:
-        # If decryption fails, it might be plain text (backward compatibility)
-        raise ValueError("Decryption failed - message may not be encrypted")
+    except (InvalidToken, Exception):  # noqa: BLE001
+        # If decryption fails, return the message as-is (backward compatibility for unencrypted messages)
+        return encrypted_message

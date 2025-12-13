@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { User, Mail } from "lucide-react";
 import {
   getCurrentUser,
@@ -29,7 +29,6 @@ interface UsageStats {
 
 export default function AccountPage() {
   const router = useRouter();
-  const { isDark } = useDarkMode();
   const { isDark } = useDarkMode();
   const [user, setUser] = useState<UserData | null>(null);
   const [firstName, setFirstName] = useState("");

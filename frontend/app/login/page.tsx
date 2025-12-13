@@ -1,7 +1,6 @@
 "use client";
-import React from "react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Loader } from "@/components/ui/loader";
 import { login } from "@/lib/api";
 import Image from "next/image";
@@ -19,6 +18,7 @@ const Page = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
     try {
       const data = await login(email, password);
       // Store access token from login response
