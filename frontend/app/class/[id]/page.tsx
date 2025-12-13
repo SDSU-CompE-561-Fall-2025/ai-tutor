@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import { ArrowLeft, Search, Send, FileText, Trash2, Plus } from "lucide-react";
+import { useDarkMode } from "@/contexts/DarkModeContext";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
@@ -41,6 +42,7 @@ interface DriveResult {
   modifiedTime?: string;
 }
 
+// prevent XSS attacks by escaping HTML special characters
 const escapeHtml = (text: string) =>
   text
     .replace(/&/g, "&amp;")
@@ -49,6 +51,7 @@ const escapeHtml = (text: string) =>
     .replace(/\"/g, "&quot;")
     .replace(/'/g, "&#039;");
 
+// apply inline markdown for bold, italics, and inline code
 const applyInlineMarkdown = (text: string) => {
   let result = text;
   result = result.replace(/`([^`]+)`/g, "<code>$1</code>");
@@ -121,6 +124,7 @@ export default function ClassDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { isDark } = useDarkMode();
+  const { isDark } = useDarkMode();
   const courseId = Number(params.id);
   const [activeTab, setActiveTab] = useState<"docs" | "chat" | "settings">(
     "docs"
@@ -145,8 +149,10 @@ export default function ClassDetailPage() {
 
   useEffect(() => {
     const fetchData = async () => {
+      // if no course id, return
       if (!params.id) return;
       const token = getStoredAccessToken();
+      // if no user token, redirect to login page
       if (!token) {
         router.push("/login");
         return;
@@ -436,42 +442,36 @@ export default function ClassDetailPage() {
   };
 
   return (
-    <div className={`flex h-screen ${isDark ? "bg-gray-800" : "bg-gray-50"}`}>
+    <div className={`flex h-screen ${
+      isDark ? "bg-gray-800" : "bg-gray-50"
+    }`}>
       {/* Main content - Documents */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div
-          className={`border-b px-8 py-6 ${
-            isDark ? "bg-gray-700 border-gray-600" : "bg-white border-gray-200"
-          }`}
-        >
+        <div className={`border-b px-8 py-6 ${
+          isDark
+            ? "bg-gray-700 border-gray-600"
+            : "bg-white border-gray-200"
+        }`}>
           <div className="flex items-center gap-4 mb-6">
             <Link href="/dashboard">
-              <button
-                className={`p-2 rounded-lg transition-colors ${
-                  isDark ? "hover:bg-gray-600" : "hover:bg-gray-100"
-                }`}
-              >
-                <ArrowLeft
-                  className={`w-5 h-5 ${
-                    isDark ? "text-gray-300" : "text-gray-600"
-                  }`}
-                />
+              <button className={`p-2 rounded-lg transition-colors ${
+                isDark ? "hover:bg-gray-600" : "hover:bg-gray-100"
+              }`}>
+                <ArrowLeft className={`w-5 h-5 ${
+                  isDark ? "text-gray-300" : "text-gray-600"
+                }`} />
               </button>
             </Link>
             <div>
-              <h1
-                className={`text-2xl font-bold ${
-                  isDark ? "text-white" : "text-gray-900"
-                }`}
-              >
+              <h1 className={`text-2xl font-bold ${
+                isDark ? "text-white" : "text-gray-900"
+              }`}>
                 {courseName}
               </h1>
-              <p
-                className={`text-sm ${
-                  isDark ? "text-gray-400" : "text-gray-500"
-                }`}
-              >
+              <p className={`text-sm ${
+                isDark ? "text-gray-400" : "text-gray-500"
+              }`}>
                 Class ID: {params.id}
               </p>
             </div>
@@ -485,7 +485,7 @@ export default function ClassDetailPage() {
                 className={`pb-3 border-b-2 transition-colors ${
                   activeTab === "docs"
                     ? isDark
-                      ? "border-blue-400 text-blue-400 font-medium"
+                      ? "border-blue-500 text-blue-400 font-medium"
                       : "border-gray-900 text-gray-900 font-medium"
                     : isDark
                     ? "border-transparent text-gray-400 hover:text-gray-200"
@@ -499,7 +499,7 @@ export default function ClassDetailPage() {
                 className={`pb-3 border-b-2 transition-colors ${
                   activeTab === "chat"
                     ? isDark
-                      ? "border-blue-400 text-blue-400 font-medium"
+                      ? "border-blue-500 text-blue-400 font-medium"
                       : "border-gray-900 text-gray-900 font-medium"
                     : isDark
                     ? "border-transparent text-gray-400 hover:text-gray-200"
@@ -513,7 +513,7 @@ export default function ClassDetailPage() {
                 className={`pb-3 border-b-2 transition-colors ${
                   activeTab === "settings"
                     ? isDark
-                      ? "border-blue-400 text-blue-400 font-medium"
+                      ? "border-blue-500 text-blue-400 font-medium"
                       : "border-gray-900 text-gray-900 font-medium"
                     : isDark
                     ? "border-transparent text-gray-400 hover:text-gray-200"
@@ -527,13 +527,11 @@ export default function ClassDetailPage() {
         </div>
 
         {error && (
-          <div
-            className={`mx-8 mt-4 rounded-md border px-4 py-3 text-sm ${
-              isDark
-                ? "border-red-700/50 bg-red-900/30 text-red-300"
-                : "border-red-200 bg-red-50 text-red-700"
-            }`}
-          >
+          <div className={`mx-8 mt-4 rounded-md border px-4 py-3 text-sm ${
+            isDark
+              ? "border-red-600 bg-red-900/30 text-red-300"
+              : "border-red-200 bg-red-50 text-red-700"
+          }`}>
             {error}
           </div>
         )}
@@ -542,21 +540,17 @@ export default function ClassDetailPage() {
         {activeTab === "docs" && (
           <div className="flex-1 overflow-auto px-8 py-6 flex flex-col">
             {isLoading ? (
-              <div
-                className={`flex-1 flex items-center justify-center ${
-                  isDark ? "text-gray-300" : "text-gray-500"
-                }`}
-              >
+              <div className={`flex-1 flex items-center justify-center ${
+                isDark ? "text-gray-400" : "text-gray-500"
+              }`}>
                 Loading files...
               </div>
             ) : (
               <>
                 {/* Documents Added Title */}
-                <h2
-                  className={`text-lg font-semibold mb-4 ${
-                    isDark ? "text-white" : "text-gray-900"
-                  }`}
-                >
+                <h2 className={`text-lg font-semibold mb-4 ${
+                  isDark ? "text-white" : "text-gray-900"
+                }`}>
                   Documents Added
                 </h2>
 
@@ -571,6 +565,11 @@ export default function ClassDetailPage() {
                             ? "bg-gray-700 border-gray-600"
                             : "bg-white border-gray-300"
                         }`}
+                        className={`flex items-center justify-between p-4 border rounded-lg hover:shadow transition-shadow ${
+                          isDark
+                            ? "bg-gray-700 border-gray-600"
+                            : "bg-white border-gray-300"
+                        }`}
                       >
                         <div className="flex items-center gap-3">
                           <FileText
@@ -579,11 +578,9 @@ export default function ClassDetailPage() {
                             }`}
                           />
                           <div>
-                            <p
-                              className={`text-sm font-medium ${
-                                isDark ? "text-white" : "text-gray-900"
-                              }`}
-                            >
+                            <p className={`text-sm font-medium ${
+                              isDark ? "text-white" : "text-gray-900"
+                            }`}>
                               {doc.name}
                             </p>
                             <p
@@ -600,6 +597,9 @@ export default function ClassDetailPage() {
                           className={`p-2 rounded-lg transition-colors ${
                             isDark ? "hover:bg-red-900/30" : "hover:bg-red-100"
                           }`}
+                          className={`p-2 rounded-lg transition-colors ${
+                            isDark ? "hover:bg-red-900/30" : "hover:bg-red-100"
+                          }`}
                           aria-label="Delete"
                           title="Delete document"
                         >
@@ -613,11 +613,9 @@ export default function ClassDetailPage() {
                     ))
                   ) : (
                     <div className="flex flex-col items-center justify-center py-12 text-center">
-                      <FileText
-                        className={`w-12 h-12 mb-3 ${
-                          isDark ? "text-gray-600" : "text-gray-300"
-                        }`}
-                      />
+                      <FileText className={`w-12 h-12 mb-3 ${
+                        isDark ? "text-gray-600" : "text-gray-300"
+                      }`} />
                       <p className={isDark ? "text-gray-400" : "text-gray-500"}>
                         No documents found
                       </p>
@@ -642,15 +640,15 @@ export default function ClassDetailPage() {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className={`w-full pl-10 pr-28 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                         isDark
-                          ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                          : "bg-white border-gray-300"
+                          ? "border-gray-600 bg-gray-700 text-white placeholder-gray-400"
+                          : "border-gray-300"
                       }`}
                     />
                     <button
                       onClick={handleSearchDrive}
                       className={`absolute inset-y-0 right-0 flex items-center gap-2 pr-3 text-sm ${
                         isDark
-                          ? "text-gray-300 hover:text-gray-100"
+                          ? "text-gray-300 hover:text-white"
                           : "text-gray-700 hover:text-gray-900"
                       }`}
                       disabled={isSearching}
@@ -663,11 +661,9 @@ export default function ClassDetailPage() {
 
                 {/* Google Drive Results */}
                 <div>
-                  <h3
-                    className={`text-sm font-semibold mb-2 ${
-                      isDark ? "text-gray-200" : "text-gray-700"
-                    }`}
-                  >
+                  <h3 className={`text-sm font-semibold mb-2 ${
+                    isDark ? "text-gray-300" : "text-gray-700"
+                  }`}>
                     Google Drive results
                   </h3>
                   {driveResults.length === 0 ? (
@@ -684,6 +680,11 @@ export default function ClassDetailPage() {
                               ? "bg-gray-700 border-gray-600"
                               : "bg-white border-gray-300"
                           }`}
+                          className={`flex items-center justify-between p-4 border rounded-lg hover:shadow transition-shadow ${
+                            isDark
+                              ? "bg-gray-700 border-gray-600"
+                              : "bg-white border-gray-300"
+                          }`}
                         >
                           <div className="flex items-center gap-3">
                             <FileText
@@ -692,11 +693,9 @@ export default function ClassDetailPage() {
                               }`}
                             />
                             <div>
-                              <p
-                                className={`text-sm font-medium ${
-                                  isDark ? "text-white" : "text-gray-900"
-                                }`}
-                              >
+                              <p className={`text-sm font-medium ${
+                                isDark ? "text-white" : "text-gray-900"
+                              }`}>
                                 {file.name}
                               </p>
                               {file.modifiedTime && (
@@ -715,7 +714,7 @@ export default function ClassDetailPage() {
                             onClick={() => handleAddFile(file)}
                             className={`flex items-center gap-1 px-3 py-1.5 border rounded-lg text-sm transition-colors ${
                               isDark
-                                ? "border-gray-600 text-gray-200 hover:bg-gray-600"
+                                ? "border-gray-600 text-gray-300 hover:bg-gray-600"
                                 : "border-gray-300 text-gray-800 hover:bg-gray-50"
                             }`}
                           >
@@ -735,65 +734,61 @@ export default function ClassDetailPage() {
         {activeTab === "settings" && (
           <div className="flex-1 overflow-auto px-8 py-6 flex flex-col gap-6">
             <div className="max-w-xl space-y-4">
-              <h2
-                className={`text-lg font-semibold ${
-                  isDark ? "text-white" : "text-gray-900"
-                }`}
-              >
+              <h2 className={`text-lg font-semibold ${
+                isDark ? "text-white" : "text-gray-900"
+              }`}>
                 Course Settings
               </h2>
               <div className="space-y-2">
                 <label
                   className={`text-sm font-medium ${
-                    isDark ? "text-gray-200" : "text-gray-700"
+                    isDark ? "text-gray-300" : "text-gray-700"
                   }`}
                   htmlFor="courseName"
                 >
                   Course name
+                  <span className="text-xs text-gray-500 ml-2">(max 30 chars)</span>
                 </label>
                 <input
                   id="courseName"
                   type="text"
+                  maxLength={30}
                   value={courseNameInput}
                   onChange={(e) => setCourseNameInput(e.target.value)}
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
                     isDark
-                      ? "bg-gray-700 border-gray-600 text-white"
-                      : "bg-white border-gray-300"
+                      ? "border-gray-600 bg-gray-700 text-white"
+                      : "border-gray-300"
                   }`}
                 />
                 <button
                   onClick={handleUpdateCourse}
-                  className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg text-sm"
+                  className={`px-4 py-2 rounded-lg transition-colors text-sm ${
+                    isDark
+                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                      : "bg-gray-900 text-white hover:bg-gray-800"
+                  }`}
                 >
                   Save changes
                 </button>
               </div>
 
-              <div
-                className={`pt-4 border-t space-y-2 ${
-                  isDark ? "border-gray-700" : "border-gray-200"
-                }`}
-              >
-                <h3
-                  className={`text-sm font-semibold ${
-                    isDark ? "text-red-400" : "text-red-600"
-                  }`}
-                >
+              <div className={`pt-4 border-t space-y-2 ${
+                isDark ? "border-gray-600" : "border-gray-200"
+              }`}>
+                <h3 className="text-sm font-semibold text-red-600">
                   Danger zone
                 </h3>
-                <p
-                  className={`text-sm ${
-                    isDark ? "text-gray-300" : "text-gray-600"
-                  }`}
-                >
+                <p className={`text-sm ${
+                  isDark ? "text-gray-400" : "text-gray-600"
+                }`}>
                   Deleting this course will remove it permanently.
                 </p>
                 <button
                   onClick={handleDeleteCourse}
                   className={`px-4 py-2 border rounded-lg transition-colors text-sm ${
                     isDark
-                      ? "border-red-700/50 text-red-400 hover:bg-red-900/30"
+                      ? "border-red-600 text-red-400 hover:bg-red-900/30"
                       : "border-red-300 text-red-700 hover:bg-red-50"
                   }`}
                 >
@@ -809,18 +804,16 @@ export default function ClassDetailPage() {
           <div className="flex-1 overflow-auto px-8 py-6 flex flex-col">
             <div className="flex flex-col h-full gap-4">
               <div className="flex items-center justify-between">
-                <h2
-                  className={`text-lg font-medium ${
-                    isDark ? "text-white" : "text-gray-900"
-                  }`}
-                >
+                <h2 className={`text-lg font-medium ${
+                  isDark ? "text-white" : "text-gray-900"
+                }`}>
                   Tutor Sessions
                 </h2>
                 <button
                   onClick={handleCreateSession}
                   className={`p-2 rounded-lg transition-all duration-200 group ${
                     isDark
-                      ? "bg-blue-600/20 text-blue-400 hover:bg-blue-600/30"
+                      ? "bg-blue-900/30 text-blue-400 hover:bg-blue-900/50 hover:text-blue-300"
                       : "bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-700"
                   }`}
                   disabled={isLoadingSessions}
@@ -860,11 +853,11 @@ export default function ClassDetailPage() {
                       className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
                         activeSessionId === session.id
                           ? isDark
-                            ? "border-blue-500 bg-blue-600 text-white"
+                            ? "border-blue-600 bg-blue-600 text-white"
                             : "border-gray-900 bg-gray-900 text-white"
                           : isDark
-                          ? "border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600"
-                          : "border-gray-300 text-gray-800 bg-white hover:bg-gray-50"
+                          ? "border-gray-600 text-gray-300 bg-gray-700"
+                          : "border-gray-300 text-gray-800 bg-white"
                       }`}
                     >
                       {session.title || `Session ${session.id}`}
@@ -873,13 +866,11 @@ export default function ClassDetailPage() {
                 )}
               </div>
 
-              <div
-                className={`flex-1 overflow-y-auto space-y-4 border rounded-lg p-4 ${
-                  isDark
-                    ? "bg-gray-700 border-gray-600"
-                    : "bg-white border-gray-200"
-                }`}
-              >
+              <div className={`flex-1 overflow-y-auto space-y-4 border rounded-lg p-4 ${
+                isDark
+                  ? "bg-gray-700 border-gray-600"
+                  : "bg-white border-gray-200"
+              }`}>
                 {isLoadingSessions ? (
                   <p
                     className={`text-sm ${
@@ -939,13 +930,11 @@ export default function ClassDetailPage() {
 
                 {isWaitingForAi && (
                   <div className="flex justify-start">
-                    <div
-                      className={`max-w-2xl px-4 py-2 rounded-lg ${
-                        isDark
-                          ? "bg-gray-600 text-gray-100"
-                          : "bg-gray-100 text-gray-900"
-                      }`}
-                    >
+                    <div className={`max-w-2xl px-4 py-2 rounded-lg ${
+                      isDark
+                        ? "bg-gray-600 text-gray-200"
+                        : "bg-gray-100 text-gray-900"
+                    }`}>
                       <p className="text-sm flex items-center gap-2">
                         <span
                           className={`inline-flex h-2 w-2 rounded-full animate-ping ${
@@ -960,16 +949,10 @@ export default function ClassDetailPage() {
               </div>
 
               {/* Chat Input */}
-              <div
-                className={`border-t pt-4 ${
-                  isDark ? "border-gray-700" : "border-gray-200"
-                }`}
-              >
-                <p
-                  className={`text-xs mb-3 ${
-                    isDark ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
+              <div className={`border-t pt-4 ${
+                isDark ? "border-gray-600" : "border-gray-200"
+              }`}>
+                <p className="text-xs text-gray-500 mb-3">
                   AI can make mistakes. Please verify important information.
                 </p>
                 <div className="flex gap-2">
@@ -983,17 +966,20 @@ export default function ClassDetailPage() {
                         handleSendMessage();
                       }
                     }}
-                    maxLength={25}
                     className={`flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${
                       isDark
-                        ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                        : "bg-white border-gray-300"
+                        ? "border-gray-600 bg-gray-700 text-white placeholder-gray-400"
+                        : "border-gray-300"
                     }`}
                   />
                   <button
                     onClick={handleSendMessage}
                     disabled={!activeSessionId || isSending}
-                    className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={`p-2 border rounded-lg transition-colors disabled:opacity-50 ${
+                      isDark
+                        ? "bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600"
+                        : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
+                    }`}
                   >
                     <Send className="w-4 h-4" />
                   </button>

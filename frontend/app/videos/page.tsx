@@ -12,7 +12,8 @@ import {
   getCourses,
 } from "@/lib/api";
 import { Play } from "lucide-react";
-import { useDarkMode } from "@/hooks/useDarkMode";
+import { useDarkMode } from "@/contexts/DarkModeContext";
+
 
 // Type definitions for video data
 // Type definitions are used to ensure correct data structure
@@ -35,6 +36,7 @@ type FileResponse = {
 // VideosPage is the main component for displaying and generating videos
 const VideosPage = () => {
   const router = useRouter();
+  const { isDark } = useDarkMode();
   const { isDark } = useDarkMode();
 
   // State management
@@ -164,59 +166,51 @@ const VideosPage = () => {
 
   // Frontend
   return (
-    <div
-      className={`min-h-screen p-8 ${isDark ? "bg-gray-800" : "bg-background"}`}
-    >
+    <div className={`min-h-screen p-8 ${
+      isDark ? "bg-gray-800" : "bg-gray-50"
+    }`}>
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="mb-8">
-          <h1
-            className={`text-3xl font-bold mb-2 ${
-              isDark ? "text-white" : "text-foreground"
-            }`}
-          >
+          <h1 className={`text-3xl font-bold mb-2 ${
+            isDark ? "text-white" : "text-gray-900"
+          }`}>
             Generated Videos
           </h1>
-          <p className={isDark ? "text-gray-300" : "text-muted-foreground"}>
+          <p className={isDark ? "text-gray-400" : "text-gray-600"}>
             Visual explanations generated from your source materials.
           </p>
         </div>
 
         {/* Error Display */}
         {error && (
-          <div
-            className={`mb-6 p-4 rounded-lg ${
-              isDark
-                ? "bg-red-900/30 border border-red-700/50 text-red-300"
-                : "bg-destructive/10 border border-destructive/20 text-destructive"
-            }`}
-          >
+          <div className={`mb-6 p-4 rounded-lg ${
+            isDark
+              ? "bg-red-900/30 border border-red-600 text-red-300"
+              : "bg-red-50 border border-red-200 text-red-700"
+          }`}>
             {error}
           </div>
         )}
 
         {/* Video Generation Section */}
-        <div
-          className={`mb-8 p-6 border rounded-lg ${
-            isDark ? "bg-gray-700 border-gray-600" : "bg-card border-border"
-          }`}
-        >
-          <h2
-            className={`text-xl font-semibold mb-4 ${
-              isDark ? "text-white" : "text-foreground"
-            }`}
-          >
-            Generate New Video
-          </h2>
+        <div className={`mb-8 p-6 border rounded-lg ${
+          isDark
+            ? "bg-gray-700 border-gray-600"
+            : "bg-white border-gray-200"
+        }`}>
+          <h2 className={`text-xl font-semibold mb-4 ${
+            isDark ? "text-white" : "text-gray-900"
+          }`}>Generate New Video</h2>
           <div className="flex gap-4 flex-wrap">
             {/* File Selection */}
             <select
               value={selectedFileId || ""}
               onChange={(e) => setSelectedFileId(e.target.value || null)}
-              className={`flex-1 min-w-[200px] px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+              className={`flex-1 min-w-[200px] px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 isDark
-                  ? "bg-gray-600 border-gray-500 text-white focus:ring-blue-500"
-                  : "bg-background border-input focus:ring-ring"
+                  ? "bg-gray-600 border-gray-500 text-white"
+                  : "bg-white border-gray-300 text-gray-900"
               }`}
               disabled={isGenerating}
             >
@@ -234,11 +228,10 @@ const VideosPage = () => {
               placeholder="Video title (optional)"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              maxLength={25}
-              className={`flex-1 min-w-[200px] px-4 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+              className={`flex-1 min-w-[200px] px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 isDark
-                  ? "bg-gray-600 border-gray-500 text-white placeholder-gray-400 focus:ring-blue-500"
-                  : "bg-background border-input focus:ring-ring"
+                  ? "bg-gray-600 border-gray-500 text-white placeholder-gray-400"
+                  : "bg-white border-gray-300 text-gray-900"
               }`}
               disabled={isGenerating}
             />
@@ -257,25 +250,21 @@ const VideosPage = () => {
         {/* Videos Grid */}
         {isLoadingVideos ? (
           <div className="flex items-center justify-center py-20">
-            <div className={isDark ? "text-gray-300" : "text-muted-foreground"}>
+            <div className={isDark ? "text-gray-400" : "text-gray-600"}>
               Loading videos...
             </div>
           </div>
         ) : videos.length === 0 ? (
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
-              <p
-                className={
-                  isDark ? "text-gray-300 mb-2" : "text-muted-foreground mb-2"
-                }
-              >
+              <p className={`mb-2 ${
+                isDark ? "text-gray-400" : "text-gray-600"
+              }`}>
                 No videos generated yet
               </p>
-              <p
-                className={`text-sm ${
-                  isDark ? "text-gray-400" : "text-muted-foreground"
-                }`}
-              >
+              <p className={`text-sm ${
+                isDark ? "text-gray-500" : "text-gray-500"
+              }`}>
                 Select a file and generate your first video!
               </p>
             </div>
@@ -297,15 +286,13 @@ const VideosPage = () => {
                   className={`border rounded-lg overflow-hidden hover:shadow-lg transition-shadow ${
                     isDark
                       ? "bg-gray-700 border-gray-600"
-                      : "bg-card border-border"
+                      : "bg-white border-gray-200"
                   }`}
                 >
                   {/* Video Thumbnail/Player */}
-                  <div
-                    className={`relative aspect-video ${
-                      isDark ? "bg-gray-600" : "bg-muted"
-                    }`}
-                  >
+                  <div className={`relative aspect-video ${
+                    isDark ? "bg-gray-800" : "bg-gray-100"
+                  }`}>
                     <video
                       src={video.url}
                       className="w-full h-full object-cover"
@@ -325,11 +312,9 @@ const VideosPage = () => {
 
                   {/* Video Info */}
                   <div className="p-5">
-                    <h3
-                      className={`font-semibold text-base line-clamp-2 leading-snug mb-4 ${
-                        isDark ? "text-white" : "text-foreground"
-                      }`}
-                    >
+                    <h3 className={`font-semibold text-base line-clamp-2 leading-snug mb-4 ${
+                      isDark ? "text-white" : "text-gray-900"
+                    }`}>
                       {cleanTitle}
                     </h3>
 

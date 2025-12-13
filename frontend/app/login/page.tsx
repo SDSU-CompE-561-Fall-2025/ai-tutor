@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Loader } from "@/components/ui/loader";
 import { login } from "@/lib/api";
 import Image from "next/image";
-import { useDarkMode } from "@/hooks/useDarkMode";
+import { useDarkMode } from "@/contexts/DarkModeContext";
 
 const Page = () => {
   const [error, setError] = useState("");
@@ -105,10 +105,12 @@ const Page = () => {
                   }`}
                 >
                   Email
+                  <span className="text-xs text-gray-500 ml-2">(max 30 characters)</span>
                 </label>
                 <input
                   type="email"
                   id="email"
+                  maxLength={30}
                   className={`w-full px-4 py-2 border-2 ${
                     isDark
                       ? "border-gray-500 bg-gray-600 text-white"

@@ -118,7 +118,14 @@ const handleResponse = async <T>(response: Response) => {
     let errorMessage = `Request failed with status ${response.status}`;
     try {
       const data = await response.json();
-      errorMessage = data.detail || data.message || errorMessage;
+      // Handle Pydantic validation errors
+      if (data.detail && Array.isArray(data.detail)) {
+        errorMessage = data.detail.map((err: any) => err.msg).join(", ");
+      } else if (typeof data.detail === "string") {
+        errorMessage = data.detail;
+      } else if (data.message) {
+        errorMessage = data.message;
+      }
     } catch (err) {
       console.error("Failed to parse error response", err);
     }

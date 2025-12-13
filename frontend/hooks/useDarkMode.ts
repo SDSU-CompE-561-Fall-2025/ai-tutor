@@ -5,21 +5,27 @@ import { useState, useEffect } from "react";
 const DARK_MODE_KEY = "darkMode";
 
 export function useDarkMode() {
-  const [isDark, setIsDark] = useState(false);
+  // Initialize state from localStorage lazily
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const stored = localStorage.getItem(DARK_MODE_KEY);
+    return stored === "true";
+  });
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const stored = localStorage.getItem(DARK_MODE_KEY);
-    if (stored !== null) {
-      setIsDark(stored === "true");
-    }
   }, []);
 
+  // Sync changes to localStorage
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem(DARK_MODE_KEY, String(isDark));
+    }
+  }, [isDark, mounted]);
+
   const toggleDarkMode = () => {
-    const newValue = !isDark;
-    setIsDark(newValue);
-    localStorage.setItem(DARK_MODE_KEY, String(newValue));
+    setIsDark(!isDark);
   };
 
   return { isDark, toggleDarkMode, mounted };

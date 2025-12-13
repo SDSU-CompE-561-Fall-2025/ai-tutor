@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Loader } from "@/components/ui/loader";
 import { register, storeAuthTokens } from "@/lib/api";
 import Image from "next/image";
-import { useDarkMode } from "@/hooks/useDarkMode";
+import { useDarkMode } from "@/contexts/DarkModeContext";
 
 const SignupContent = () => {
   const [error, setError] = useState("");
@@ -142,10 +142,12 @@ const SignupContent = () => {
                   }`}
                 >
                   Email
+                  <span className="text-xs text-gray-500 ml-2">(max 30 characters)</span>
                 </label>
                 <input
                   type="email"
                   id="email"
+                  maxLength={30}
                   className={`w-full px-4 py-2 border-2 ${
                     isDark
                       ? "border-gray-500 bg-gray-600 text-white"
@@ -166,10 +168,12 @@ const SignupContent = () => {
                     }`}
                   >
                     First Name
+                    <span className="text-xs text-gray-500 ml-2">(max 15 chars)</span>
                   </label>
                   <input
                     type="text"
                     id="firstName"
+                    maxLength={15}
                     className={`w-full px-4 py-2 border-2 ${
                       isDark
                         ? "border-gray-500 bg-gray-600 text-white"
@@ -189,10 +193,12 @@ const SignupContent = () => {
                     }`}
                   >
                     Last Name
+                    <span className="text-xs text-gray-500 ml-2">(max 15 chars)</span>
                   </label>
                   <input
                     type="text"
                     id="lastName"
+                    maxLength={15}
                     className={`w-full px-4 py-2 border-2 ${
                       isDark
                         ? "border-gray-500 bg-gray-600 text-white"
@@ -229,12 +235,18 @@ const SignupContent = () => {
                 />
               </div>
 
+              <p className={`text-xs mt-4 ${
+                isDark ? "text-gray-400" : "text-gray-600"
+              }`}>
+                📌 After signup, you'll be redirected to Google Sign-In to connect your Google Drive account.
+              </p>
+
               <button
                 type="submit"
                 disabled={
                   !email || !password || !firstName || !lastName || loading
                 }
-                className={`w-full bg-gray-900 text-white py-2 px-4 rounded-lg font-semibold transition mt-6 ${
+                className={`w-full bg-gray-900 text-white py-2 px-4 rounded-lg font-semibold transition mt-4 ${
                   !email || !password || !firstName || !lastName || loading
                     ? "opacity-50 cursor-not-allowed"
                     : "hover:bg-gray-800"

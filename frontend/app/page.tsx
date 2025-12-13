@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ButtonColorful } from "@/components/ui/button-colorful";
 import { useRouter } from "next/navigation";
 import { SplineScene } from "@/components/ui/splite";
-import { useDarkMode } from "@/hooks/useDarkMode";
+import { useDarkMode } from "@/contexts/DarkModeContext";
 export default function Home() {
   const router = useRouter();
   const { isDark, toggleDarkMode } = useDarkMode();
